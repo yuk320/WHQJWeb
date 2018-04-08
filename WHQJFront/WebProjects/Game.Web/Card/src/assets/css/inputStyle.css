@@ -1,0 +1,9 @@
+input[type="text"] {
+  font-size: 0.35rem;
+}
+input[type="password"] {
+  font-size: 0.35rem;
+}
+input[type="submit"] {
+  width: 74%;
+}

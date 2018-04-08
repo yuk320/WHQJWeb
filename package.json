@@ -1,0 +1,26 @@
+{
+  "name": "whjhweb",
+  "version": "1.1.1",
+  "main": "index",
+  "dependencies": {
+    "async": "^2.6.0",
+    "eventproxy": "^1.0.0",
+    "files-extractor": "^0.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "preauto": "npm i",
+    "auto": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuk320/WHQJWeb.git"
+  },
+  "author": "yuppies@vip.qq.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yuk320/WHQJWeb/issues"
+  },
+  "homepage": "https://github.com/yuk320/WHQJWeb#readme",
+  "description": "网狐棋牌精华版源码及自动打包工具"
+}

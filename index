@@ -1,0 +1,844 @@
+#!/usr/bin/env node
+
+const fs = require("fs-extra");
+if (fs.existsSync("./package-lock.json")) fs.removeSync("./package-lock.json");
+console.time("全自动化工具完成");
+let allCount = 0;
+let start = process.argv[2] ? new Date(process.argv[2]) : null;
+const DATE_TODAY = new Date(
+  new Date().getFullYear(),
+  new Date().getMonth(),
+  new Date().getDate()
+);
+const DATE_TOMORROW = new Date(
+  new Date().getFullYear(),
+  new Date().getMonth(),
+  new Date().getDate() + 1
+);
+const COMMON_IGNORE = [
+  ".vscode/**/*",
+  "Docs/**/*",
+  "README.MD",
+  "index.html",
+  "node_modules/**/*",
+  "**/node_modules/**/*",
+  "完整包/**/*",
+  "更新包/**/*",
+  ".gitignore",
+  "package.json",
+  "config.json",
+  "index",
+  "pickup"
+];
+const path = require("path");
+const exec = require("child_process").exec;
+const spawn = require("child_process").spawn;
+const fextract = require("files-extractor");
+const STATUS = fextract.STATUS;
+const autoConfig = require("./config");
+const CODE_VERSION = "V" + autoConfig.version;
+const LAST_VERSION = "V" + autoConfig.lastVersion;
+let VERSION_LIST = {
+  last: autoConfig.versionList[autoConfig.lastVersion]
+};
+autoConfig.versionList[
+  autoConfig.version
+] = DATE_TOMORROW.toLocaleDateString().replace(/\-/g, "/");
+fs.writeFileSync("./config.json", JSON.stringify(autoConfig, null, 2));
+start =
+  start == null && VERSION_LIST.last
+    ? (start = new Date(VERSION_LIST.last))
+    : null;
+const PRODUCT_NAME = autoConfig.product_name;
+const eventproxy = require("eventproxy");
+const async = require("async");
+const AUTO_MODE = {
+  PUBLISH_ONLY: "PublishOnly",
+  UPDATE_ONLY: "UpdateOnly",
+  COMPLETE_ONLY: "CompleteOnly",
+  ALL: "ALL"
+};
+console.info(
+  `全自动化工具运行中...模式${autoConfig.mode}...网站版本${CODE_VERSION}`
+);
+/**
+ * Pad start string with 0
+ *
+ * @param {String} value
+ * @param {Number} length
+ * @param {String} pad
+ * @returns {String}
+ */
+const pad = String.prototype.padStart
+  ? function(value, length, pad) {
+      return String.prototype.padStart.call(String(value), length, pad || "0");
+    }
+  : function(value, length, pad) {
+      value = String(value);
+      length = length >> 0;
+      pad = pad || "0";
+
+      if (value.length > length) {
+        return value;
+      } else {
+        length = length - value.length;
+
+        if (length > pad.length) {
+          pad += pad.repeat(length / pad.length);
+        }
+
+        return pad.slice(0, length) + value;
+      }
+    };
+/**
+ * Format date
+ *
+ * @param {Date} date
+ * @returns {String}
+ */
+const formatDate = function(date, easy = false) {
+  let year = date.getFullYear();
+  let month = pad(date.getMonth() + 1, 2);
+  let day = pad(date.getDate(), 2);
+  let hour = pad(date.getHours(), 2);
+  let minutes = pad(date.getMinutes(), 2);
+  let seconds = pad(date.getSeconds(), 2);
+
+  return easy
+    ? `${year}${month}${day}`
+    : `${year}-${month}-${day} ${hour}.${minutes}.${seconds}`;
+};
+
+const getDirObj = function(opts) {
+  // console.info(opts.start.toISOString(),opts.end.toISOString());
+  let originDirName = formatDate(opts.start) + " & " + formatDate(opts.end);
+  let codeVersion =
+    opts.output === "更新包"
+      ? `${LAST_VERSION}to${CODE_VERSION}`
+      : CODE_VERSION;
+  let terminDirName =
+    opts.terminDirName ||
+    `${PRODUCT_NAME.replace(
+      "源码包",
+      opts.tag + opts.output
+    )}-${codeVersion}-${formatDate(opts.end, true)}`;
+  let originDirPath = path.join(__dirname, opts.output, originDirName);
+  let terminDirPath = originDirPath.replace(originDirName, terminDirName);
+  return {
+    originDirName: originDirName,
+    terminDirName: terminDirName,
+    originDirPath: originDirPath,
+    terminDirPath: terminDirPath
+  };
+};
+let optsCodeDiff = {
+  start: start || DATE_TODAY,
+  end: DATE_TOMORROW,
+  output: "更新包",
+  types: "mtime",
+  ignore: [
+    "网站发布/**/*",
+    "**/dist/**/*",
+    "**/obj/**",
+    "**/bin/**",
+    "**/*.user",
+    "**/log/**",
+    "**/Web.config"
+  ],
+  tag: "源码"
+};
+let optsUpdate = {
+  start: start || DATE_TODAY,
+  end: DATE_TOMORROW,
+  output: "更新包",
+  types: "mtime",
+  ignore: ["WHQJAdmin/**/*", "WHQJFront/**/*", "**/log/**", "**/Web.config"],
+  tag: "发布"
+};
+const optsCode = {
+  start: new Date(2017, 0, 1),
+  end: DATE_TOMORROW,
+  dot: true,
+  output: "完整包",
+  ignore: [
+    "网站发布/WHQJFront/index.html",
+    ".git/**/*",
+    ".svn/**/*",
+    "**/.vs/**/*",
+    "**/Game.*/obj/**",
+    "**/Game.*/bin/**",
+    "**/*.user",
+    "**/dist/**/*"
+  ],
+  tag: ""
+};
+const optsAgent = {
+  start: new Date(2017, 0, 1),
+  end: DATE_TOMORROW,
+  files: "网站发布/WHQJFront/?(bin|Card)/**/*",
+  output: "网站发布",
+  terminDirName: "WHQJAgent"
+};
+const optsAPI = {
+  start: new Date(2017, 0, 1),
+  end: DATE_TOMORROW,
+  files: "网站发布/WHQJFront/?(bin|WS)/**/*",
+  output: "网站发布",
+  terminDirName: "WHQJAPI"
+};
+
+let NEED_PUBLISH_PROJS = [
+  {
+    name: "WHQJFront",
+    path: path.join(
+      __dirname,
+      "./WHQJFront/WebProjects/Game.Web/Game.Web.csproj"
+    )
+  },
+  {
+    name: "WHQJAdmin",
+    path: path.join(
+      __dirname,
+      "./WHQJAdmin/WebProjects/Game.Web/Game.Web.csproj"
+    )
+  }
+];
+const buildConfig = {
+  spread: [
+    {
+      execStr: "npm i",
+      condition: !fs.existsSync(
+        path.join(
+          __dirname,
+          "./WHQJFront/WebProjects/Game.Web/Spread/node_modules"
+        )
+      ),
+      options: {
+        cwd: path.join(__dirname, "./WHQJFront/WebProjects/Game.Web/Spread/")
+      }
+    },
+    {
+      execStr: "npm run build",
+      condition: true,
+      options: {
+        cwd: path.join(__dirname, "./WHQJFront/WebProjects/Game.Web/Spread/")
+      }
+    },
+    {
+      execStr: "npm run auto",
+      condition: true,
+      options: {
+        cwd: path.join(__dirname, "./WHQJFront/WebProjects/Game.Web/Spread/")
+      }
+    }
+  ],
+  card: [
+    {
+      execStr: "npm i",
+      condition: !fs.existsSync(
+        path.join(
+          __dirname,
+          "./WHQJFront/WebProjects/Game.Web/Card/node_modules"
+        )
+      ),
+      options: {
+        cwd: path.join(__dirname, "./WHQJFront/WebProjects/Game.Web/Card/")
+      }
+    },
+    {
+      execStr: "npm run product",
+      condition: true,
+      options: {
+        cwd: path.join(__dirname, "./WHQJFront/WebProjects/Game.Web/Card/")
+      }
+    },
+    {
+      execStr: "npm run auto",
+      condition: true,
+      options: {
+        cwd: path.join(__dirname, "./WHQJFront/WebProjects/Game.Web/Card/")
+      }
+    }
+  ]
+};
+
+const codeDiffExtract = function(cb) {
+  console.time("源码更新");
+  allCount++;
+  let subCount = 0;
+  let diffDirObj = getDirObj(optsCodeDiff);
+  COMMON_IGNORE.forEach(ignore => {
+    optsCodeDiff.ignore.push(ignore);
+  });
+  if (fs.existsSync(diffDirObj.terminDirPath)) {
+    subCount++;
+    fs.removeSync(diffDirObj.terminDirPath);
+    console.info(`Step_${allCount}_${subCount} [源码更新]清理`);
+  }
+  let x = fextract(optsCodeDiff);
+  x.on("message", msg => {
+    switch (msg.status) {
+      case STATUS.FAILED:
+        console.error(msg.data);
+        return cb(err);
+      case STATUS.WARNING:
+        console.warn(msg.data);
+        break;
+      case STATUS.BOOTSTRAP:
+        subCount++;
+        console.info(`Step_${allCount}_${subCount} [源码更新]文件提取启动 `);
+        console.time("Files Search");
+        break;
+      case STATUS.SEARCHED:
+        subCount++;
+        console.timeEnd("Files Search");
+        console.info(`Step_${allCount}_${subCount} [源码更新]文件搜索完成 `);
+        console.time("Files Filter");
+        break;
+      case STATUS.FILTERED:
+        subCount++;
+        console.timeEnd("Files Filter");
+        console.info(`Step_${allCount}_${subCount} [源码更新]文件过滤完成 `);
+        console.time("Files Extract");
+        break;
+      case STATUS.EXTRACTED:
+        subCount++;
+        let result = null;
+        console.timeEnd("Files Extract");
+        console.info(`Step_${allCount}_${subCount} [源码更新]文件提取完成 `);
+        if (fs.existsSync(diffDirObj.originDirPath)) {
+          subCount++;
+          fs.copySync(diffDirObj.originDirPath, diffDirObj.terminDirPath, {
+            preserveTimestamps: true
+          });
+          console.info(
+            `Step_${allCount}_${subCount} [源码更新]文件夹重命名成功 {${
+              diffDirObj.originDirName
+            }} > {${diffDirObj.terminDirName}} `
+          );
+          fs.removeSync(diffDirObj.originDirPath);
+          result = diffDirObj.terminDirPath;
+        }
+        cb(null, result);
+        break;
+    }
+  });
+};
+
+const publishDiffExtract = function(cb) {
+  console.time("发布更新");
+  allCount++;
+  let subCount = 0;
+  let diffDirObj = getDirObj(optsUpdate);
+  COMMON_IGNORE.forEach(ignore => {
+    optsUpdate.ignore.push(ignore);
+  });
+  if (fs.existsSync(diffDirObj.terminDirPath)) {
+    fs.removeSync(diffDirObj.terminDirPath);
+    subCount++;
+    console.info(`Step_${allCount}_${subCount} [发布更新]清理`);
+  }
+  mvList = [];
+  let x = fextract(optsUpdate);
+  x.on("message", msg => {
+    switch (msg.status) {
+      case STATUS.FAILED:
+        console.error(msg.data);
+        return cb(err);
+      case STATUS.WARNING:
+        console.warn(msg.data);
+        break;
+      case STATUS.BOOTSTRAP:
+        subCount++;
+        console.info(`Step_${allCount}_${subCount} [发布更新]文件提取启动 `);
+        console.time("Files Search");
+        break;
+      case STATUS.SEARCHED:
+        console.timeEnd("Files Search");
+        subCount++;
+        console.info(`Step_${allCount}_${subCount} [发布更新]文件搜索完成 `);
+        console.time("Files Filter");
+        break;
+      case STATUS.FILTERED:
+        console.timeEnd("Files Filter");
+        if (Array.isArray(msg.data)) {
+          msg.data.forEach(p => {
+            if (p.indexOf("网站发布") > -1)
+              mvList.push({
+                origin: path.join(diffDirObj.originDirPath, p),
+                termin: path
+                  .join(diffDirObj.originDirPath, p)
+                  .replace("\\网站发布", "")
+              });
+          });
+        }
+        subCount++;
+        console.info(`Step_${allCount}_${subCount} [发布更新]文件过滤完成 `);
+        console.time("Files Extract");
+        break;
+      case STATUS.EXTRACTED:
+        console.timeEnd("Files Extract");
+        subCount++;
+        console.info(`Step_${allCount}_${subCount} [发布更新]文件提取完成 `);
+        let epUpdateStep4 = new eventproxy();
+        epUpdateStep4.once("updateStep4", function() {
+          let result = null;
+          if (fs.existsSync(diffDirObj.originDirPath)) {
+            fs.copySync(diffDirObj.originDirPath, diffDirObj.terminDirPath, {
+              preserveTimestamps: true
+            });
+            subCount++;
+            console.info(
+              `Step_${allCount}_${subCount} [发布更新]文件夹重命名成功 {${
+                diffDirObj.originDirName
+              }} > {${diffDirObj.terminDirName}} `
+            );
+            fs.removeSync(diffDirObj.originDirPath);
+            result = diffDirObj.terminDirPath;
+          }
+          fs.remove(path.join(diffDirObj.terminDirPath, "./网站发布"), function(
+            err
+          ) {
+            if (err) console.error(err);
+            subCount++;
+            console.info(
+              `Step_${allCount}_${subCount} [发布更新]文件整理完成 `
+            );
+            cb(null, result);
+          });
+        });
+        if (mvList.length > 0) {
+          let epUpdateStep4_1 = new eventproxy();
+          epUpdateStep4_1.after("mvList", mvList.length, function() {
+            epUpdateStep4.emit("updateStep4", true);
+          });
+          mvList.forEach(function(obj) {
+            fs.move(obj.origin, obj.termin, function(err) {
+              epUpdateStep4_1.emit("mvList", true);
+            });
+          });
+        } else {
+          epUpdateStep4.emit("updateStep4", false);
+        }
+        break;
+    }
+  });
+};
+
+const codeExtract = function(cb) {
+  console.time("源码完整");
+  allCount++;
+  let subCount = 1;
+  let diffDirObj = getDirObj(optsCode);
+  COMMON_IGNORE.forEach(ignore => {
+    optsCode.ignore.push(ignore);
+  });
+  if (fs.existsSync(diffDirObj.terminDirPath)) {
+    fs.removeSync(diffDirObj.terminDirPath);
+    console.info(`Step_${allCount}_${subCount} [源码完整]清理`);
+  }
+  let x = fextract(optsCode);
+  x.on("message", msg => {
+    switch (msg.status) {
+      case STATUS.FAILED:
+        console.error(msg.data);
+        return cb(err);
+      case STATUS.WARNING:
+        console.warn(msg.data);
+        break;
+      case STATUS.BOOTSTRAP:
+        subCount++;
+        console.info(`Step_${allCount}_${subCount} [源码完整]文件提取启动 `);
+        console.time("Files Search");
+        break;
+      case STATUS.SEARCHED:
+        subCount++;
+        console.timeEnd("Files Search");
+        console.info(`Step_${allCount}_${subCount} [源码完整]文件搜索完成 `);
+        console.time("Files Filter");
+        break;
+      case STATUS.FILTERED:
+        subCount++;
+        console.timeEnd("Files Filter");
+        console.info(`Step_${allCount}_${subCount} [源码完整]文件过滤完成 `);
+        console.time("Files Extract");
+        break;
+      case STATUS.EXTRACTED:
+        subCount++;
+
+        let result = null;
+        console.timeEnd("Files Extract");
+        console.info(`Step_${allCount}_${subCount} [源码完整]文件提取完成 `);
+        if (fs.existsSync(diffDirObj.originDirPath)) {
+          subCount++;
+          fs.copySync(diffDirObj.originDirPath, diffDirObj.terminDirPath, {
+            preserveTimestamps: true
+          });
+          console.info(
+            `Step_${allCount}_${subCount} [源码完整]文件夹重命名成功 {${
+              diffDirObj.originDirName
+            }} > {${diffDirObj.terminDirName}} `
+          );
+          fs.removeSync(diffDirObj.originDirPath);
+          result = diffDirObj.terminDirPath;
+        }
+        cb(null, result);
+        break;
+    }
+  });
+};
+
+const buildDist = function(buildCfg, cb) {
+  if (buildCfg.length > 0) {
+    let epBuildList = new eventproxy();
+    epBuildList.after("builded", buildCfg.length, function(builded) {
+      cb(true);
+    });
+    async.eachSeries(
+      buildCfg,
+      (cfg, ecb) => {
+        if (cfg.condition) {
+          console.info(`${cfg.execStr} on ${cfg.options.cwd} start`);
+          exec(cfg.execStr, cfg.options, (err, stdout, stderr) => {
+            console.info(`${cfg.execStr} on ${cfg.options.cwd} end`);
+            ecb();
+            epBuildList.emit("builded", true);
+          });
+        } else {
+          ecb();
+          epBuildList.emit("builded", false);
+        }
+      },
+      err => {
+        if (err) console.err(err);
+      }
+    );
+  } else {
+    cb(false);
+  }
+};
+
+const copyRoomCard = function(cb) {
+  let dirObj = getDirObj(optsAgent);
+  let copy = [];
+  let x = fextract(optsAgent);
+  x.on("message", msg => {
+    switch (msg.status) {
+      case STATUS.FAILED:
+        console.error(msg.data);
+        return cb(err);
+      case STATUS.WARNING:
+        console.warn(msg.data);
+        break;
+      case STATUS.BOOTSTRAP:
+      case STATUS.SEARCHED:
+      case STATUS.FILTERED:
+        if (Array.isArray(msg.data)) {
+          msg.data.forEach(p => {
+            let obj = {
+              src: path.join(dirObj.originDirPath, p),
+              dest: path.join(
+                dirObj.originDirPath,
+                p.replace("网站发布/WHQJFront/", "")
+              )
+            };
+            copy.push(obj);
+          });
+        }
+        break;
+      case STATUS.EXTRACTED:
+        let result = null;
+        let epRCReady = eventproxy();
+        epRCReady.once("ready", ready => {
+          if (fs.existsSync(dirObj.originDirPath)) {
+            fs.removeSync(path.join(dirObj.originDirPath, "./网站发布"));
+            fs.copySync(dirObj.originDirPath, dirObj.terminDirPath, {
+              preserveTimestamps: true
+            });
+            fs.removeSync(dirObj.originDirPath);
+            result = {
+              name: dirObj.terminDirName,
+              path: dirObj.terminDirPath
+            };
+            cb(null, result);
+          }
+        });
+        if (copy.length > 0) {
+          copy.push({
+            src: path.join(__dirname, "./网站发布/WHQJFront/index.html"),
+            dest: path.join(dirObj.originDirPath, "./index.html")
+          });
+          copy.push({
+            src: path.join(__dirname, "./网站发布/WHQJFront/Web.config"),
+            dest: path.join(dirObj.originDirPath, "./Web.config")
+          });
+          let epRCMove = eventproxy();
+          epRCMove.after("moved", copy.length, moved => {
+            epRCReady.emit("ready", true);
+          });
+          copy.forEach(obj => {
+            fs.copySync(obj.src, obj.dest, {
+              preserveTimestamps: true
+            });
+            epRCMove.emit("moved", true);
+          });
+        } else {
+          epRCReady.emit("ready", true);
+        }
+        break;
+    }
+  });
+};
+
+const copyAPI = function(cb) {
+  let dirObj = getDirObj(optsAPI);
+  let copy = [];
+  let x = fextract(optsAPI);
+  x.on("message", msg => {
+    switch (msg.status) {
+      case STATUS.FAILED:
+        console.error(msg.data);
+        return cb(err);
+      case STATUS.WARNING:
+        console.warn(msg.data);
+        break;
+      case STATUS.BOOTSTRAP:
+      case STATUS.SEARCHED:
+      case STATUS.FILTERED:
+        if (Array.isArray(msg.data)) {
+          msg.data.forEach(p => {
+            let obj = {
+              src: path.join(dirObj.originDirPath, p),
+              dest: path.join(
+                dirObj.originDirPath,
+                p.replace("网站发布/WHQJFront/", "")
+              )
+            };
+            copy.push(obj);
+          });
+        }
+        break;
+      case STATUS.EXTRACTED:
+        let result = null;
+        let epRCReady = eventproxy();
+        epRCReady.once("ready", ready => {
+          if (fs.existsSync(dirObj.originDirPath)) {
+            fs.removeSync(path.join(dirObj.originDirPath, "./网站发布"));
+            fs.copySync(dirObj.originDirPath, dirObj.terminDirPath, {
+              preserveTimestamps: true
+            });
+            fs.removeSync(dirObj.originDirPath);
+            result = {
+              name: dirObj.terminDirName,
+              path: dirObj.terminDirPath
+            };
+            cb(null, result);
+          }
+        });
+        if (copy.length > 0) {
+          copy.push({
+            src: path.join(__dirname, "./网站发布/WHQJFront/Web.config"),
+            dest: path.join(dirObj.originDirPath, "./Web.config")
+          });
+          let epRCMove = eventproxy();
+          epRCMove.after("moved", copy.length, moved => {
+            epRCReady.emit("ready", true);
+          });
+          copy.forEach(obj => {
+            fs.copySync(obj.src, obj.dest, {
+              preserveTimestamps: true
+            });
+            epRCMove.emit("moved", true);
+          });
+        } else {
+          epRCReady.emit("ready", true);
+        }
+        break;
+    }
+  });
+};
+if (fs.existsSync(path.join(__dirname, "./网站发布"))) {
+  console.time("项目清理");
+  fs.removeSync(path.join(__dirname, "./网站发布"));
+  console.timeEnd("项目清理");
+}
+console.time("项目发布");
+let epPublish = new eventproxy();
+epPublish.after("publish", NEED_PUBLISH_PROJS.length, publish => {
+  if (autoConfig.mode !== AUTO_MODE.PUBLISH_ONLY) {
+    let epUpdate = new eventproxy();
+    epUpdate.once("updated", function(updated) {
+      if (autoConfig.mode !== AUTO_MODE.UPDATE_ONLY) {
+        codeExtract(function(err, codePath) {
+          allCount++;
+          let subCount = 0;
+          if (codePath && fs.existsSync(codePath + ".zip")) {
+            subCount++;
+            fs.removeSync(codePath + ".zip");
+            console.info(`Step_${allCount}_${subCount} [完整包]清理`);
+          }
+          console.time("完整包打包");
+          subCount++;
+          console.info(
+            `Step_${allCount}_${subCount} [完整包]打包开始 ${codePath}.zip`
+          );
+          let cmd7z = "7z a -tzip " + codePath + ".zip " + codePath;
+          exec(cmd7z, (err, stdout, stderr) => {
+            if (err) console.info(err);
+            subCount++;
+            console.info(
+              `Step_${allCount}_${subCount} [完整包]打包完成，正在为你打开更新包文件夹`
+            );
+            console.timeEnd("完整包打包");
+            exec("start " + path.join(__dirname, optsCode.output));
+            console.timeEnd("全自动化工具完成");
+          });
+        });
+      } else {
+        console.timeEnd("全自动化工具完成");
+      }
+    });
+    console.info(`Step_0 项目发布完成`);
+    console.timeEnd("项目发布");
+    if (autoConfig.mode !== AUTO_MODE.COMPLETE_ONLY) {
+      codeDiffExtract(function(err, codeDiffPath) {
+        console.timeEnd("源码更新");
+        let paths = [];
+        if (codeDiffPath) paths.push(codeDiffPath);
+        publishDiffExtract(function(err, publishDiffPath) {
+          console.timeEnd("发布更新");
+          if (publishDiffPath) paths.push(publishDiffPath);
+          if (paths.length > 0) {
+            console.time("更新包打包");
+            allCount++;
+            let subCount = 0;
+            let zipPath = paths[0].replace("发布", "").replace("源码", "");
+            if (fs.existsSync(zipPath + ".zip")) {
+              subCount++;
+              fs.removeSync(zipPath + ".zip");
+              console.info(`Step_${allCount}_${subCount} [更新包]清理`);
+            }
+            subCount++;
+            console.info(
+              `Step_${allCount}_${subCount} [更新包]打包开始 ${zipPath}.zip`
+            );
+            let cmd7z = "7z a -tzip " + zipPath + ".zip " + paths.join(" ");
+            exec(cmd7z, (err, stdout, stderr) => {
+              if (err) console.info(err);
+              subCount++;
+              console.info(
+                `Step_${allCount}_${subCount} [更新包]打包完成，正在为你打开更新包文件夹`
+              );
+              console.timeEnd("更新包打包");
+              epUpdate.emit("updated", true);
+              exec("start " + path.join(__dirname, optsCodeDiff.output));
+            });
+          } else {
+            console.info("[更新包]无需打包，因为没有需要更新的文件！");
+            epUpdate.emit("updated", false);
+          }
+        });
+      });
+    } else {
+      epUpdate.emit("updated", false);
+    }
+  } else {
+    console.timeEnd("全自动化工具完成");
+  }
+});
+
+let projCount = 0;
+
+function publishExec(proj) {
+  let pOutPath = path.join(__dirname, "./网站发布/" + proj.name);
+  let MSBuild_Publish =
+    "MSBuild " +
+    proj.path +
+    " /t:_WPPCopyWebApplication /p:Configuration=Release /p:WebProjectOutputDir=" +
+    pOutPath;
+
+  exec(
+    MSBuild_Publish,
+    {
+      encoding: "utf8",
+      timeout: 0,
+      maxBuffer: 5000 * 1024, // 默认 200 * 1024
+      killSignal: "SIGTERM"
+    },
+    (err, stdout, stderr) => {
+      projCount++;
+      console.info(`Step_0_${projCount} 项目[${proj.name}] 发布完成!`);
+      if (err) {
+        console.info(`Step_0_${projCount} 项目[${proj.name}] 编译出错!`);
+      }
+      if (proj.name === "WHQJFront" && autoConfig.otherRoomCard) {
+        copyRoomCard(function(err, result) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          projCount++;
+          console.info(`Step_0_${projCount} 项目[${result.name}] 发布完成!`);
+          if (autoConfig.otherAPI) {
+            copyAPI(function(err, result) {
+              if (err) {
+                console.error(err);
+                return;
+              }
+              projCount++;
+              console.info(
+                `Step_0_${projCount} 项目[${result.name}] 发布完成!`
+              );
+              epPublish.emit("publish", true);
+            });
+          } else {
+            epPublish.emit("publish", true);
+          }
+        });
+      } else {
+        epPublish.emit("publish", true);
+      }
+    }
+  );
+}
+console.info(`Step_0 项目发布启动`);
+if (Object.keys(autoConfig.prebuild).length > 0) {
+  let epPreBuild = new eventproxy();
+  epPreBuild.after(
+    "prebuilded",
+    Object.keys(autoConfig.prebuild).length,
+    prebuilded => {
+      async.each(NEED_PUBLISH_PROJS, publishExec);
+    }
+  );
+  Object.keys(autoConfig.prebuild).forEach(k => {
+    if (autoConfig.prebuild[k]) {
+      buildDist(buildConfig[k], builded => {
+        if (builded) {
+          projCount++;
+          console.info(`Step_0_${projCount} 项目[预发布] 编译完成!`);
+        }
+        epPreBuild.emit("prebuilded", true);
+      });
+    } else {
+      epPreBuild.emit("prebuilded", false);
+    }
+  });
+} else {
+  async.each(NEED_PUBLISH_PROJS, publishExec);
+}
+if (autoConfig.prebuild) {
+  buildDist(function(builded) {
+    if (builded) {
+      projCount++;
+      console.info(`Step_0_${projCount} 项目[预发布] 编译完成!`);
+    }
+    async.each(NEED_PUBLISH_PROJS, publishExec);
+  });
+} else {
+}
+
+// console.info(opts);
+// process.exec("fextract -s "+ opts.start.toISOString() + " -e "+ opts.end.toISOString(),(err,stdout,stderr)=>{
+//   console.info(stdout);
+// });
