@@ -80,7 +80,7 @@ namespace Game.Web.Module.AppManager
             {
                 if(ViewState["SearchItems"] == null)
                 {
-                    ViewState["SearchItems"] = "WHERE 1=1";
+                    ViewState["SearchItems"] = "WHERE StatusName NOT LIKE 'Club%' ";
                 }
                 return (string)ViewState["SearchItems"];
             }

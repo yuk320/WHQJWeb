@@ -9,6 +9,7 @@ using Game.Kernel;
 using Game.Utils;
 using System.Data;
 using Game.Entity.Accounts;
+using Game.Entity.Agent;
 using Game.Entity.NativeWeb;
 
 namespace Game.Facade
@@ -219,7 +220,7 @@ namespace Game.Facade
         /// <param name="info"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public int SaveAgentToken(UserInfo info, string token)
+        public int SaveAgentToken(AgentInfo info, string token)
         {
             return webData.SaveAgentToken(info, token);
         }

@@ -1,8 +1,9 @@
-﻿using Game.Entity.Accounts;
+﻿using Game.Entity.Agent;
 using Game.Facade;
 using Game.Kernel;
 using Game.Utils;
 using System;
+using Game.Entity.Accounts;
 
 namespace Game.Web.Card
 {
@@ -40,26 +41,18 @@ namespace Game.Web.Card
                                     "<div style=\"font-size:1.2rem; color:red; text-align:center; margin-top:3rem;\">参数异常，请稍后尝试。</div>");
                                 return;
                             }
-                            Message msg = FacadeManage.aideAccountsFacade.WXLogin(wu.unionid, GameRequest.GetUserIP());
+                            Message msg =
+                                FacadeManage.aideAgentFacade.AgentWXLogin(wu.unionid, GameRequest.GetUserIP());
                             if (msg.Success)
                             {
-                                UserInfo ui = msg.EntityList[0] as UserInfo;
+                                Entity.Agent.AgentInfo ui = msg.EntityList[0] as Entity.Agent.AgentInfo;
                                 if (ui != null)
                                 {
-                                    if (version == 1)
-                                    {
-                                        // for Version 1.0 跳转
-                                        Fetch.SetUserCookie(ui.ToUserTicketInfo());
-                                        Response.Redirect("Card/AgentInfo.aspx");
-                                    }
-                                    else if (version == 2)
-                                    {
-                                        //for Version 2.0 跳转
-                                        string token = Fetch.SHA256Encrypt(
-                                            $"<{ui.UserID}>,<{ui.AgentID}>,<{ui.GameID}>,<{Fetch.ConvertDateTimeToUnix(DateTime.Now)}>");
-                                        FacadeManage.aideNativeWebFacade.SaveAgentToken(ui, token);
-                                        Response.Redirect($"v2/#/?token={token}");
-                                    }
+                                    //for Version 2.0 跳转
+                                    string token = Fetch.SHA256Encrypt(
+                                        $"<{ui.UserID}>,<{ui.AgentID}>,<{ui.AgentDomain}>,<{Fetch.ConvertDateTimeToUnix(DateTime.Now)}>");
+                                    FacadeManage.aideNativeWebFacade.SaveAgentToken(ui, token);
+                                    Response.Redirect($"v2/#/?token={token}");
                                 }
                                 else
                                 {
@@ -94,72 +87,37 @@ namespace Game.Web.Card
         {
             if (AppConfig.Mode == AppConfig.CodeMode.Dev)
             {
-                if (version == 1)
+                #region Version 2.0 Dev
+
+                string mobile = CtrlHelper.GetText(txtPhone);
+                string pass = Utility.MD5(CtrlHelper.GetText(txtPassword));
+                Message msg =
+                    FacadeManage.aideAgentFacade.AgentMobileLogin(mobile, pass, GameRequest.GetUserIP());
+                if (msg.Success)
                 {
-                    #region Version 1.0 Dev
-
-                    AccountsInfo info =
-                        FacadeManage.aideAccountsFacade.GetAccountsInfoByGameID(Convert.ToInt32(txtGameID.Text));
-                    Message msg =
-                        FacadeManage.aideAccountsFacade.WXLogin(info != null ? info.UserUin : "yryr",
-                            GameRequest.GetUserIP());
-                    if (msg.Success)
+                    Entity.Agent.AgentInfo info = msg.EntityList[0] as Entity.Agent.AgentInfo;
+                    if (info != null)
                     {
-                        UserInfo ui = msg.EntityList[0] as UserInfo;
-                        if (ui != null)
-                        {
-                            Fetch.SetUserCookie(ui.ToUserTicketInfo());
-                            Response.Redirect("/Card/AgentInfo.aspx");
-                        }
-                        else
-                        {
-                            Response.Write(
-                                "<div style=\"font-size:1.2rem; color:red; text-align:center; margin-top:3rem;\">登录失败，请稍后尝试</div>");
-                        }
-                    }
-                    else
-                    {
-                        Response.Write(
-                            "<div style=\"font-size:1.2rem; color:red; text-align:center; margin-top:3rem;\">" +
-                            msg.Content + "</div>");
-                    }
+                        string token =
+                            Fetch.SHA256Encrypt(
+                                $"<{info.UserID}>,<{info.AgentID}>,<{info.AgentDomain}>,<{Fetch.ConvertDateTimeToUnix(DateTime.Now)}>");
 
-                    #endregion
-                }
-                else if (version == 2)
-                {
-                    #region Version 2.0 Dev
-
-                    string mobile = CtrlHelper.GetText(txtPhone);
-                    string pass = Utility.MD5(CtrlHelper.GetText(txtPassword));
-                    Message msg =
-                        FacadeManage.aideAccountsFacade.AgentMobileLogin(mobile, pass, GameRequest.GetUserIP());
-                    if (msg.Success)
-                    {
-                        UserInfo info = msg.EntityList[0] as UserInfo;
-                        if (info != null)
-                        {
-                            string token =
-                                Fetch.SHA256Encrypt(
-                                    $"<{info.UserID}>,<{info.AgentID}>,<{info.GameID}>,<{Fetch.ConvertDateTimeToUnix(DateTime.Now)}>");
-
-                            FacadeManage.aideNativeWebFacade.SaveAgentToken(info, token);
-                            Response.Redirect($"v2/#/?token={token}");
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        Response.Write(
-                            $"<div style=\"font-size:1.2rem; color:red; text-align:center; margin-top:3rem;\">{msg.Content}</div>");
+                        FacadeManage.aideNativeWebFacade.SaveAgentToken(info, token);
+                        Response.Redirect($"v2/#/?token={token}");
                         return;
                     }
-
-                    Response.Write(
-                        "<div style=\"font-size:1.2rem; color:red; text-align:center; margin-top:3rem;\">账号或密码错误。</div>");
-
-                    #endregion
                 }
+                else
+                {
+                    Response.Write(
+                        $"<div style=\"font-size:1.2rem; color:red; text-align:center; margin-top:3rem;\">{msg.Content}</div>");
+                    return;
+                }
+
+                Response.Write(
+                    "<div style=\"font-size:1.2rem; color:red; text-align:center; margin-top:3rem;\">账号或密码错误。</div>");
+
+                #endregion
             }
         }
     }

@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AgentDataProvider.cs" />
     <Compile Include="AccountsDataProvider.cs" />
     <Compile Include="Factory\ClassFactory.cs" />
     <Compile Include="GameMatchDataProvider.cs" />

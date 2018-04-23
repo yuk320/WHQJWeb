@@ -1,6 +1,6 @@
 <template>
   <div class="ui-main ui-change">
-    <top title="密码修改"></top>
+    <top></top>
     <form>
      <div class="ui-panel">
        <div class="ui-form-item">
@@ -26,14 +26,14 @@
 
 <script>
 import md5 from 'blueimp-md5'
-import top from './Top'
-import Dailog from './dialog/dialog'
-import Message from './message'
+import top from './common/top'
+import dailog from './common/dialog'
+import message from './common/message'
 import { updatePassword } from '../fetch/fetch'
 
 export default {
   name: 'password-change',
-  components: { top, Dailog, Message },
+  components: { top, dailog, message },
   data: function() {
     return {
       password: null,

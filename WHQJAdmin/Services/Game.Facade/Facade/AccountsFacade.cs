@@ -295,7 +295,7 @@ namespace Game.Facade
         /// <param name="agent">代理信息</param>
         /// <param name="pGameId">父级代理游戏ID</param>
         /// <returns></returns>
-        public Message InsertAgentUser(AccountsAgentInfo agent, int pGameId)
+        public Message InsertAgentUser(AccountsAgentInfo agent, int pGameId=0)
         {
             return aideAccountsData.InsertAgentUser(agent, pGameId);
         }

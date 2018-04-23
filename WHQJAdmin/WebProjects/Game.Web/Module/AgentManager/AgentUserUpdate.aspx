@@ -34,14 +34,12 @@
                 <asp:Literal ID="litInfo" runat="server"></asp:Literal>代理信息</div></td>
         </tr>
         <tr>
-            <td class="listTdLeft">代理级别：</td>
-            <td>        
-                <asp:DropDownList ID="ddlLevel" runat="server" Enabled="false" Width="156px">
-                    <asp:ListItem Text="一级代理" Value="1"></asp:ListItem>
-                    <asp:ListItem Text="二级代理" Value="2"></asp:ListItem>
-                    <asp:ListItem Text="三级代理" Value="3"></asp:ListItem>
-                </asp:DropDownList> 
-            </td>
+          <td class="listTdLeft">
+            安全密码：
+          </td>
+          <td>
+            <asp:TextBox runat="server" ID="txtPassword" TextMode="Password"></asp:TextBox> <span>（不修改请留空）</span>
+          </td>
         </tr>
         <tr>
             <td class="listTdLeft">真实姓名：</td>

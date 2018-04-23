@@ -4,6 +4,7 @@ using Game.IData;
 using System.Data.Common;
 using System.Data;
 using Game.Entity.Accounts;
+using Game.Entity.Agent;
 using Game.Entity.NativeWeb;
 using Game.Entity.Treasure;
 
@@ -286,7 +287,7 @@ namespace Game.Data
         /// <param name="info"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public int SaveAgentToken(UserInfo info, string token)
+        public int SaveAgentToken(AgentInfo info, string token)
         {
             Database.ExecuteNonQuery(CommandType.Text, "DELETE AgentTokenInfo WHERE ExpirtAt < GETDATE() ");
             string sql =

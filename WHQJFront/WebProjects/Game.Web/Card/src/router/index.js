@@ -4,12 +4,14 @@ import Index from '../component/index.vue'
 import Login from '../component/login.vue'
 import Home from '../component/home.vue'
 import Info from '../component/agentInfo.vue'
-import InfoChange from '../component/updateAgent.vue'
 import Password from '../component/updatePass.vue'
-import Under from '../component/under.vue'
+import Below from '../component/below.vue'
 import AddProxy from '../component/addAgent.vue'
 import Record from '../component/record.vue'
 import Send from '../component/present.vue'
+import Award from '../component/award.vue'
+import payInfo from '../component/payInfo.vue'
+import expendInfo from '../component/expendInfo.vue'
 
 Vue.use(Router)
 
@@ -26,36 +28,48 @@ export default new Router({
     },
     {
       path: '/Home',
-      component: Home
+      component: Home,
+      props: route => ({ nav: 'Home' })
     },
     {
       path: '/Info',
       component: Info
     },
     {
-      path: '/InfoChange',
-      component: InfoChange
-    },
-    {
-      path: '/Password',
-      component: Password
-    },
-    {
-      path: '/Under',
-      component: Under,
-      props: route => ({ type: route.query.type })
-    },
-    {
       path: '/AddProxy',
-      component: AddProxy
+      component: AddProxy,
+      props: route => ({ nav: 'Below' })
     },
     {
-      path: '/Record',
-      component: Record
+      path: '/Below',
+      component: Below,
+      props: route => ({ type: '', nav: 'Below' })
     },
     {
-      path: '/Send',
-      component: Send
+      path: '/BelowAgent',
+      component: Below,
+      props: route => ({ type: 'agent', nav: 'Below' })
+    },
+    {
+      path: '/BelowUser',
+      component: Below,
+      props: route => ({ type: 'user', nav: 'Below' })
+    },
+    {
+      path: '/Award',
+      component: Award,
+      props: nav => ({ nav: 'Award' })
+    },
+    {
+      path: '/payInfo',
+      component: payInfo,
+      props: nav => ({ nav: 'Award' })
+
+    },
+    {
+      path: '/expendInfo',
+      component: expendInfo,
+      props: nav => ({ nav: 'Award' })
     },
     {
       path: '/',

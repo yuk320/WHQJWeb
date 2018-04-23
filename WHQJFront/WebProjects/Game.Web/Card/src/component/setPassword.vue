@@ -1,6 +1,6 @@
 <template>
   <div class="ui-main ui-set-pass">
-    <top title="设置安全密码"></top>
+    <top></top>
     <form>
      <div class="ui-panel">
        <div class="ui-form-item">
@@ -21,9 +21,9 @@
 </template>
 <script>
 import md5 from 'blueimp-md5'
-import top from './Top'
-import Dailog from './dialog/dialog'
-import Message from './message'
+import top from './common/top'
+import Dailog from './common/dialog'
+import Message from './common/message'
 import { setPassword } from '../fetch/fetch'
 
 export default {
@@ -88,9 +88,9 @@ export default {
     closeDialog: function() {
       this.showMessage = false
 
-      // 安全密码设置完成后跳转回Home页面
+      // 安全密码设置完成后跳转回Info页面
       if(this.isHasPassword) {
-        this.$router.push('/Home')
+        this.$router.push('/Info')
       }
     }
   }

@@ -77,73 +77,7 @@
     <Content Include="404.html" />
     <Content Include="Agreement.aspx" />
     <Content Include="Authorize.aspx" />
-    <Content Include="Card\AddAgent.aspx" />
-    <Content Include="Card\AddUser.aspx" />
-    <Content Include="Card\AgentChildList.aspx" />
-    <Content Include="Card\AgentInfo.aspx" />
-    <Content Include="Card\Js\iscroll\pullup-refresh.css" />
-    <Content Include="Card\Js\under.js" />
-    <Content Include="Card\Under.aspx" />
-    <Content Include="Card\ExchangeRecord.aspx" />
-    <Content Include="Card\CostRecord.aspx" />
-    <Content Include="Card\Css\agentinfo.css" />
-    <Content Include="Card\Css\base.css" />
-    <Content Include="Card\Css\default.css" />
-    <Content Include="Card\Css\form.css" />
-    <Content Include="Card\Css\present.css" />
-    <Content Include="Card\Css\record.css" />
-    <Content Include="Card\Image\add.png" />
-    <Content Include="Card\Image\addagent.png" />
-    <Content Include="Card\Image\adduser.png" />
-    <Content Include="Card\Image\adduserbtn.png" />
-    <Content Include="Card\Image\banner.png" />
-    <Content Include="Card\Image\buy_submit.png" />
-    <Content Include="Card\Image\card_title.png" />
-    <Content Include="Card\Image\change_password.png" />
-    <Content Include="Card\Image\change_submit.png" />
-    <Content Include="Card\Image\correct.png" />
-    <Content Include="Card\Image\editor.png" />
-    <Content Include="Card\Image\error.png" />
-    <Content Include="Card\Image\exchange_submit.png" />
-    <Content Include="Card\Image\input_bg.png" />
-    <Content Include="Card\Image\login_out.png" />
-    <Content Include="Card\Image\logo.png" />
-    <Content Include="Card\Image\menu.png" />
-    <Content Include="Card\Image\menu_bg.png" />
-    <Content Include="Card\Image\menu_li_bg.png" />
-    <Content Include="Card\Image\nav_bg.png" />
-    <Content Include="Card\Image\nav_ico.png" />
-    <Content Include="Card\Image\nav_ico\1.png" />
-    <Content Include="Card\Image\nav_ico\1_active.png" />
-    <Content Include="Card\Image\nav_ico\2.png" />
-    <Content Include="Card\Image\nav_ico\2_active.png" />
-    <Content Include="Card\Image\nav_ico\3.png" />
-    <Content Include="Card\Image\nav_ico\3_active.png" />
-    <Content Include="Card\Image\nav_ico\4_active.png" />
-    <Content Include="Card\Image\nav_ico\7.png" />
-    <Content Include="Card\Image\nav_line.png" />
-    <Content Include="Card\Image\present_submit.png" />
-    <Content Include="Card\Image\return.png" />
     <Content Include="Card\Index.aspx" />
-    <Content Include="Card\Js\ajaxname.js" />
-    <Content Include="Card\Js\base.js" />
-    <Content Include="Card\Js\iscroll\iscroll-probe.js" />
-    <Content Include="Card\Js\iscroll\load.js" />
-    <Content Include="Card\Js\iscroll\pullup-refresh.js" />
-    <Content Include="Card\Js\layer_mobile\layer.js" />
-    <Content Include="Card\Js\layer_mobile\need\layer.css" />
-    <Content Include="Card\Js\zepto.min.js" />
-    <Content Include="Card\LoginOut.aspx" />
-    <Content Include="Card\PayRecord.aspx" />
-    <Content Include="Card\Present.aspx" />
-    <Content Include="Card\PresentRecord.aspx" />
-    <Content Include="Card\RegisterRecord.aspx" />
-    <Content Include="Card\SetPassword.aspx" />
-    <Content Include="Card\SignOut.aspx" />
-    <Content Include="Card\Success.aspx" />
-    <Content Include="Card\UpdateAgent.aspx" />
-    <Content Include="Card\UpdatePass.aspx" />
-    <Content Include="Card\UserControl\Record_Sidebar.ascx" />
     <Content Include="Card\v2\assets\css\inputStyle.css" />
     <Content Include="Card\v2\assets\css\main.css" />
     <Content Include="Card\v2\assets\images\arrow-left.png" />
@@ -333,59 +267,7 @@
     <Compile Include="Authorize.aspx.designer.cs">
       <DependentUpon>Authorize.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Card\AddAgent.aspx.cs">
-      <DependentUpon>AddAgent.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\AddAgent.aspx.designer.cs">
-      <DependentUpon>AddAgent.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\AddUser.aspx.cs">
-      <DependentUpon>AddUser.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\AddUser.aspx.designer.cs">
-      <DependentUpon>AddUser.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\AdminPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\AgentChildList.aspx.cs">
-      <DependentUpon>AgentChildList.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\AgentChildList.aspx.designer.cs">
-      <DependentUpon>AgentChildList.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\AgentInfo.aspx.cs">
-      <DependentUpon>AgentInfo.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\AgentInfo.aspx.designer.cs">
-      <DependentUpon>AgentInfo.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Card\DataStruct\AgentStruct.cs" />
-    <Compile Include="Card\Under.aspx.cs">
-      <DependentUpon>Under.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\Under.aspx.designer.cs">
-      <DependentUpon>Under.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\ExchangeRecord.aspx.cs">
-      <DependentUpon>ExchangeRecord.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\ExchangeRecord.aspx.designer.cs">
-      <DependentUpon>ExchangeRecord.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\CostRecord.aspx.cs">
-      <DependentUpon>CostRecord.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\CostRecord.aspx.designer.cs">
-      <DependentUpon>CostRecord.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Card\DataHandler.ashx.cs">
       <DependentUpon>DataHandler.ashx</DependentUpon>
     </Compile>
@@ -395,90 +277,6 @@
     </Compile>
     <Compile Include="Card\Index.aspx.designer.cs">
       <DependentUpon>Index.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\LoginOut.aspx.cs">
-      <DependentUpon>LoginOut.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\LoginOut.aspx.designer.cs">
-      <DependentUpon>LoginOut.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\PayRecord.aspx.cs">
-      <DependentUpon>PayRecord.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\PayRecord.aspx.designer.cs">
-      <DependentUpon>PayRecord.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\Present.aspx.cs">
-      <DependentUpon>Present.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\Present.aspx.designer.cs">
-      <DependentUpon>Present.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\PresentRecord.aspx.cs">
-      <DependentUpon>PresentRecord.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\PresentRecord.aspx.designer.cs">
-      <DependentUpon>PresentRecord.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\RegisterRecord.aspx.cs">
-      <DependentUpon>RegisterRecord.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\RegisterRecord.aspx.designer.cs">
-      <DependentUpon>RegisterRecord.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\SetPassword.aspx.cs">
-      <DependentUpon>SetPassword.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\SetPassword.aspx.designer.cs">
-      <DependentUpon>SetPassword.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\SignOut.aspx.cs">
-      <DependentUpon>SignOut.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\SignOut.aspx.designer.cs">
-      <DependentUpon>SignOut.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\Site.Master.cs">
-      <DependentUpon>Site.Master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\Site.Master.designer.cs">
-      <DependentUpon>Site.Master</DependentUpon>
-    </Compile>
-    <Compile Include="Card\Success.aspx.cs">
-      <DependentUpon>Success.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\Success.aspx.designer.cs">
-      <DependentUpon>Success.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\UpdateAgent.aspx.cs">
-      <DependentUpon>UpdateAgent.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\UpdateAgent.aspx.designer.cs">
-      <DependentUpon>UpdateAgent.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\UpdatePass.aspx.cs">
-      <DependentUpon>UpdatePass.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\UpdatePass.aspx.designer.cs">
-      <DependentUpon>UpdatePass.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Card\UserControl\Record_Sidebar.ascx.cs">
-      <DependentUpon>Record_Sidebar.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Card\UserControl\Record_Sidebar.ascx.designer.cs">
-      <DependentUpon>Record_Sidebar.ascx</DependentUpon>
     </Compile>
     <Compile Include="Contact\Index.aspx.cs">
       <DependentUpon>Index.aspx</DependentUpon>
@@ -700,7 +498,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="log4net.config" />
-    <Content Include="Card\Site.Master" />
     <Content Include="Card\DataHandler.ashx" />
     <Content Include="WS\NewMoblieInterface.ashx" />
     <Content Include="WS\UserFace.ashx" />

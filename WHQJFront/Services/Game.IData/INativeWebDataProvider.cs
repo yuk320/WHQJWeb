@@ -3,6 +3,7 @@
 using Game.Kernel;
 using System.Data;
 using Game.Entity.Accounts;
+using Game.Entity.Agent;
 using Game.Entity.NativeWeb;
 
 namespace Game.IData
@@ -145,7 +146,7 @@ namespace Game.IData
         /// <param name="info"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        int SaveAgentToken(UserInfo info, string token);
+        int SaveAgentToken(AgentInfo info, string token);
 
         #endregion
     }

@@ -114,6 +114,27 @@ namespace Game.Facade
             AgentHomeVersion
         }
 
+        /// <summary>
+        /// 代理系统配置Key
+        /// </summary>
+        public enum AgentConfig
+        {
+            AgentAwardType,
+            IsClearSpreadUser,
+            ReceiveDiamondSave,
+            ReceiveGoldSave,
+        }
+
+        /// <summary>
+        /// 充值货币类型
+        /// </summary>
+        public enum PayScoreType : byte
+        {
+            Score = 0,
+            Diamond = 1,
+            Currency = 2
+        }
+
         public enum CodeMode
         {
             /// <summary>

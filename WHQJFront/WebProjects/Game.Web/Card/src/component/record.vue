@@ -1,6 +1,6 @@
 <template>
   <div class="ui-main ui-record">
-    <top title="用户记录"></top>
+    <top></top>
     <div class="vue-custom-tab">
       <div class="vue-tab-nav">
         <ul>
@@ -16,7 +16,7 @@
   </div>
 </template>
 <script>
-import top from './Top'
+import top from './common/top'
 import UiTable from './table/vue-table'
 import { getRecord } from '../fetch/fetch'
 

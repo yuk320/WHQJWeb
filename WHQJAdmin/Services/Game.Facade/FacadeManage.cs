@@ -151,5 +151,25 @@ namespace Game.Facade
                 return _aideGameMatchFacade;
             }
         }
+
+        ///// <summary>
+        ///// 代理库逻辑
+        ///// </summary>
+        private static volatile AgentFacade _aideAgentFacade;
+        public static AgentFacade aideAgentFacade
+        {
+            get
+            {
+                if (_aideAgentFacade == null)
+                {
+                    lock (lockObj)
+                    {
+                        if (_aideAgentFacade == null)
+                            _aideAgentFacade = new AgentFacade();
+                    }
+                }
+                return _aideAgentFacade;
+            }
+        }
     }
 }

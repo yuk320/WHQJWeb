@@ -89,23 +89,12 @@
                 <asp:Literal ID="litInfo" runat="server"></asp:Literal>代理信息</div></td>
         </tr>
         <tr>
-            <td class="listTdLeft">代理级别：</td>
-            <td>        
-                <asp:DropDownList ID="ddlLevel" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ddlLevel_SelectedIndexChanged">
-                    <asp:ListItem Text="一级代理" Value="1"></asp:ListItem>
-                    <asp:ListItem Text="二级代理" Value="2"></asp:ListItem>
-                    <asp:ListItem Text="三级代理" Value="3"></asp:ListItem>
-                </asp:DropDownList>               
-            </td>
-        </tr>
-        <tr>
             <td class="listTdLeft">游戏ID：</td>
             <td>        
                 <asp:TextBox ID="txtGameID" runat="server" CssClass="text"></asp:TextBox>
                 <input type="button" value="检测" class="btn wd1" onclick="getnickname()" />   
                 <span class="hong">*</span>
                 <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ErrorMessage="请输入游戏id" ControlToValidate="txtGameID" Display="Dynamic" ForeColor="Red"></asp:RequiredFieldValidator>
-                            
             </td>
         </tr>
         <tr>
@@ -115,22 +104,6 @@
                 <asp:HiddenField ID="hdfUserID" runat="server" Value="0" />            
             </td>
         </tr>
-        <div runat="server" id="parent" visible="false">
-            <tr>
-                <td class="listTdLeft">父级游戏ID：</td>
-                <td>        
-                    <asp:TextBox ID="txtParentGameID" runat="server" CssClass="text"></asp:TextBox>
-                    <input type="button" value="检测" class="btn wd1" onclick="getparentnickname()" />               
-                </td>
-            </tr>
-            <tr>
-                <td class="listTdLeft">父级昵称：</td>
-                <td>        
-                    <asp:TextBox ID="txtParentNickName" runat="server" CssClass="text" Enabled="false"></asp:TextBox>   
-                    <asp:HiddenField ID="hfParentUserID" runat="server" Value="0" />            
-                </td>
-            </tr>
-        </div>
         <tr>
             <td class="listTdLeft">真实姓名：</td>
             <td>        

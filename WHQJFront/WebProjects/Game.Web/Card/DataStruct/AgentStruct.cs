@@ -15,17 +15,21 @@ namespace Game.Web.Card.DataStruct
         public string Compellation { get; set; }
         public string AgentLevel { get; set; }
         public string AgentDomain { get; set; }
-        public int MyAgent { get; set; }
-        public long MyPlayer { get; set; }
+        public string AgentNote { get; set; }
+        public int BelowAgent { get; set; }
+        public int BelowUser { get; set; }
+        public int BelowAgentsAgent { get; set; }
+        public int BelowAgentsUser { get; set; }
         public string ContactAddress { get; set; }
         public string ContactPhone { get; set; }
         public string QQAccount { get; set; }
         public string WCNickName { get; set; }
-        public long CurDiamond { get; set; }
-        public long PresentToday { get; set; }
-        public long PresentMonth { get; set; }
-        public long PresentTotal { get; set; }
-
+        public long TotalDiamondAward { get; set; }
+        public long TotalGoldAward { get; set; }
+        public long DiamondAward { get; set; }
+        public long GoldAward { get; set; }
+        public long Diamond { get; set; }
+        public long Gold { get; set; }
         public string FaceUrl { get; set; }
 
         /// <summary>

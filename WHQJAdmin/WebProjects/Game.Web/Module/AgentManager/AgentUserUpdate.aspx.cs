@@ -11,6 +11,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Game.Entity.Agent;
 using Game.Entity.Enum;
 
 namespace Game.Web.Module.AgentManager
@@ -26,11 +27,10 @@ namespace Game.Web.Module.AgentManager
             {
                 if(IntParam > 0)
                 {
-                    AccountsAgentInfo info = FacadeManage.aideAccountsFacade.GetAccountsAgentInfo(IntParam);
+                    AgentInfo info = FacadeManage.aideAgentFacade.GetAgentInfo(IntParam);
                     if(info != null)
                     {
                         AccountsInfo accounts = FacadeManage.aideAccountsFacade.GetAccountInfoByUserId(info.UserID);
-
                         CtrlHelper.SetText(txtAgentNote, info.AgentNote);
                         CtrlHelper.SetText(txtCompellation, info.Compellation);
                         CtrlHelper.SetText(txtContactAddress, info.ContactAddress);
@@ -38,7 +38,6 @@ namespace Game.Web.Module.AgentManager
                         CtrlHelper.SetText(txtDomain, info.AgentDomain);
                         CtrlHelper.SetText(txtQQAccount, info.QQAccount);
                         CtrlHelper.SetText(txtWCNickName, accounts.NickName);
-                        ddlLevel.SelectedValue = info.AgentLevel.ToString();
                     }
                 }
             }
@@ -51,7 +50,7 @@ namespace Game.Web.Module.AgentManager
             AuthUserOperationPermission(Permission.Edit);
             if(IntParam > 0)
             {
-                AccountsAgentInfo info = FacadeManage.aideAccountsFacade.GetAccountsAgentInfo(IntParam);
+                AgentInfo info = FacadeManage.aideAgentFacade.GetAgentInfo(IntParam);
                 if(info != null)
                 {
                     info.AgentNote = CtrlHelper.GetText(txtAgentNote);
@@ -61,7 +60,8 @@ namespace Game.Web.Module.AgentManager
                     info.AgentDomain = CtrlHelper.GetText(txtDomain);
                     info.QQAccount = CtrlHelper.GetText(txtQQAccount);
                     info.WCNickName = CtrlHelper.GetText(txtWCNickName);
-                    info.AgentLevel = Convert.ToByte(ddlLevel.SelectedValue);
+                    string password = CtrlHelper.GetText(txtPassword);
+                    if (!string.IsNullOrEmpty(password)) info.Password = Utility.MD5(password);
 
                     AccountsInfo accounts = FacadeManage.aideAccountsFacade.GetAccountInfoByUserId(info.UserID);
                     if(accounts == null || accounts.UserID <= 0)
@@ -80,7 +80,7 @@ namespace Game.Web.Module.AgentManager
                         return;
                     }
 
-                    int result = FacadeManage.aideAccountsFacade.UpdateAgentUser(info);
+                    int result = FacadeManage.aideAgentFacade.UpdateAgentUser(info);
                     if(result > 0)
                     {
                         MessageBoxCloseRef("修改成功");

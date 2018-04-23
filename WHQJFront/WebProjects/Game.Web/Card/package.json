@@ -6,8 +6,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "prebuild": "npm i",
-    "predev": "npm i",
     "dev": "webpack-dev-server --open --hot",
     "build": "webpack --config webpack_pro.config.js",
     "product": "rimraf v2 && npm run build",

@@ -41,32 +41,37 @@ namespace Game.Facade.Enum
         /// <summary>
         /// 兑换金币
         /// </summary>
-        [EnumDescription("兑换金币")]
-        兑换金币 = 5,
+        [EnumDescription("兑换金币")] 兑换金币 = 5,
 
         /// <summary>
         /// 存入银行
         /// </summary>
-        [EnumDescription("存入银行")]
-        存入银行 = 6,
+        [EnumDescription("存入银行")] 存入银行 = 6,
 
         /// <summary>
         /// 银行取出
         /// </summary>
-        [EnumDescription("银行取出")]
-        银行取出 = 7,
+        [EnumDescription("银行取出")] 银行取出 = 7,
 
         /// <summary>
         /// 银行服务费
         /// </summary>
-        [EnumDescription("银行服务费")]
-        银行服务费 = 8,
+        [EnumDescription("银行服务费")] 银行服务费 = 8,
 
         /// <summary>
         /// 领取返利
         /// </summary>
-        [EnumDescription("领取返利")]
-        领取返利 = 9
+        [EnumDescription("领取返利")] 领取返利 = 9,
+
+        /// <summary>
+        /// 代理赠送
+        /// </summary>
+        [EnumDescription("代理赠送")] 代理赠送 = 10,
+
+        /// <summary>
+        /// 被代理赠送
+        /// </summary>
+        [EnumDescription("被代理赠送")] 被代理赠送 = 11,
     }
 
     /// <summary>
@@ -139,35 +144,39 @@ namespace Game.Facade.Enum
         /// <summary>
         /// 钻石兑换
         /// </summary>
-        [EnumDescription("钻石兑换")]
-        钻石兑换 = 12,
+        [EnumDescription("钻石兑换")] 钻石兑换 = 12,
 
         /// <summary>
         /// 领取返利
         /// </summary>
-        [EnumDescription("领取返利")]
-        领取返利 = 13
+        [EnumDescription("领取返利")] 领取返利 = 13
     }
 
     [Serializable]
     [EnumDescription("API错误类型枚举")]
     public enum ApiCode
     {
-        [EnumDescription("成功")]
-        Success = 0,
+        [EnumDescription("成功")] Success = 0,
 
-        [EnumDescription("抱歉，接口认证失败")]
-        Unauthorized = 401,
+        [EnumDescription("抱歉，接口认证失败")] Unauthorized = 401,
 
-        [EnumDescription("抱歉，接口系统错误")]
-        LogicErrorCode = 500,
+        [EnumDescription("抱歉，接口系统错误")] LogicErrorCode = 500,
 
-        [EnumDescription("抱歉，接口签名错误")]
-        VertySignErrorCode = 2001,
+        [EnumDescription("抱歉，接口签名错误")] VertySignErrorCode = 2001,
 
-        [EnumDescription("抱歉，接口参数错误{0}")]
-        VertyParamErrorCode = 2002
-      
+        [EnumDescription("抱歉，接口参数错误{0}")] VertyParamErrorCode = 2002
+    }
+
+
+    /// <summary>
+    /// 返利类型
+    /// </summary>
+    [Serializable]
+    [EnumDescription("返利类型")]
+    public enum AwardType : byte
+    {
+        [EnumDescription("充值返利【钻石】")] DiamondAward = 1,
+        [EnumDescription("游戏税收返利【金币】")] GoldAward = 2
     }
 
     /// <summary>
@@ -180,7 +189,7 @@ namespace Game.Facade.Enum
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string GetDesc( object value)
+        public static string GetDesc(object value)
         {
             return EnumDescription.GetFieldText(value);
         }

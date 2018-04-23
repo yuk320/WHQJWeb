@@ -124,9 +124,10 @@
     <Content Include="Module\AccountManager\UserPlaying.aspx" />
     <Content Include="Module\AgentManager\AgentGrantDiamond.aspx" />
     <Content Include="Module\AgentManager\AgentUserInfo.aspx" />
-    <Content Include="Module\AgentManager\AgentUserList.aspx" />
+    <Content Include="Module\AgentManager\AgentList.aspx" />
     <Content Include="Module\AgentManager\AgentUserUnder.aspx" />
     <Content Include="Module\AgentManager\AgentUserUpdate.aspx" />
+    <Content Include="Module\AgentManager\SystemSet.aspx" />
     <Content Include="Module\AppManager\DataBaseInfoInfo.aspx" />
     <Content Include="Module\AppManager\DataBaseInfoList.aspx" />
     <Content Include="Module\AppManager\GameGameItemInfo.aspx" />
@@ -154,6 +155,7 @@
     <Content Include="Module\BackManager\BaseUserInfo.aspx" />
     <Content Include="Module\BackManager\BaseUserList.aspx" />
     <Content Include="Module\BackManager\BaseUserUpdate.aspx" />
+    <Content Include="Module\ClubManager\SystemSet.aspx" />
     <Content Include="Module\DataStatistics\DailyRevenue.aspx" />
     <Content Include="Module\DataStatistics\DiamondDistribute.aspx" />
     <Content Include="Module\DataStatistics\DailyWaste.aspx" />
@@ -2605,12 +2607,12 @@
     <Compile Include="Module\AgentManager\AgentUserInfo.aspx.designer.cs">
       <DependentUpon>AgentUserInfo.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Module\AgentManager\AgentUserList.aspx.cs">
-      <DependentUpon>AgentUserList.aspx</DependentUpon>
+    <Compile Include="Module\AgentManager\AgentList.aspx.cs">
+      <DependentUpon>AgentList.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Module\AgentManager\AgentUserList.aspx.designer.cs">
-      <DependentUpon>AgentUserList.aspx</DependentUpon>
+    <Compile Include="Module\AgentManager\AgentList.aspx.designer.cs">
+      <DependentUpon>AgentList.aspx</DependentUpon>
     </Compile>
     <Compile Include="Module\AgentManager\AgentUserUnder.aspx.cs">
       <DependentUpon>AgentUserUnder.aspx</DependentUpon>
@@ -2625,6 +2627,13 @@
     </Compile>
     <Compile Include="Module\AgentManager\AgentUserUpdate.aspx.designer.cs">
       <DependentUpon>AgentUserUpdate.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Module\AgentManager\SystemSet.aspx.cs">
+      <DependentUpon>SystemSet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Module\AgentManager\SystemSet.aspx.designer.cs">
+      <DependentUpon>SystemSet.aspx</DependentUpon>
     </Compile>
     <Compile Include="Module\AppManager\DataBaseInfoInfo.aspx.cs">
       <DependentUpon>DataBaseInfoInfo.aspx</DependentUpon>
@@ -2814,6 +2823,13 @@
     </Compile>
     <Compile Include="Module\BackManager\BaseUserUpdate.aspx.designer.cs">
       <DependentUpon>BaseUserUpdate.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Module\ClubManager\SystemSet.aspx.cs">
+      <DependentUpon>SystemSet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Module\ClubManager\SystemSet.aspx.designer.cs">
+      <DependentUpon>SystemSet.aspx</DependentUpon>
     </Compile>
     <Compile Include="Module\DataStatistics\DailyRevenue.aspx.cs">
       <DependentUpon>DailyRevenue.aspx</DependentUpon>
@@ -3249,6 +3265,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Module\MatchManager\" />
     <Folder Include="scripts\kindEditor\attached\" />
   </ItemGroup>
   <PropertyGroup>

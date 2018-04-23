@@ -17,6 +17,11 @@ osql -E -i "%rootPath%网站后台数据.sql"
 set rootPath=3数据库修改\
 osql -E -i "%rootPath%更新脚本.sql"
 
+set rootPath=代理系统\
+osql -E -i "%rootPath%1数据库创建.sql"
+osql -E -i "%rootPath%2数据库表结构.sql"
+osql -E -i "%rootPath%3数据库表数据.sql"
+
 set rootPath=4存储过程\1公共过程\
 osql -d WHQJAccountsDB -E  -n -i "%rootPath%分页过程.sql"
 osql -d WHQJGameScoreDB -E  -n -i "%rootPath%分页过程.sql"
@@ -25,6 +30,8 @@ osql -d WHQJPlatformDB -E  -n -i "%rootPath%分页过程.sql"
 osql -d WHQJPlatformManagerDB -E  -n -i "%rootPath%分页过程.sql"
 osql -d WHQJRecordDB -E  -n -i "%rootPath%分页过程.sql"
 osql -d WHQJTreasureDB -E  -n -i "%rootPath%分页过程.sql"
+osql -d WHQJAgentDB -E  -n -i "%rootPath%分页过程.sql"
+
 osql -d WHQJAccountsDB -E  -n -i "%rootPath%切字符串.sql"
 osql -d WHQJGameScoreDB -E  -n -i "%rootPath%切字符串.sql"
 osql -d WHQJNativeWebDB -E  -n -i "%rootPath%切字符串.sql"
@@ -32,6 +39,7 @@ osql -d WHQJPlatformDB -E  -n -i "%rootPath%切字符串.sql"
 osql -d WHQJPlatformManagerDB -E  -n -i "%rootPath%切字符串.sql"
 osql -d WHQJRecordDB -E  -n -i "%rootPath%切字符串.sql"
 osql -d WHQJTreasureDB -E  -n -i "%rootPath%切字符串.sql"
+osql -d WHQJAgentDB -E  -n -i "%rootPath%切字符串.sql"
 
 osql -d WHQJAccountsDB -E  -n -i "%rootPath%生成流水号.sql"
 osql -d WHQJGameScoreDB -E  -n -i "%rootPath%生成流水号.sql"
@@ -40,6 +48,7 @@ osql -d WHQJPlatformDB -E  -n -i "%rootPath%生成流水号.sql"
 osql -d WHQJPlatformManagerDB -E  -n -i "%rootPath%生成流水号.sql"
 osql -d WHQJRecordDB -E  -n -i "%rootPath%生成流水号.sql"
 osql -d WHQJTreasureDB -E  -n -i "%rootPath%生成流水号.sql"
+osql -d WHQJAgentDB -E  -n -i "%rootPath%切字符串.sql"
 
 set rootPath=4存储过程\2网站前台\
 osql -E -i "%rootPath%在线充值.sql"
@@ -77,12 +86,6 @@ osql -E -i "%rootPath%钻石分布.sql"
 osql -E -i "%rootPath%数据汇总.sql"
 osql -E -i "%rootPath%创建超端管理员.sql"
 
-set rootPath=4存储过程\4代理后台\
-osql -E -i "%rootPath%代理后台登录.sql"
-osql -E -i "%rootPath%代理商创建代理.sql"
-osql -E -i "%rootPath%代理钻石赠送.sql"
-osql -E -i "%rootPath%代理商添加下线.sql"
-
 set rootPath=4存储过程\5作业脚本\
 osql -E -i "%rootPath%排行榜统计.sql"
 osql -E -i "%rootPath%排行榜周统计.sql"
@@ -94,6 +97,24 @@ osql -E -i "%rootPath%排行榜统计.sql"
 osql -E -i "%rootPath%排行榜周统计.sql"
 osql -E -i "%rootPath%每日钻石统计.sql"
 osql -E -i "%rootPath%每日统计.sql"
+
+set rootPath=代理系统\4存储过程\
+osql -d WHQJAccountsDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJGameScoreDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJNativeWebDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJPlatformDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJPlatformManagerDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJRecordDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJTreasureDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJAgentDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+
+osql -E -i "%rootPath%(代理)代理商创建代理.sql"
+osql -E -i "%rootPath%(代理)代理登录.sql"
+osql -E -i "%rootPath%(代理)转赠返利.sql"
+osql -E -i "%rootPath%(代理)领取返利.sql"
+osql -E -i "%rootPath%(公共)玩家绑定代理.sql"
+osql -E -i "%rootPath%(公共)系统返利.sql"
+osql -E -i "%rootPath%(后台)系统创建代理.sql"
 
 pause
 

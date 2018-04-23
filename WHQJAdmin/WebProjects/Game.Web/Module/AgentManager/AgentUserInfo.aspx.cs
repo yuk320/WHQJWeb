@@ -1,10 +1,11 @@
-﻿using Game.Entity.Accounts;
+﻿using Game.Entity.Agent;
 using Game.Entity.Enum;
 using Game.Facade;
 using Game.Kernel;
 using Game.Utils;
 using Game.Web.UI;
 using System;
+using Game.Entity.Accounts;
 
 namespace Game.Web.Module.AgentManager
 {
@@ -29,10 +30,8 @@ namespace Game.Web.Module.AgentManager
             string phone = CtrlHelper.GetText(txtContactPhone);
             string domain = CtrlHelper.GetText(txtDomain);
             int gameid = CtrlHelper.GetInt(txtGameID, 0);
-            int pgameid = CtrlHelper.GetInt(txtParentGameID, 0);
             string qqaccount = CtrlHelper.GetText(txtQQAccount);
             string wxnickname = CtrlHelper.GetText(txtWCNickName);
-            int level = Convert.ToInt32(ddlLevel.SelectedValue);
 
             //判断用户是否存在
             AccountsInfo info = FacadeManage.aideAccountsFacade.GetAccountInfoByGameId(gameid);
@@ -46,10 +45,10 @@ namespace Game.Web.Module.AgentManager
                 MessageBox("真实姓名与实名认证资料不符");
                 return;
             }
-            AccountsAgentInfo agent = new AccountsAgentInfo
+            AgentInfo agent = new AgentInfo
             {
                 AgentDomain = domain,
-                AgentLevel = Convert.ToByte(level),
+                AgentLevel = 1,
                 AgentNote = agentNote,
                 Compellation = compellation,
                 ContactAddress = address,
@@ -59,7 +58,7 @@ namespace Game.Web.Module.AgentManager
                 UserID = info.UserID
             };
 
-            Message msg = FacadeManage.aideAccountsFacade.InsertAgentUser(agent, pgameid);
+            Message msg = FacadeManage.aideAgentFacade.InsertAgentUser(agent);
             if(msg.Success)
             {
                 MessageBoxCloseRef(msg.Content);
@@ -68,18 +67,6 @@ namespace Game.Web.Module.AgentManager
             {
                 MessageBox(msg.Content);
             }
-        }
-
-        /// <summary>
-        /// 切换代理等级
-        /// </summary>
-        protected void ddlLevel_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            int level = Convert.ToInt32(ddlLevel.SelectedValue);
-            parent.Visible = level > 1;
-            if (level > 1) return;
-            txtParentGameID.Text = "";
-            txtParentNickName.Text = "";
         }
     }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="ui-main ui-info">
-    <top title="个人信息"></top>
+    <top></top>
     <table>
       <tbody>
         <tr>
@@ -32,23 +32,31 @@
     <table>
       <tbody>
         <tr>
-          <td>代理等级</td>
-          <td>{{info.AgentLevel}}</td>
-        </tr>
-        <tr>
           <td>代理域名</td>
           <td>{{info.AgentDomain}}</td>
         </tr>
         <tr>
-          <td>我的代理</td>
+          <td>直属代理</td>
           <td class="ui-agent-number">
-            <span>{{info.MyAgent}}人</span><router-link to="/Under?type=agent">详情</router-link>
+            <span>{{info.BelowAgent}}人</span><router-link to="/Under?type=agent">详情</router-link>
           </td>
         </tr>
         <tr>
-          <td>我的玩家</td>
+          <td>直属玩家</td>
           <td class="ui-player-number">
-            <span>{{info.MyPlayer}}人</span><router-link to="/Under?type=user">详情</router-link>
+            <span>{{info.BelowUser}}人</span><router-link to="/Under?type=user">详情</router-link>
+          </td>
+        </tr>
+         <tr>
+          <td>直属代理的下线代理</td>
+          <td class="ui-agent-number">
+            <span>{{info.BelowAgentsAgent}}人</span>
+          </td>
+        </tr>
+        <tr>
+          <td>直属代理的下线玩家</td>
+          <td class="ui-player-number">
+            <span>{{info.BelowAgentsUser}}人</span>
           </td>
         </tr>
       </tbody>
@@ -56,24 +64,43 @@
     <table>
       <tbody>
         <tr>
-          <td>当前房卡</td>
-          <td>{{info.CurDiamond}}</td>
+          <td>当前钻石</td>
+          <td>{{info.Diamond}}</td>
         </tr>
         <tr>
-          <td>当月售卡</td>
-          <td>{{info.PresentMonth}}</td>
+          <td>充值返利总奖励</td>
+          <td>{{info.TotalDiamondAward}}</td>
         </tr>
         <tr>
-          <td>累计售卡</td>
-          <td>{{info.PresentTotal}}</td>
+          <td>可提取奖励</td>
+          <td>{{info.DiamondAward}}</td>
         </tr>
       </tbody>
     </table>
+    <table>
+      <tbody>
+        <tr>
+          <td>当前金币</td>
+          <td>{{info.Gold}}</td>
+        </tr>
+        <tr>
+          <td>游戏税收返利总奖励</td>
+          <td>{{info.TotalGoldAward}}</td>
+        </tr>
+        <tr>
+          <td>可提取奖励</td>
+          <td>{{info.GoldAward}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="ui-main-exit">
+      <input type="submit" value="退出当前账号" @click="singOut"/>
+    </div>
   </div>
 </template>
 
 <script>
-import top from './Top.vue'
+import top from './common/top'
 import { getInfo } from '../fetch/fetch'
 
 export default {
@@ -90,6 +117,12 @@ export default {
         this.info = data.data.info
       }
     })
+  },
+  methods: {
+    singOut: function() {
+      localStorage.removeItem('token');
+      this.$router.push('/Login')
+    }
   }
 }
 </script>
@@ -107,7 +140,7 @@ export default {
   position: absolute;
   right: 0.2rem;
   top: 0.06rem;
-  line-height:0.5rem;
+  line-height: 0.5rem;
   border-radius: 0.1rem;
   background: #0f7fd5;
   font-size: 0.3rem;
@@ -115,17 +148,16 @@ export default {
 .ui-player-number {
   position: relative;
 }
-.ui-info>table:nth-child(2){
+.ui-info > table:nth-child(2) {
   margin-top: 20px;
 }
-.ui-info>table:nth-child(3){
+.ui-info > table:nth-child(3) {
   margin-top: 20px;
 }
-.ui-info>table:nth-child(4){
+.ui-info > table:nth-child(4) {
   margin-top: 20px;
 }
-.ui-info>table:nth-child(5){
+.ui-info > table:nth-child(5) {
   margin-top: 20px;
 }
-
 </style>

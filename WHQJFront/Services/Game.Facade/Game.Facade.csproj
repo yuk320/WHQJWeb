@@ -55,11 +55,12 @@
     <Compile Include="AjaxJsonValid.cs" />
     <Compile Include="AppConfig.cs" />
     <Compile Include="DataStruct\MobileData.cs" />
-    <Compile Include="DataStruct\UnderData.cs" />
+    <Compile Include="DataStruct\BelowData.cs" />
     <Compile Include="DataStruct\WeiXinReturn.cs" />
     <Compile Include="DataStruct\WxPayInfo.cs" />
     <Compile Include="Enum\EnumList.cs" />
     <Compile Include="FacadeManage.cs" />
+    <Compile Include="Facade\AgentFacade.cs" />
     <Compile Include="Facade\AccountsFacade.cs" />
     <Compile Include="Facade\GameMatchFacade.cs" />
     <Compile Include="Facade\NativeWebFacade.cs" />

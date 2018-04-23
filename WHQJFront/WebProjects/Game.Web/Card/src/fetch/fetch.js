@@ -49,27 +49,19 @@ function getInfo(params, callback) {
  * @param {Object} params
  * @param {Function} callback
  */
-function getUnderList(params, callback) {
-  $.ajax(generateUrl('GetUnderList', params)).done(function(data) {
+function getBelowList(params, callback) {
+  $.ajax(generateUrl('GetBelowList', params)).done(function(data) {
     if (toLogin(data)) {
       return
     }
 
     let sourceData = data.data
     if (sourceData.valid === true) {
-      sourceData.list = underList(sourceData.list)
+      sourceData.list = sourceData.list.map(info => {
+        return Object.assign({}, info, { NickName: info.NickName + ' / ' + info.GameID,TypeDesc: info.IsAgent?"代理":"玩家" })
+      });
       callback(sourceData)
     }
-  })
-}
-
-/**
- * 提取UnderList
- * @param {Array} sourceData
- */
-function underList(sourceData) {
-  return sourceData.map(value => {
-    return Object.assign({}, value, { UnderDetail: value.RankID + ' | ' + value.NickName + ' | ' + value.GameID })
   })
 }
 
@@ -78,8 +70,8 @@ function underList(sourceData) {
  * @param {Object} params
  * @param {Function} callback
  */
-function getUnderDetail(params, callback) {
-  $.ajax(generateUrl('GetUnderDetail', params)).done(function(data) {
+function getBelowDetail(params, callback) {
+  $.ajax(generateUrl('GetBelowDetail', params)).done(function(data) {
     toLogin(data) || callback(data)
   })
 }
@@ -214,7 +206,7 @@ export {
   getData,
   getInfo,
   getRecord,
-  getUnderList,
+  getBelowList,
   getUnderDetail,
   getNickNameByGameID,
   present,

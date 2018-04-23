@@ -1,6 +1,6 @@
 <template>
   <div class="ui-dialog-message ui-underdetail">
-    <top :back="false" title="代理详情"></top>
+    <top></top>
     <div class="ui-underdetail-content">
       <table>
         <tbody>
@@ -45,7 +45,7 @@
   </div>
 </template>
 <script>
-import top from "./Top";
+import top from './common/top'
 export default {
   name: "underdetail",
   components: { top },

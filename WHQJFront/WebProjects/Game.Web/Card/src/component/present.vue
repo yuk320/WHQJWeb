@@ -1,6 +1,6 @@
 <template>
   <div class="ui-main ui-send">
-    <top title="钻石赠送"></top>
+    <top></top>
     <form>
       <div class="ui-panel ui-info-show">
         <div class="ui-diamond ui-info-display">
@@ -45,15 +45,15 @@
 </template>
 
 <script>
-import top from './Top'
-import Dailog from './dialog/dialog'
-import Message from './message'
+import top from './common/top'
+import dailog from './common/dialog'
+import message from './common/message'
 import md5 from 'blueimp-md5'
 import { present, getInfo, getNickNameByGameID } from '../fetch/fetch'
 
 export default {
   name: 'add-proxy',
-  components: { top, Dailog, Message },
+  components: { top, dailog, message },
   data: function() {
     return {
       diamondImg: './assets/images/diamond.png',
@@ -70,7 +70,6 @@ export default {
       disabled: false,
       state: false,
       nickExist: true
-
     }
   },
   created() {

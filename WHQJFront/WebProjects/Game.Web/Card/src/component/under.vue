@@ -1,6 +1,6 @@
 <template>
   <div class="ui-main ui-proxy-info">
-    <top :title="title">
+    <top>
       <router-link v-if="this.type == 'agent'" to="/AddProxy" class="ui-top-right">添加代理</router-link>
     </top>
     <div class="ui-panel">
@@ -25,15 +25,15 @@
   </div>
 </template>
 <script>
-import top from './Top'
+import top from './common/top'
 import UiTable from './table/vue-table'
-import Dailog from './dialog/dialog'
+import dailog from './common/dialog'
 import UnderDetail from './underdetail'
 import { getUnderList, getUnderDetail, getInfo } from '../fetch/fetch'
 
 export default {
   name: 'proxy',
-  components: { top, UiTable, Dailog, UnderDetail },
+  components: { top, UiTable, dailog, UnderDetail },
   props: {
     type: String
   },

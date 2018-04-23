@@ -25,7 +25,20 @@ export default {
 </script>
 <style scoped>
   .vue-ui-table-header {
-    z-index: 2;
+    z-index: 1000;
     position: relative;
   }
+.vue-ui-table-header tr {
+  border-top: 1px solid #dedfe0;
+  background: #eee;
+  color: #3075ce;
+  height: 0.5rem;
+  line-height: 0.5rem;
+}
+.vue-ui-table-header td {
+  text-align: center;
+  font-size: 0.24rem;
+  font-weight: 900;
+  
+}
 </style>

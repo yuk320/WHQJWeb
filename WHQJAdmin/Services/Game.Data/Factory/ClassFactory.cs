@@ -89,5 +89,14 @@ namespace Game.Data.Factory
         {
             return ProxyFactory.CreateInstance<GameMatchDataProvider>( ApplicationSettings.Get( "DBGameMatch" ) );
         }
+
+        /// <summary>
+        /// 创建比赛库对象实例
+        /// </summary>
+        /// <returns></returns>
+        public static IAgentDataProvider GetIAgentDataProvider()
+        {
+            return ProxyFactory.CreateInstance<AgentDataProvider>(ApplicationSettings.Get("DBAgent"));
+        }
     }
 }

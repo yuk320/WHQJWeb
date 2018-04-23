@@ -49,6 +49,13 @@
     <Compile Include="Accounts\UserInfo.cs" />
     <Compile Include="Accounts\UserTicketInfo.cs" />
     <Compile Include="Accounts\WxUser.cs" />
+    <Compile Include="Agent\AgentInfo.cs" />
+    <Compile Include="Agent\ReturnAwardConfig.cs" />
+    <Compile Include="Agent\ReturnAwardGrant.cs" />
+    <Compile Include="Agent\ReturnAwardReceive.cs" />
+    <Compile Include="Agent\ReturnAwardRecord.cs" />
+    <Compile Include="Agent\ReturnAwardSteam.cs" />
+    <Compile Include="Agent\SystemStatusInfo.cs" />
     <Compile Include="NativeWeb\Ads.cs" />
     <Compile Include="NativeWeb\AgentTokenInfo.cs" />
     <Compile Include="NativeWeb\CacheConsumeRank.cs" />

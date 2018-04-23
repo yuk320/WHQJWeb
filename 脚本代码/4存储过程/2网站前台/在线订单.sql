@@ -60,7 +60,7 @@ DECLARE @EndTime NVARCHAR(20)
 -- 执行逻辑
 BEGIN
 	-- 充值渠道验证
-	SELECT @PayChannel=StatusValue FROM WHQJAccountsDBLink.WHQJAccountsDB.dbo.SystemStatusInfo WITH(NOLOCK) WHERE StatusName = N'JJPayChannel'
+	SELECT @PayChannel=StatusValue FROM WHQJAccountsDB.dbo.SystemStatusInfo WITH(NOLOCK) WHERE StatusName = N'JJPayChannel'
 	IF @PayChannel IS NULL OR @PayChannel=0
 	BEGIN
 		SET @strErrorDescribe=N'抱歉！充值渠道未开放！'

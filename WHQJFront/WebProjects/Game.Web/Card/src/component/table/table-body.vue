@@ -128,4 +128,14 @@ export default {
 .vue-ui-table-body table td.ui-no-data {
   text-align: center;
 }
+.vue-ui-table-body td:last-child {
+  font-size: 0.2rem;
+}
+.vue-ui-table-body td {
+  text-align: center;
+  padding: 0.14rem 0 0.14rem 0;
+  box-sizing: border-box;
+  font-size: 0.2rem;
+  width: 0.8rem;
+}
 </style>

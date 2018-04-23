@@ -54,6 +54,13 @@
     <Compile Include="Accounts\ReserveIdentifier.cs" />
     <Compile Include="Accounts\SystemStatusInfo.cs" />
     <Compile Include="Accounts\SystemStreamInfo.cs" />
+    <Compile Include="Agent\AgentInfo.cs" />
+    <Compile Include="Agent\ReturnAwardConfig.cs" />
+    <Compile Include="Agent\ReturnAwardGrant.cs" />
+    <Compile Include="Agent\ReturnAwardReceive.cs" />
+    <Compile Include="Agent\ReturnAwardRecord.cs" />
+    <Compile Include="Agent\ReturnAwardSteam.cs" />
+    <Compile Include="Agent\SystemStatusInfo.cs" />
     <Compile Include="ApplicationConfig.cs" />
     <Compile Include="Enum\SerialType.cs" />
     <Compile Include="Enum\EnumHelper.cs" />

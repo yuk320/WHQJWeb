@@ -1,6 +1,6 @@
 <template>
   <div class="ui-login ui-main">
-    <top title="代理登录" :back="false"></top>
+    <top></top>
     <div class="ui-container">
       <form>
         <div class="ui-panel">
@@ -29,15 +29,15 @@
   </div>
 </template>
 <script>
-import Top from './Top'
-import Dailog from './dialog/dialog'
-import Message from './message'
+import top from './common/top'
+import dailog from './common/dialog'
+import message from "./common/message";
 import { login } from '../fetch/fetch'
 import md5 from 'blueimp-md5'
 
 export default {
   name: 'login',
-  components: { Top, Dailog, Message },
+  components: { top, dailog, message },
   data: function() {
     return {
       imgUrl: {
