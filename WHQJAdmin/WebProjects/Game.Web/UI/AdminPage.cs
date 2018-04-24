@@ -53,6 +53,28 @@ namespace Game.Web.UI
         }
 
         /// <summary>
+        /// Get方法传递的长整型参数 param
+        /// </summary>
+        protected long LongParam
+        {
+            get
+            {
+                try
+                {
+                    long result = !string.IsNullOrEmpty(GameRequest.Request.Params["param"])
+                        ? Convert.ToInt64(GameRequest.Request.Params["param"])
+                        : 0;
+                    return result;
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+            
+        }
+
+        /// <summary>
         /// Get方法传递的整型参数 param
         /// </summary>
         protected int IntParam

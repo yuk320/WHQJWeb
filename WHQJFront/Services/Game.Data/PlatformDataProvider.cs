@@ -44,20 +44,36 @@ namespace Game.Data
         }
 
         /// <summary>
-        /// 获取创建房间
+        /// 获取创建房间信息
         /// </summary>
         /// <param name="roomid">房间编号</param>
+        /// <param name="groupid">群组编号：0代表非群组约战，大于0代表具群组编号所属的约战房间</param>
         /// <returns></returns>
-        public StreamCreateTableFeeInfo GetStreamCreateTableFeeInfo(int roomid)
+        public StreamCreateTableFeeInfo GetStreamCreateTableFeeInfo(int roomid,long groupid=0)
         {
             const string sql =
-                "SELECT UserID,NickName,CreateTableFee,CreateDate,DissumeDate,PayMode,RoomStatus,NeedRoomCard FROM StreamCreateTableFeeInfo WITH(NOLOCK) WHERE RoomID = @RoomID";
+                "SELECT * FROM StreamCreateTableFeeInfo WITH(NOLOCK) WHERE RoomID = @RoomID AND GroupID = @GroupID ";
 
-            List<DbParameter> prams = new List<DbParameter> {Database.MakeInParam("RoomID", roomid)};
+            List<DbParameter> prams = new List<DbParameter> {Database.MakeInParam("RoomID", roomid),Database.MakeInParam("GroupID",groupid)};
 
             return Database.ExecuteObject<StreamCreateTableFeeInfo>(sql, prams);
         }
 
+        /// <summary>
+        /// 获取房间总记录
+        /// </summary>
+        /// <param name="groupId">群组编号</param>
+        /// <param name="roomId">房间编号</param>
+        /// <param name="userId">房主编号</param>
+        /// <returns></returns>
+        public PersonalRoomScoreInfo GetPersonalRoomScoreInfo(long groupId, int roomId, int userId)
+        {
+            const string sql =
+                "SELECT * FROM PersonalRoomScoreInfo WITH(NOLOCK) WHERE RoomID = @RoomID AND GroupID = @GroupID AND UserID=@UserID ";
+
+            List<DbParameter> prams = new List<DbParameter> { Database.MakeInParam("RoomID", roomId), Database.MakeInParam("GroupID", groupId), Database.MakeInParam("UserID", userId) };
+            return Database.ExecuteObject<PersonalRoomScoreInfo>(sql, prams);
+        }
         #endregion
 
         #region 游戏信息
@@ -113,8 +129,25 @@ namespace Game.Data
 
         #region 约战战绩与统计
 
-        
 
+
+        #endregion
+
+        #region 公共分页
+        /// <summary>
+        /// 分页获取数据列表
+        /// </summary>
+        /// <param name="tableName">表名</param>
+        /// <param name="pageIndex">页下标</param>
+        /// <param name="pageSize">页显示数</param>
+        /// <param name="condition">查询条件</param>
+        /// <param name="orderby">排序</param>
+        /// <returns></returns>
+        public PagerSet GetList(string tableName, int pageIndex, int pageSize, string condition, string orderby)
+        {
+            PagerParameters pagerPrams = new PagerParameters(tableName, orderby, condition, pageIndex, pageSize);
+            return GetPagerSet2(pagerPrams);
+        }
         #endregion
     }
 }

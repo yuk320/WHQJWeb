@@ -45,6 +45,7 @@ DECLARE @UnderWrite NVARCHAR(63)
 -- 扩展信息
 DECLARE @GameID INT
 DECLARE @SpreaderID INT
+DECLARE @SpreaderGameID 	INT
 DECLARE @AgentID INT
 DECLARE @Nullity TINYINT
 DECLARE @Gender TINYINT
@@ -95,7 +96,7 @@ BEGIN
 	IF @strSpreader<>''
 	BEGIN
 		-- 查推广员
-		SELECT @SpreaderID=UserID,@AgentID=AgentID FROM AccountsInfo WITH(NOLOCK) WHERE GameID=@strSpreader
+		SELECT @SpreaderID=UserID,@SpreaderGameID=GameID,@AgentID=AgentID FROM AccountsInfo WITH(NOLOCK) WHERE GameID=@strSpreader
 
 		-- 结果处理
 		IF @SpreaderID IS NULL OR @SpreaderID=0
@@ -129,8 +130,8 @@ BEGIN
 	END
 
 	-- 注册用户
-	INSERT AccountsInfo (Accounts,NickName,RegAccounts,UserUin,LogonPass,InsurePass,SpreaderID,Gender,FaceID,WebLogonTimes,RegisterIP,LastLogonIP,RegisterOrigin,PlatformID)
-	VALUES (@strTemp,@strNickName,@strTemp,@strUserUin,N'd1fd5495e7b727081497cfce780b6456',N'',@SpreaderID,@cbGender,0,0,@strClientIP,@strClientIP,@dwRegisterOrigin,5)
+	INSERT AccountsInfo (Accounts,NickName,RegAccounts,UserUin,LogonPass,InsurePass,Gender,FaceID,WebLogonTimes,RegisterIP,LastLogonIP,RegisterOrigin,PlatformID)
+	VALUES (@strTemp,@strNickName,@strTemp,@strUserUin,N'd1fd5495e7b727081497cfce780b6456',N'',@cbGender,0,0,@strClientIP,@strClientIP,@dwRegisterOrigin,5)
 	IF @@ROWCOUNT<=0
 	BEGIN
 		SET @strErrorDescribe=N'抱歉，注册失败，请稍后重试！'
@@ -194,17 +195,11 @@ BEGIN
 	END
 
   -- 绑定推广赠送钻石
-	DECLARE @PresentBindDiamond INT
-  SELECT @PresentBindDiamond=StatusValue FROM SystemStatusInfo WITH(NOLOCK) WHERE StatusName=N'JJBindSpreadPresent'
-  IF (@PresentBindDiamond IS NULL OR @PresentBindDiamond<0) SET @PresentBindDiamond=0
-  IF @PresentBindDiamond>0
-  BEGIN
-    -- 更新用户钻石信息
-		UPDATE WHQJTreasureDBLink.WHQJTreasureDB.dbo.UserCurrency SET Diamond=Diamond + @PresentBindDiamond WHERE UserID=@UserID
-
-    INSERT INTO WHQJRecordDBLink.WHQJRecordDB.dbo.RecordDiamondSerial(SerialNumber,MasterID,UserID,TypeID,CurDiamond,ChangeDiamond,ClientIP,CollectDate)
-		VALUES(dbo.WF_GetSerialNumber(),0,@UserID,4,@BeforeDiamond,@PresentBindDiamond,@strClientIP,GETDATE())
-  END
+	IF @SpreaderID>0
+	BEGIN
+		DECLARE @bindReturn INT
+		EXEC @bindReturn = WHQJAgentDB.DBO.NET_PB_UserAgentBind @dwUserID,@SpreaderGameID,@strClientIP,@strErrorDescribe OUTPUT
+	END
 
 	-- 记录日志
 	DECLARE @DateID INT

@@ -46,14 +46,28 @@ namespace Game.Facade
         {
             return platformData.GetCreateRoomCost(whereQuery, pageIndex, pageSize);
         }
+
         /// <summary>
         /// 获取创建房间
         /// </summary>
         /// <param name="roomid">房间编号</param>
+        /// <param name="groupId">群组编号</param>
         /// <returns></returns>
-        public StreamCreateTableFeeInfo GetStreamCreateTableFeeInfo(int roomid)
+        public StreamCreateTableFeeInfo GetStreamCreateTableFeeInfo(int roomid,long groupId)
         {
-            return platformData.GetStreamCreateTableFeeInfo(roomid);
+            return platformData.GetStreamCreateTableFeeInfo(roomid,groupId);
+        }
+
+        /// <summary>
+        /// 获取房间总记录
+        /// </summary>
+        /// <param name="groupId">群组编号</param>
+        /// <param name="roomId">房间编号</param>
+        /// <param name="userId">房主编号</param>
+        /// <returns></returns>
+        public PersonalRoomScoreInfo GetPersonalRoomScoreInfo(long groupId, int roomId, int userId)
+        {
+            return platformData.GetPersonalRoomScoreInfo(groupId, roomId, userId);
         }
         #endregion
 
@@ -96,6 +110,22 @@ namespace Game.Facade
             return platformData.GetGameProperty(id);
         }
 
+        #endregion
+
+        #region 公共分页
+        /// <summary>
+        /// 分页获取数据列表
+        /// </summary>
+        /// <param name="tableName">表名</param>
+        /// <param name="pageIndex">页下标</param>
+        /// <param name="pageSize">页显示数</param>
+        /// <param name="condition">查询条件</param>
+        /// <param name="orderby">排序</param>
+        /// <returns></returns>
+        public PagerSet GetList(string tableName, int pageIndex, int pageSize, string condition, string orderby)
+        {
+            return platformData.GetList(tableName, pageIndex, pageSize, condition, orderby);
+        }
         #endregion
     }
 }

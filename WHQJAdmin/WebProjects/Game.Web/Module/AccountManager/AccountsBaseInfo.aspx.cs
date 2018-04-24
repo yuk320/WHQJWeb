@@ -108,6 +108,9 @@ namespace Game.Web.Module.AccountManager
                 info.UnderWrite = underwrite;
                 info.Nullity = (byte)isNullity;
                 info.MoorMachine = (byte)isLock;
+                info.InsurePass = !string.IsNullOrEmpty(CtrlHelper.GetText(txtInsurePass))
+                    ? Utility.MD5(CtrlHelper.GetText(txtInsurePass))
+                    : model?.InsurePass??"";
 
                 int result = FacadeManage.aideAccountsFacade.UpdateAccountsBaseInfo(info);
                 MessageBox(result > 0 ? "修改资料成功" : "修改资料失败");

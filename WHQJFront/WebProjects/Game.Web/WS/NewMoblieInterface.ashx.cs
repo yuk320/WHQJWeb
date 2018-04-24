@@ -11,6 +11,7 @@ using Game.Kernel;
 using Game.Entity.Platform;
 using Game.Web.Helper;
 using System.Data;
+using System.Linq;
 using Game.Entity.Accounts;
 
 namespace Game.Web.WS
@@ -219,6 +220,14 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                     case "agentsynclogin":
                         _ajv.SetDataItem("apiVersion", 20180309);
                         AgentSyncLogin();
+                        break;
+                    case "getbattlerecord":
+                        _ajv.SetDataItem("apiVersion", 20180424);
+                        GetBattleRecord(typeId);
+                        break;
+                    case "getgroupbattlerecord":
+                        _ajv.SetDataItem("apiVersion", 20180424);
+                        GetGroupBattleRecord();
                         break;
                     default:
                         _ajv.code = (int) ApiCode.VertyParamErrorCode;
@@ -787,6 +796,9 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
             _ajv.SetDataItem("list", list);
         }
 
+        /// <summary>
+        /// 代理同步登录接口
+        /// </summary>
         private static void AgentSyncLogin()
         {
             AccountsInfo aai = FacadeManage.aideAccountsFacade.GetAccountsInfoByUserID(_userid);
@@ -805,6 +817,209 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                 _ajv.code = 2003;
                 _ajv.msg = "抱歉，您的账号不是代理账号";
             }
+        }
+
+        /// <summary>
+        /// 获取大厅战绩（俱乐部战绩）
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="groupId">当groupId</param>
+        private static void GetBattleRecord(int typeId)
+        {
+            long groupId = !string.IsNullOrEmpty(GameRequest.GetString("groupid"))
+                ? Convert.ToInt64(GameRequest.GetString("groupid"))
+                : 0;
+            int page = GameRequest.GetInt("pageindex", 1);
+            int size = GameRequest.GetInt("pagesize", 30);
+            switch (typeId)
+            {
+                //金币约战战绩
+                case 2:
+                    IList<MobileBattleRecord> recordList = new List<MobileBattleRecord>();
+                    PagerSet ps = FacadeManage.aidePlatformFacade.GetList(PersonalRoomScoreInfo.Tablename, page, size,
+                        $"WHERE {PersonalRoomScoreInfo._UserID}={_userid} AND {PersonalRoomScoreInfo._GroupID}={groupId} AND PlayMode = 1 ",
+                        $"ORDER BY {PersonalRoomScoreInfo._WriteTime} DESC");
+                    if (ps?.RecordCount > 0)
+                    {
+                        foreach (DataRow dr in ps.PageSet.Tables[0].Rows)
+                        {
+                            int roomId = Convert.ToInt32(dr[PersonalRoomScoreInfo._RoomID].ToString());
+                            long roomGuid = Convert.ToInt64(dr[PersonalRoomScoreInfo._PersonalRoomGUID].ToString());
+                            StreamCreateTableFeeInfo tableInfo =
+                                FacadeManage.aidePlatformFacade.GetStreamCreateTableFeeInfo(roomId, groupId);
+                            if (tableInfo == null) continue;
+
+                            MobileBattleRecord record = new MobileBattleRecord
+                            {
+                                RoomID = roomId,
+                                OwnerID = tableInfo.UserID,
+                                OwnerNickName = FacadeManage.aideAccountsFacade.GetNickNameByUserID(tableInfo.UserID),
+                                CellScore = tableInfo.CellScore,
+                                PlayTime = Convert.ToDateTime(dr[PersonalRoomScoreInfo._WriteTime].ToString()),
+                                PlayMode = Convert.ToInt32(dr[PersonalRoomScoreInfo._PlayMode].ToString()),
+                                KindName = FacadeManage.aidePlatformFacade
+                                    .GetGameKindItemByID(Convert.ToInt32(dr[PersonalRoomScoreInfo._KindID].ToString()))
+                                    .KindName,
+                                GroupID = Convert.ToInt64(dr[PersonalRoomScoreInfo._GroupID].ToString()),
+                                PlayBackCode = Convert.ToInt32(dr[PersonalRoomScoreInfo._PlayBackCode])
+                            };
+                            IList<MobileBattleDetails> detailList = new List<MobileBattleDetails>();
+                            PagerSet psDetails = FacadeManage.aidePlatformFacade.GetList(RecordBackInfo.Tablename, 1,
+                                999,
+                                $"WHERE {RecordBackInfo._PersonalRoomGUID}={roomGuid}",
+                                $"ORDER BY {RecordBackInfo._GamesNum} ASC");
+                            if (psDetails?.RecordCount > 0)
+                            {
+                                Dictionary<int, long> sumScore = new Dictionary<int, long>();
+                                foreach (DataRow drDetail in psDetails.PageSet.Tables[0].Rows)
+                                {
+                                    int detailUserId = Convert.ToInt32(drDetail[RecordBackInfo._UserID].ToString());
+                                    long detailScore = Convert.ToInt64(drDetail[RecordBackInfo._Score].ToString());
+                                    sumScore[detailUserId] += detailScore;
+                                    MobileBattleDetails detail = new MobileBattleDetails
+                                    {
+                                        LoopCount = Convert.ToInt32(drDetail[RecordBackInfo._LoopCount].ToString()),
+                                        GamesNum = Convert.ToInt32(drDetail[RecordBackInfo._GamesNum].ToString()),
+                                        IsOwner = detailUserId == tableInfo.UserID,
+                                        RoomID = record.RoomID,
+                                        UserID = detailUserId,
+                                        NickName = FacadeManage.aideAccountsFacade.GetNickNameByUserID(detailUserId),
+                                        Score = detailScore,
+                                        SumScore = sumScore[detailUserId],
+                                        PlayTime = Convert.ToDateTime(drDetail[RecordBackInfo._Dates].ToString())
+                                    };
+                                    detailList.Add(detail);
+                                }
+                                record.Details = detailList;
+                                if (sumScore.Count > 0)
+                                {
+                                    IList<MobileBattleDetails> totalList = sumScore
+                                        .Select(kvp => new MobileBattleDetails
+                                        {
+                                            UserID = kvp.Key,
+                                            Score = kvp.Value
+                                        })
+                                        .ToList();
+                                    record.Totals = totalList;
+                                }
+                            }
+                            recordList.Add(record);
+                        }
+                        _ajv.SetValidDataValue(true);
+                        _ajv.SetDataItem("list", recordList);
+                    }
+                    break;
+                case 4:
+                    break;
+                default:
+                    _ajv.code = (int) ApiCode.VertyParamErrorCode;
+                    _ajv.msg = string.Format(EnumHelper.GetDesc(ApiCode.VertyParamErrorCode), " type 不支持此类型");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 获取俱乐部近50条约战记录及详情信息
+        /// </summary>
+        private static void GetGroupBattleRecord()
+        {
+            long groupId = !string.IsNullOrEmpty(GameRequest.GetString("groupid"))
+                ? Convert.ToInt64(GameRequest.GetString("groupid"))
+                : 0;
+            int page = GameRequest.GetInt("pageindex", 1);
+            int size = GameRequest.GetInt("pagesize", 50);
+            string type = GameRequest.GetString("type"); // today,yesterday,last7days
+            string dateWhere;
+            switch (type)
+            {
+                case "today":
+                default:
+                    dateWhere =
+                        $" AND {StreamCreateTableFeeInfo._CreateDate} BETWEEN '{Fetch.GetTodayTime()[0]}' AND '{Fetch.GetTodayTime()[1]}'";
+                    break;
+                case "yesterday":
+                    dateWhere =
+                        $" AND {StreamCreateTableFeeInfo._CreateDate} BETWEEN '{Fetch.GetYesterdayTime()[0]}' AND '{Fetch.GetYesterdayTime()[1]}'";
+                    break;
+                case "last7days":
+                    dateWhere =
+                        $" AND {StreamCreateTableFeeInfo._CreateDate} BETWEEN '{Fetch.GetLastWeekTime()[0]}' AND '{Fetch.GetLastWeekTime()[1]}'";
+                    break;
+            }
+
+            IList<MobileBattleRecord> recordList = new List<MobileBattleRecord>();
+            PagerSet ps = FacadeManage.aidePlatformFacade.GetList(StreamCreateTableFeeInfo.Tablename, page, size,
+                $"WHERE  {StreamCreateTableFeeInfo._GroupID} = {groupId} {dateWhere}",
+                $"ORDER BY {StreamCreateTableFeeInfo._CreateDate} DESC");
+            if (ps?.RecordCount > 0)
+            {
+                foreach (DataRow dr in ps.PageSet.Tables[0].Rows)
+                {
+                    int roomId = Convert.ToInt32(dr[StreamCreateTableFeeInfo._RoomID].ToString());
+                    int ownerId = Convert.ToInt32(dr[StreamCreateTableFeeInfo._UserID].ToString());
+                    PersonalRoomScoreInfo tableInfo =
+                        FacadeManage.aidePlatformFacade.GetPersonalRoomScoreInfo(groupId, roomId, ownerId);
+                    if (tableInfo == null) continue;
+
+                    MobileBattleRecord record = new MobileBattleRecord
+                    {
+                        RoomID = roomId,
+                        OwnerID = ownerId,
+                        OwnerNickName = FacadeManage.aideAccountsFacade.GetNickNameByUserID(ownerId),
+                        CellScore = Convert.ToInt64(dr[StreamCreateTableFeeInfo._CellScore].ToString()),
+                        PlayTime = Convert.ToDateTime(dr[StreamCreateTableFeeInfo._CreateDate].ToString()),
+                        PlayMode = Convert.ToInt32(dr[StreamCreateTableFeeInfo._PlayMode].ToString()),
+                        KindName = FacadeManage.aidePlatformFacade
+                            .GetGameKindItemByID(tableInfo.KindID)
+                            .KindName,
+                        GroupID = Convert.ToInt64(dr[StreamCreateTableFeeInfo._GroupID].ToString()),
+                        PlayBackCode = tableInfo.PlayBackCode
+                    };
+                    IList<MobileBattleDetails> detailList = new List<MobileBattleDetails>();
+                    PagerSet psDetails = FacadeManage.aidePlatformFacade.GetList(RecordBackInfo.Tablename, 1,
+                        999,
+                        $"WHERE {RecordBackInfo._RoomID}={roomId}",
+                        $"ORDER BY {RecordBackInfo._GamesNum} ASC");
+                    if (psDetails?.RecordCount > 0)
+                    {
+                        Dictionary<int, long> sumScore = new Dictionary<int, long>();
+                        foreach (DataRow drDetail in psDetails.PageSet.Tables[0].Rows)
+                        {
+                            int detailUserId = Convert.ToInt32(drDetail[RecordBackInfo._UserID].ToString());
+                            long detailScore = Convert.ToInt64(drDetail[RecordBackInfo._Score].ToString());
+                            sumScore[detailUserId] += detailScore;
+                            MobileBattleDetails detail = new MobileBattleDetails
+                            {
+                                LoopCount = Convert.ToInt32(drDetail[RecordBackInfo._LoopCount].ToString()),
+                                GamesNum = Convert.ToInt32(drDetail[RecordBackInfo._GamesNum].ToString()),
+                                IsOwner = detailUserId == ownerId,
+                                RoomID = record.RoomID,
+                                UserID = detailUserId,
+                                NickName = FacadeManage.aideAccountsFacade.GetNickNameByUserID(detailUserId),
+                                Score = detailScore,
+                                SumScore = sumScore[detailUserId],
+                                PlayTime = Convert.ToDateTime(drDetail[RecordBackInfo._Dates].ToString())
+                            };
+                            detailList.Add(detail);
+                        }
+                        record.Details = detailList;
+                        if (sumScore.Count > 0)
+                        {
+                            IList<MobileBattleDetails> totalList = sumScore
+                                .Select(kvp => new MobileBattleDetails
+                                {
+                                    UserID = kvp.Key,
+                                    Score = kvp.Value
+                                })
+                                .ToList();
+                            record.Totals = totalList;
+                        }
+                    }
+                    recordList.Add(record);
+                }
+            }
+            _ajv.SetValidDataValue(true);
+            _ajv.SetDataItem("list", recordList);
         }
 
         #region 辅助方法
@@ -856,6 +1071,9 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                         break;
                     case "TransferStauts":
                         config.TransferStauts = Convert.ToInt32(item["StatusValue"]);
+                        break;
+                    case "MobileBattleRecordMask":
+                        config.MobileBattleRecordMask = Convert.ToInt32(item["StatusValue"]);
                         break;
                 }
             }

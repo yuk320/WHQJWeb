@@ -57,6 +57,15 @@
                 <asp:Literal ID="ltNickName" runat="server"></asp:Literal>
             </td>
         </tr>
+      <tr>
+        <td class="listTdLeft">
+          银行密码：
+        </td>
+        <td colspan="3">
+          <asp:TextBox ID="txtInsurePass" runat="server" TextMode="Password"></asp:TextBox> 
+          <span class="hong"> （不修改请留空） </span>
+        </td>
+      </tr>
         <tr>
             <td class="listTdLeft">
                推广 I D：

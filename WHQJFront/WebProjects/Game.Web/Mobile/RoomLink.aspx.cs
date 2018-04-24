@@ -21,6 +21,7 @@ namespace Game.Web.Mobile
         protected int Gameid = GameRequest.GetQueryInt("g", 0);
 
         protected int Roomid = GameRequest.GetQueryInt("r", 0);
+        protected int Groupid = GameRequest.GetQueryInt("gr", 0);
         protected int Kindid = GameRequest.GetQueryInt("k", 0);
         protected int Action = GameRequest.GetQueryInt("a", 0);
         protected string Password = GameRequest.GetQueryString("p");
@@ -52,7 +53,7 @@ namespace Game.Web.Mobile
                         KindRule = rule.KindIntro;
                     }
                     StreamCreateTableFeeInfo table =
-                        FacadeManage.aidePlatformFacade.GetStreamCreateTableFeeInfo(Roomid);
+                        FacadeManage.aidePlatformFacade.GetStreamCreateTableFeeInfo(Roomid, Groupid);
                     if (table == null || table.DissumeDate != null || table.RoomStatus == 2)
                     {
                         Finish = false;

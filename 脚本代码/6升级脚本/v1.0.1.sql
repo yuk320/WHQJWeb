@@ -1,4 +1,19 @@
 -- V1.0.1 新增配置
+USE WHQJAccountsDB
+GO
+
+INSERT INTO [dbo].[SystemStatusInfo] ([StatusName],[StatusValue],[StatusString],[StatusTip],[StatusDescription],[SortID])
+     VALUES (N'MobileBattleRecordMask',7,N'手机大厅战绩显示类型',N'大厅战绩类型',N'键值：
+     1：仅显示普通房卡战绩；
+     2：仅显示金币房卡战绩；
+     3：1+2；
+     4：仅显示金币游戏记录；
+     5：1+4；
+     6：2+4；
+     7：1+2+4；',50)
+GO
+
+
 USE WHQJGroupDB
 GO
 
@@ -61,7 +76,7 @@ INSERT DBO.Base_Module (ModuleID,ParentID,Title,Link,OrderNo,Nullity,IsMenu,[Des
 VALUES (901,9,N'俱乐部管理',N'/Module/ClubManager/SystemSet.aspx',1,0,0,N'',0)
 GO
   -- 插入新模块的权限
-DELETE DBO.Base_ModulePermission WHERE ModuleID = 901
+DELETE DBO.Base_ModulePermission WHERE ModuleID IN (901,902)
 INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
 VALUES (901,N'查看',1,0,0,1)
 GO
@@ -73,4 +88,17 @@ VALUES (901,N'修改',4,0,0,1)
 GO
 INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
 VALUES (901,N'删除',8,0,0,1)
+GO
+
+INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
+VALUES (902,N'查看',1,0,0,1)
+GO
+INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
+VALUES (902,N'冻结/解冻',2,0,0,1)
+GO
+INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
+VALUES (902,N'移交群主',4,0,0,1)
+GO
+INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
+VALUES (902,N'强制解散',8,0,0,1)
 GO

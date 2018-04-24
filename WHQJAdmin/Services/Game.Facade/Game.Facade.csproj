@@ -57,6 +57,7 @@
     <Compile Include="Controls\VerifyImageInfo.cs" />
     <Compile Include="Controls\VerifyImageVer2.cs" />
     <Compile Include="FacadeManage.cs" />
+    <Compile Include="Facade\GroupFacade.cs" />
     <Compile Include="Facade\AgentFacade.cs" />
     <Compile Include="Facade\AccountsFacade.cs" />
     <Compile Include="Facade\GameMatchFacade.cs" />

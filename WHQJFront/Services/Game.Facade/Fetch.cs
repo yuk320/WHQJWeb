@@ -665,5 +665,171 @@ namespace Game.Facade
         }
 
         #endregion
+
+        #region 日期处理
+
+        /// <summary>
+        /// 获取开始时间
+        /// </summary>
+        /// <param name="bgDate"></param>
+        /// <returns></returns>
+        public static string GetStartTime(DateTime bgDate)
+        {
+            DateTime bgTime = new DateTime(bgDate.Year, bgDate.Month, bgDate.Day, 0, 0, 0);
+            return Convert.ToString(bgTime);
+        }
+
+        /// <summary>
+        /// 获取结束时间
+        /// </summary>
+        /// <param name="enDate"></param>
+        /// <returns></returns>
+        public static string GetEndTime(DateTime enDate)
+        {
+            DateTime enTime = new DateTime(enDate.Year, enDate.Month, enDate.Day, 23, 59, 59);
+            return Convert.ToString(enTime);
+        }
+
+        /// <summary>
+        /// 获取指定日期的开始时间和结束时间(日期格式：开始时间$结束时间)
+        /// </summary>
+        /// <param name="bgDate"></param>
+        /// <param name="enDate"></param>
+        /// <returns></returns>
+        public static string[] GetTimeByDate(DateTime bgDate, DateTime enDate)
+        {
+            DateTime bgTime = new DateTime(bgDate.Year, bgDate.Month, bgDate.Day, 0, 0, 0);
+            DateTime enTime = new DateTime(enDate.Year, enDate.Month, enDate.Day, 23, 59, 59);
+            return new[] {bgTime.ToString("yyyy-MM-dd HH:mm:ss"), enTime.ToString("yyyy-MM-dd HH:mm:ss")};
+        }
+
+
+        /// <summary>
+        /// 获取当天的开始时间和结束时间
+        /// </summary>
+        public static string[] GetTodayTime()
+        {
+            DateTime dt = DateTime.Now;
+            return GetTimeByDate(dt, dt);
+        }
+
+        /// <summary>
+        /// 获取昨天的开始时间和结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static string[] GetYesterdayTime()
+        {
+            DateTime dt = DateTime.Now.AddDays(-1);
+            return GetTimeByDate(dt, dt);
+        }
+
+        /// <summary>
+        /// 获取本周的开始时间和结束时间
+        /// </summary>
+        public static string[] GetWeekTime()
+        {
+            DateTime dt = DateTime.Now;
+            DateTime startWeek = dt.AddDays(0 - Convert.ToInt32(dt.DayOfWeek.ToString("d")));  //本周周日
+            DateTime endWeek = startWeek.AddDays(6);  //本周周六
+            return GetTimeByDate(startWeek, endWeek);
+        }
+
+        /// <summary>
+        /// 获取上周的开始时间和结束时间
+        /// </summary>
+        public static string[] GetLastWeekTime()
+        {
+            DateTime dt = DateTime.Now;
+            DateTime startWeek = dt.AddDays(0 - 7 - Convert.ToInt32(dt.DayOfWeek.ToString("d")));  //本周周日
+            DateTime endWeek = startWeek.AddDays(6);  //本周周日六
+            return GetTimeByDate(startWeek, endWeek);
+        }
+
+        /// <summary>
+        /// 获取本月的开始时间和结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static string[] GetMonthTime()
+        {
+            DateTime dt = DateTime.Now;
+            DateTime startMonth = dt.AddDays(1 - dt.Day);  //本月月初
+            DateTime endMonth = startMonth.AddMonths(1).AddDays(-1);  //本月月末
+            return GetTimeByDate(startMonth, endMonth);
+        }
+
+        /// <summary>
+        /// 获取上月的开始时间和结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static string[] GetLastMonthTime()
+        {
+            DateTime dt = DateTime.Now.AddMonths(-1);
+            DateTime startMonth = dt.AddDays(1 - dt.Day);
+            DateTime endMonth = startMonth.AddMonths(1).AddDays(-1);
+            return GetTimeByDate(startMonth, endMonth);
+        }
+
+        /// <summary>
+        /// 获取本年的开始时间和结束时间
+        /// </summary>
+        /// <returns></returns>
+        public static string[] GetYearTime()
+        {
+            DateTime dt = DateTime.Now;
+            DateTime startYear = dt.AddDays(1 - dt.DayOfYear);//本年年初
+            DateTime endYear = startYear.AddYears(1).AddDays(-1);  //本年年末
+            return GetTimeByDate(startYear, endYear);
+        }
+
+        /// <summary>
+        /// 获取时间间隔
+        /// </summary>
+        /// <param name="dtStartDate">开始时间</param>
+        /// <param name="dtEndDate">结束时间</param>
+        /// <returns></returns>
+        public static string GetTimeSpan(DateTime dtStartDate, DateTime dtEndDate)
+        {
+            StringBuilder sb = new StringBuilder();
+            TimeSpan ts = dtEndDate.Subtract(dtStartDate);
+            if (ts.Days != 0)
+                sb.AppendFormat("{0}天", ts.Days);
+            if (ts.Hours != 0)
+                sb.AppendFormat("{0}小时", ts.Hours);
+            if (ts.Minutes != 0)
+                sb.AppendFormat("{0}分钟", ts.Minutes);
+            if (ts.Seconds != 0)
+                sb.AppendFormat("{0}秒", ts.Seconds);
+            if (string.IsNullOrEmpty(sb.ToString()))
+                return "0秒";
+            return sb.ToString();
+        }
+        /// <summary>
+        /// 秒数转换成 0天0小时0分钟0秒
+        /// </summary>
+        /// <param name="seconds">秒</param>
+        /// <returns></returns>
+        public static string ConverTimeToDHMS(long seconds)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (seconds <= 0)
+                return "0秒";
+            long day = seconds / 0x15180;
+            long hour = (seconds % 0x15180) / 0xe10;
+            long minute = (seconds % 0xe10) / 60;
+            long second = seconds % 60;
+            if (day > 0)
+                sb.AppendFormat("{0}天", day);
+            if (hour > 0)
+                sb.AppendFormat("{0}小时", hour);
+            if (minute > 0)
+                sb.AppendFormat("{0}分钟", minute);
+            if (second > 0)
+                sb.AppendFormat("{0}秒", second);
+            if (string.IsNullOrEmpty(sb.ToString()))
+                return "0秒";
+            return sb.ToString();
+
+        }
+        #endregion
     }
 }

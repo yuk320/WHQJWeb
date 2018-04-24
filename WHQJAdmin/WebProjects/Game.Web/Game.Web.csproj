@@ -155,6 +155,8 @@
     <Content Include="Module\BackManager\BaseUserInfo.aspx" />
     <Content Include="Module\BackManager\BaseUserList.aspx" />
     <Content Include="Module\BackManager\BaseUserUpdate.aspx" />
+    <Content Include="Module\ClubManager\GroupTransfer.aspx" />
+    <Content Include="Module\ClubManager\GroupList.aspx" />
     <Content Include="Module\ClubManager\SystemSet.aspx" />
     <Content Include="Module\DataStatistics\DailyRevenue.aspx" />
     <Content Include="Module\DataStatistics\DiamondDistribute.aspx" />
@@ -2823,6 +2825,20 @@
     </Compile>
     <Compile Include="Module\BackManager\BaseUserUpdate.aspx.designer.cs">
       <DependentUpon>BaseUserUpdate.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Module\ClubManager\GroupTransfer.aspx.cs">
+      <DependentUpon>GroupTransfer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Module\ClubManager\GroupTransfer.aspx.designer.cs">
+      <DependentUpon>GroupTransfer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Module\ClubManager\GroupList.aspx.cs">
+      <DependentUpon>GroupList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Module\ClubManager\GroupList.aspx.designer.cs">
+      <DependentUpon>GroupList.aspx</DependentUpon>
     </Compile>
     <Compile Include="Module\ClubManager\SystemSet.aspx.cs">
       <DependentUpon>SystemSet.aspx</DependentUpon>

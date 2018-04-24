@@ -77,5 +77,14 @@ namespace Game.Data.Factory
         {
             return ProxyFactory.CreateInstance<AgentDataProvider>(ApplicationSettings.Get( "DBAgent" ) );
         }
+
+        /// <summary>
+        /// 创建代理库对象实例
+        /// </summary>
+        /// <returns></returns>
+        public static IGroupDataProvider GetIGroupDataProvider()
+        {
+            return ProxyFactory.CreateInstance<GroupDataProvider>(ApplicationSettings.Get("DBGroup"));
+        }
     }
 }

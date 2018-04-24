@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IGroupDataProvider.cs" />
     <Compile Include="IAgentDataProvider.cs" />
     <Compile Include="IAccountsDataProvider.cs" />
     <Compile Include="IGameMatchProvider.cs" />

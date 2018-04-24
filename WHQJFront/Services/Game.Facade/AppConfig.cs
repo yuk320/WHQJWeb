@@ -109,6 +109,10 @@ namespace Game.Facade
             /// </summary>
             SpreadReturnType,
             /// <summary>
+            /// 手机大厅战绩显示类型
+            /// </summary>
+            MobileBattleRecordMask,
+            /// <summary>
             /// 代理后台版本
             /// </summary>
             AgentHomeVersion

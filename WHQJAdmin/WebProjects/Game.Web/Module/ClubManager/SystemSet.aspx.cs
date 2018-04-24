@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-
 using Game.Utils;
 using Game.Web.UI;
 using Game.Kernel;
-using System.Text;
-using Game.Entity.Platform;
-using Game.Entity.Accounts;
+using Game.Entity.Group;
 using Game.Entity.Enum;
 using Game.Facade;
 
@@ -35,14 +27,13 @@ namespace Game.Web.Module.ClubManager
         {
             AuthUserOperationPermission(Permission.Edit);
 
-            SystemStatusInfo config = new SystemStatusInfo();
-            config.StatusName = CtrlHelper.GetText(txtStatusName);
-            config.StatusValue = CtrlHelper.GetInt(txtStatusValue, 0);
-            config.StatusString = CtrlHelper.GetText(txtStatusString);
-            config.StatusTip = CtrlHelper.GetText(txtStatusTip);
-            config.StatusDescription = CtrlHelper.GetText(txtStatusDescription);
+            IMGroupOption config = new IMGroupOption();
+            config.OptionName = CtrlHelper.GetText(txtStatusName);
+            config.OptionValue = CtrlHelper.GetInt(txtStatusValue, 0);
+            config.OptionTip = CtrlHelper.GetText(txtStatusTip);
+            config.OptionDescribe = CtrlHelper.GetText(txtStatusDescription);
 
-            int result = FacadeManage.aideAccountsFacade.UpdateSystemStatusInfo(config);
+            int result = FacadeManage.aideGroupFacade.UpdateGroupOption(config);
             if(result > 0)
             {
                 ShowInfo("修改成功");
@@ -57,17 +48,16 @@ namespace Game.Web.Module.ClubManager
         /// </summary>
         private void BindData()
         {
-            PagerSet pagerSet = FacadeManage.aideAccountsFacade.GetList(SystemStatusInfo.Tablename ,1, 100, SearchItems, Orderby);
+            PagerSet pagerSet = FacadeManage.aideGroupFacade.GetList(IMGroupOption.Tablename ,1, 100, SearchItems, Orderby);
             rptDataList.DataSource = pagerSet.PageSet;
             rptDataList.DataBind();
 
-            SystemStatusInfo config = FacadeManage.aideAccountsFacade.GetSystemStatusInfo(string.IsNullOrEmpty(StrParam) ? "ClubCreateLimit" : StrParam);
+            IMGroupOption config = FacadeManage.aideGroupFacade.GetGroupOption(string.IsNullOrEmpty(StrParam) ? "MaxMemberCount" : StrParam);
             if (config == null) return;
-            CtrlHelper.SetText(txtStatusName, config.StatusName);
-            CtrlHelper.SetText(txtStatusValue, config.StatusValue.ToString());
-            CtrlHelper.SetText(txtStatusTip, config.StatusTip);
-            CtrlHelper.SetText(txtStatusString, config.StatusString);
-            CtrlHelper.SetText(txtStatusDescription, config.StatusDescription);
+            CtrlHelper.SetText(txtStatusName, config.OptionName);
+            CtrlHelper.SetText(txtStatusValue, config.OptionValue.ToString());
+            CtrlHelper.SetText(txtStatusTip, config.OptionTip);
+            CtrlHelper.SetText(txtStatusDescription, config.OptionDescribe);
         }
         /// <summary>
         /// 查询条件
@@ -78,7 +68,7 @@ namespace Game.Web.Module.ClubManager
             {
                 if(ViewState["SearchItems"] == null)
                 {
-                    ViewState["SearchItems"] = "WHERE StatusName LIKE 'Club%' ";
+                    ViewState["SearchItems"] = "WHERE 1=1 ";
                 }
                 return (string)ViewState["SearchItems"];
             }

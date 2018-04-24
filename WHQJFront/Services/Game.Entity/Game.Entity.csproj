@@ -56,6 +56,16 @@
     <Compile Include="Agent\ReturnAwardRecord.cs" />
     <Compile Include="Agent\ReturnAwardSteam.cs" />
     <Compile Include="Agent\SystemStatusInfo.cs" />
+    <Compile Include="Group\IMGroupApplyRecord.cs" />
+    <Compile Include="Group\IMGroupBattleConfig.cs" />
+    <Compile Include="Group\IMGroupBattleOption.cs" />
+    <Compile Include="Group\IMGroupBattleRule.cs" />
+    <Compile Include="Group\IMGroupMember.cs" />
+    <Compile Include="Group\IMGroupOption.cs" />
+    <Compile Include="Group\IMGroupProperty.cs" />
+    <Compile Include="Group\IMGroupWealth.cs" />
+    <Compile Include="Group\IMUserGroupInfo.cs" />
+    <Compile Include="Group\StreamGroupBalance.cs" />
     <Compile Include="NativeWeb\Ads.cs" />
     <Compile Include="NativeWeb\AgentTokenInfo.cs" />
     <Compile Include="NativeWeb\CacheConsumeRank.cs" />
@@ -69,6 +79,8 @@
     <Compile Include="Platform\GameKindItem.cs" />
     <Compile Include="Platform\GameProperty.cs" />
     <Compile Include="Platform\MobileKindItem.cs" />
+    <Compile Include="Platform\PersonalRoomScoreInfo.cs" />
+    <Compile Include="Platform\RecordBackInfo.cs" />
     <Compile Include="Platform\StreamCreateTableFeeInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record\RecordDiamondSerial.cs" />

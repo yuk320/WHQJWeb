@@ -58,6 +58,18 @@ BEGIN
     RETURN 1003
   END
 
+  DECLARE @AgentAwardType TINYINT
+  SELECT @AgentAwardType=StatusValue FROM WHQJAgentDB.DBO.SystemStatusInfo WHERE StatusName = N'AgentAwardType'
+  IF @AgentAwardType IS NULL 
+  BEGIN
+    -- 无配置时 默认不开启
+    SET @AgentAwardType = 0
+  END
+  IF @AgentAwardType & @dwAwardType <> @dwAwardType
+  BEGIN
+    SET @strErrorDescribe=N'抱歉，该返利模式未开启'
+    RETURN 1004
+  END
 	
   -- 如果存在返利配置，写入返利记录
 	IF EXISTS (SELECT 1 FROM ReturnAwardConfig WHERE Nullity = 0 AND AwardType = @dwAwardType)

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿
+// ReSharper disable InconsistentNaming
 
 namespace Game.Facade
 {
@@ -10,7 +8,7 @@ namespace Game.Facade
     /// </summary>
     public class FacadeManage
     {
-        private static object lockObj = new object();
+        private static readonly object lockObj = new object();
 
         ///// <summary>
         ///// 前台逻辑
@@ -149,6 +147,26 @@ namespace Game.Facade
                     }
                 }
                 return _aideGameMatchFacade;
+            }
+        }
+
+        /// <summary>
+        /// 群组库逻辑
+        /// </summary>
+        private static volatile GroupFacade _aideGroupFacade;
+        public static GroupFacade aideGroupFacade
+        {
+            get
+            {
+                if (_aideGroupFacade == null)
+                {
+                    lock (lockObj)
+                    {
+                        if (_aideGroupFacade == null)
+                            _aideGroupFacade = new GroupFacade();
+                    }
+                }
+                return _aideGroupFacade;
             }
         }
 

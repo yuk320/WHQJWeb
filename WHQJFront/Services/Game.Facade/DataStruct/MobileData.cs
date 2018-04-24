@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Web.UI.WebControls;
+
 // ReSharper disable InconsistentNaming
 
 namespace Game.Facade.DataStruct
@@ -17,6 +20,7 @@ namespace Game.Facade.DataStruct
         public int GoldBuyPropCount { get; set; }
         public int EnjoinInsure { get; set; }
         public int TransferStauts { get; set; }
+        public int MobileBattleRecordMask { get; set; }
     }
 
     public class MobileCustomerService
@@ -108,18 +112,22 @@ namespace Game.Facade.DataStruct
         /// 兑换后钻石
         /// </summary>
         public long AfterDiamond { get; set; }
+
         /// <summary>
         /// 兑换后银行金币
         /// </summary>
         public long AfterInsureScore { get; set; }
+
         /// <summary>
         /// 兑换后身上金币
         /// </summary>
         public long AfterScore { get; set; }
+
         /// <summary>
         /// 消耗钻石
         /// </summary>
         public long ExchDiamond { get; set; }
+
         /// <summary>
         /// 兑换金币
         /// </summary>
@@ -145,5 +153,35 @@ namespace Game.Facade.DataStruct
         /// 游戏简介
         /// </summary>
         public string Content { get; set; }
+    }
+
+    public class MobileBattleRecord
+    {
+        public long GroupID { get; set; }
+        public string KindName { get; set; }
+        public int RoomID { get; set; }
+        public int PlayMode { get; set; }
+        public int OwnerID { get; set; }
+        public string OwnerNickName { get; set; }
+        public long CellScore { get; set; }
+        public long Score { get; set; }
+        public int GamesNum { get; set; }
+        public IList<MobileBattleDetails> Details { get; set; }
+        public IList<MobileBattleDetails> Totals { get; set; }
+        public int PlayBackCode { get; set; }
+        public DateTime PlayTime { get; set; }
+    }
+
+    public class MobileBattleDetails
+    {
+        public bool IsOwner { get; set; }
+        public int RoomID { get; set; }
+        public int UserID { get; set; }
+        public string NickName { get; set; }
+        public int GamesNum { get; set; }
+        public long Score { get; set; }
+        public long SumScore { get; set; }
+        public int LoopCount { get; set; }
+        public DateTime PlayTime { get; set; }
     }
 }

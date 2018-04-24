@@ -79,6 +79,16 @@
     <Compile Include="GameScore\RecordDrawInfo.cs" />
     <Compile Include="GameScore\RecordDrawScore.cs" />
     <Compile Include="GameScore\RecordUserInout.cs" />
+    <Compile Include="Group\IMGroupApplyRecord.cs" />
+    <Compile Include="Group\IMGroupBattleConfig.cs" />
+    <Compile Include="Group\IMGroupBattleOption.cs" />
+    <Compile Include="Group\IMGroupBattleRule.cs" />
+    <Compile Include="Group\IMGroupMember.cs" />
+    <Compile Include="Group\IMGroupOption.cs" />
+    <Compile Include="Group\IMGroupProperty.cs" />
+    <Compile Include="Group\IMGroupWealth.cs" />
+    <Compile Include="Group\IMUserGroupInfo.cs" />
+    <Compile Include="Group\StreamGroupBalance.cs" />
     <Compile Include="MailConfig.cs" />
     <Compile Include="NativeWeb\Ads.cs" />
     <Compile Include="NativeWeb\ConfigInfo.cs" />

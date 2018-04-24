@@ -31,6 +31,7 @@ osql -d WHQJPlatformManagerDB -E  -n -i "%rootPath%分页过程.sql"
 osql -d WHQJRecordDB -E  -n -i "%rootPath%分页过程.sql"
 osql -d WHQJTreasureDB -E  -n -i "%rootPath%分页过程.sql"
 osql -d WHQJAgentDB -E  -n -i "%rootPath%分页过程.sql"
+osql -d WHQJGroupDB -E  -n -i "%rootPath%分页过程.sql"
 
 osql -d WHQJAccountsDB -E  -n -i "%rootPath%切字符串.sql"
 osql -d WHQJGameScoreDB -E  -n -i "%rootPath%切字符串.sql"
@@ -40,6 +41,7 @@ osql -d WHQJPlatformManagerDB -E  -n -i "%rootPath%切字符串.sql"
 osql -d WHQJRecordDB -E  -n -i "%rootPath%切字符串.sql"
 osql -d WHQJTreasureDB -E  -n -i "%rootPath%切字符串.sql"
 osql -d WHQJAgentDB -E  -n -i "%rootPath%切字符串.sql"
+osql -d WHQJGroupDB -E  -n -i "%rootPath%切字符串.sql"
 
 osql -d WHQJAccountsDB -E  -n -i "%rootPath%生成流水号.sql"
 osql -d WHQJGameScoreDB -E  -n -i "%rootPath%生成流水号.sql"
@@ -49,6 +51,7 @@ osql -d WHQJPlatformManagerDB -E  -n -i "%rootPath%生成流水号.sql"
 osql -d WHQJRecordDB -E  -n -i "%rootPath%生成流水号.sql"
 osql -d WHQJTreasureDB -E  -n -i "%rootPath%生成流水号.sql"
 osql -d WHQJAgentDB -E  -n -i "%rootPath%切字符串.sql"
+osql -d WHQJGroupDB -E  -n -i "%rootPath%切字符串.sql"
 
 set rootPath=4存储过程\2网站前台\
 osql -E -i "%rootPath%在线充值.sql"

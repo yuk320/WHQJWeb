@@ -27,7 +27,7 @@
           <td height="28">
             <ul>
               <li class="tab1">俱乐部设置</li>
-              <li class="tab2" onclick="openWindowSelf('SystemStatus.aspx');">俱乐部统计</li>
+              <li class="tab2" onclick="openWindowSelf('GroupList.aspx');">俱乐部管理</li>
             </ul>
           </td>
         </tr>
@@ -39,8 +39,8 @@
                     <ul>
                         <asp:Repeater ID="rptDataList" runat="server">
                             <ItemTemplate>
-                               <input type="button" class="btn wd3" <%# Eval("StatusName").ToString()==StrParam || ( string.IsNullOrEmpty( StrParam ) && Container.ItemIndex==0 )?"disabled=\"disabled\"":""%> onclick="openWindowSelf('SystemSet.aspx?param=<%#Eval("StatusName").ToString() %>');"
-                                    value=<%#Eval( "StatusTip" ).ToString( )%> />
+                               <input type="button" class="btn wd3" <%# Eval("OptionName").ToString()==StrParam || ( string.IsNullOrEmpty( StrParam ) && Container.ItemIndex==0 )?"disabled=\"disabled\"":""%> onclick="openWindowSelf('SystemSet.aspx?param=<%#Eval("OptionName").ToString() %>');"
+                                    value=<%#Eval( "OptionTip" ).ToString( )%> />
                             </ItemTemplate>
                         </asp:Repeater>
                     </ul>
@@ -77,14 +77,6 @@
                 <asp:TextBox ID="txtStatusTip" runat="server" CssClass="text" Width="250px" MaxLength="50"></asp:TextBox>&nbsp;&nbsp;&nbsp;
                 <span class="hong">*</span>
                 <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="请输入名称" ControlToValidate="txtStatusTip" Display="Dynamic" ForeColor="Red"></asp:RequiredFieldValidator>
-            </td>
-        </tr>
-        <tr>
-            <td class="listTdLeft">
-                备注：
-            </td>
-            <td>
-                <asp:TextBox ID="txtStatusString" runat="server" CssClass="text" Width="450px" MaxLength="80"></asp:TextBox>&nbsp;&nbsp;&nbsp;
             </td>
         </tr>
         <tr>
