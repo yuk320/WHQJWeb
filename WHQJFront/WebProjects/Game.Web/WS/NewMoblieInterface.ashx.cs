@@ -223,7 +223,7 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                         break;
                     case "getbattlerecord":
                         _ajv.SetDataItem("apiVersion", 20180424);
-                        GetBattleRecord(typeId);
+                        GetBattleRecord(typeid);
                         break;
                     case "getgroupbattlerecord":
                         _ajv.SetDataItem("apiVersion", 20180424);
