@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------
 -- 版权：2017
--- 时间：2017-06-8
+-- 时间：2017-04-27
 -- 用途：在线订单
 ----------------------------------------------------------------------
 
@@ -47,8 +47,10 @@ DECLARE @PayChannel INT
 -- 订单信息
 DECLARE @OrderID NVARCHAR(32)
 DECLARE @Amount DECIMAL(18,2)
-DECLARE @Diamond INT
-DECLARE @PresentDiamond INT
+DECLARE @ScoreType TINYINT
+DECLARE @Score INT
+DECLARE @PresentScore INT
+DECLARE @FristPresent INT
 DECLARE @OtherPresent INT
 DECLARE @PayIdentity TINYINT
 DECLARE @PayType TINYINT
@@ -83,13 +85,13 @@ BEGIN
 	END
 
 	-- 充值配置验证
-	SELECT @Amount=PayPrice,@Diamond=Diamond,@PresentDiamond=PresentDiamond,@PayIdentity=PayIdentity,@PayType=PayType FROM AppPayConfig WHERE ConfigID = @dwConfigID
-	IF @Amount IS NULL
+	SELECT @ConfigID=ConfigID,@Amount=PayPrice,@ScoreType=ScoreType,@Score=Score,@FristPresent=FristPresent,@PresentScore=PresentScore,@PayIdentity=PayIdentity,@PayType=PayType FROM AppPayConfig WHERE ConfigID = @dwConfigID
+	IF @ConfigID IS NULL
 	BEGIN
 		SET @strErrorDescribe=N'抱歉！充值产品不存在！'
 		RETURN 2004
 	END
-	IF @Amount <= 0 OR @Diamond <=0
+	IF @Amount <= 0 OR @Score <=0
 	BEGIN
 		SET @strErrorDescribe=N'抱歉！充值产品配置异常！'
 		RETURN 2004
@@ -101,25 +103,13 @@ BEGIN
 	SET @StartTime = @STime + N' 00:00:00'
 	SET @EndTime = @STime + N' 23:59:59'
 
-	-- 普通时赠送为0
-	SET @OtherPresent = 0
-	-- 计算额外赠送钻石(首充时计算)
-	IF @PayIdentity = 2
-	BEGIN
-		-- 每日首充获得额外
-		IF NOT EXISTS(SELECT OnLineID FROM OnLinePayOrder WHERE UserID=@UserID AND OrderStatus=1 AND OrderDate BETWEEN @StartTime AND @EndTime)
-		BEGIN
-			SET @OtherPresent = @PresentDiamond
-		END
-	END
+	-- 普通赠送
+	SET @OtherPresent = @PresentScore
 
-	IF @PayIdentity = 3
+	-- 账户按类型首充
+	IF NOT EXISTS(SELECT OnLineID FROM OnLinePayOrder WHERE UserID=@UserID AND ConfigID=@ConfigID AND OrderStatus>1)
 	BEGIN
-		-- 账户首充获得额外
-		IF NOT EXISTS(SELECT OnLineID FROM OnLinePayOrder WHERE UserID=@UserID AND OrderStatus=1)
-		BEGIN
-			SET @OtherPresent = @PresentDiamond
-		END
+		SET @OtherPresent = @FristPresent
 	END
 
 	-- 订单重复验证
@@ -165,12 +155,12 @@ BEGIN
 	-- END
 
 	-- 写入订单信息
-	INSERT INTO OnLinePayOrder(ConfigID,ShareID,UserID,GameID,Accounts,NickName,OrderID,OrderType,Amount,Diamond,OtherPresent,OrderStatus,OrderDate,OrderAddress)
-	VALUES(@dwConfigID,@dwShareID,@UserID,@GameID,@Accounts,@NickName,@strOrderID,@PayType,@Amount,@Diamond,@OtherPresent,0,@CurrentTime,@strIPAddress)
+	INSERT INTO OnLinePayOrder(ConfigID,ShareID,UserID,GameID,Accounts,NickName,OrderID,OrderType,Amount,ScoreType,Score,OtherPresent,OrderStatus,OrderDate,OrderAddress)
+	VALUES(@dwConfigID,@dwShareID,@UserID,@GameID,@Accounts,@NickName,@strOrderID,@PayType,@Amount,@ScoreType,@Score,@OtherPresent,0,@CurrentTime,@strIPAddress)
 
 	-- 输出对象变量
 	SELECT @dwConfigID AS ConfigID,@dwShareID AS ShareID,@UserID AS UserID,@GameID AS GameID,@Accounts AS Accounts,@NickName AS NickName,@strOrderID AS OrderID,@PayType AS OrderType,
-	@Amount AS Amount,@Diamond AS Diamond,@OtherPresent AS OtherPresent,0 AS OrderStatus,@CurrentTime AS OrderDate,@strIPAddress AS OrderAddress
+	@Amount AS Amount,@ScoreType AS ScoreType, @Score AS Score,@OtherPresent AS OtherPresent,0 AS OrderStatus,@CurrentTime AS OrderDate,@strIPAddress AS OrderAddress
 
 END
 RETURN 0

@@ -17,7 +17,9 @@ using Game.Entity.Enum;
 using System.IO;
 using Game.Utils.Cache;
 using System.Text.RegularExpressions;
+using Game.Entity.Agent;
 using Game.Entity.NativeWeb;
+// ReSharper disable InconsistentNaming
 
 
 namespace Game.Web.UI
@@ -345,8 +347,37 @@ namespace Game.Web.UI
         protected string GetGameID(int userID)
         {
             AccountsInfo accounts = FacadeManage.aideAccountsFacade.GetAccountInfoByUserId(userID);
-            return accounts != null ? accounts.GameID.ToString() : "";
+            return accounts?.GameID.ToString() ?? "";
         }
+
+        /// <summary>
+        /// 获得用户昵称（GameID）
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        protected string GetGameName(int userId)
+        {
+            return $"{GetNickNameByUserID(userId)}（{GetGameID(userId)}）";
+        }
+
+        /// <summary>
+        /// 获取推广、代理信息
+        /// </summary>
+        /// <param name="spreaderId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        protected string GetSpreaderDesc(int spreaderId,int userId)
+        {
+            AccountsInfo accounts = FacadeManage.aideAccountsFacade.GetAccountInfoByUserId(spreaderId);
+            AgentBelowInfo abi = FacadeManage.aideAgentFacade.GetAgentBelowInfo(userId);
+            AccountsInfo agentInfo = new AccountsInfo();
+            if (abi != null) {
+                agentInfo = FacadeManage.aideAccountsFacade.GetAccountInfoByUserId(FacadeManage.aideAgentFacade
+                        .GetAgentInfo(abi.AgentID).UserID);
+            }
+            return (spreaderId > 0 ? $"{accounts.NickName}（{accounts.GameID}）" : "") +" / "+ (agentInfo.UserID>0?$"{agentInfo.NickName}（{agentInfo.GameID}）":"");
+        }
+
 
         #endregion
 

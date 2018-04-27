@@ -56,42 +56,7 @@ namespace Game.Web.Card
         {
             context.Response.ContentType = "application/json";
             string action = GameRequest.GetString("action").ToLower();
-            int version = GameRequest.GetInt("version", 1);
-
-//            #region Version 1.0 Router
-//
-//            if (version == 1)
-//            {
-//                switch (action)
-//                {
-//                    case "getnicknamebygameid":
-//                        GetNickNameByGameID(context);
-//                        break;
-//                    case "getpaydiamondlist":
-//                        GetPayDiamondList(context);
-//                        break;
-//                    case "getpresentdiamondlist":
-//                        GetPresentDiamondList(context);
-//                        break;
-//                    case "getcostdiamondlist":
-//                        GetCostDiamondList(context);
-//                        break;
-//                    case "getspreadregisterlist":
-//                        GetSpreadRegisterList(context);
-//                        break;
-//                    case "getexchangediamondlist":
-//                        GetExchangeDiamondList(context);
-//                        break;
-//                    case "getunderlist":
-//                        GetUnderList(context);
-//                        break;
-//                    case "getunderdetail":
-//                        GetUnderDetail(context);
-//                        break;
-//                }
-//            }
-//
-//            #endregion
+            int version = GameRequest.GetInt("version", 2);
 
             #region Version 2.0 Router
 
@@ -147,12 +112,12 @@ namespace Game.Web.Card
                         case "getbelowlist": //1.4
                             GetBelowList(GameRequest.GetString("type"));
                             break;
-                        case "getbelowdetail": //1.5
-                            GetBelowDetail(GameRequest.GetInt("gameid", 0));
+                        case "getawardinfo": //1.5
+                            GetAwardInfo();
                             break;
-                        case "presentdiamond": //1.6
-                            PresentDiamond(GameRequest.GetInt("gameid", 0), GameRequest.GetString("password"),
-                                GameRequest.GetInt("count", 0), GameRequest.GetString("note"));
+                        case "presentscore": //1.6
+                            PresentScore(GameRequest.GetInt("gameid", 0), GameRequest.GetString("password"),
+                                GameRequest.GetInt("count", 0), Convert.ToByte(GameRequest.GetInt("type", 0)));
                             break;
                         case "setpassword": //1.7
                             SetSafePass(GameRequest.GetString("password"));
@@ -197,473 +162,6 @@ namespace Game.Web.Card
         }
 
         #endregion
-
-//        #region Version 1.0 Logic
-//
-//        /// <summary>
-//        /// 获取用户昵称
-//        /// </summary>
-//        /// <param name="context"></param>
-//        protected void GetNickNameByGameID(HttpContext context)
-//        {
-//            AjaxJsonValid ajv = new AjaxJsonValid();
-//
-//            int gameid = GameRequest.GetFormInt("gameid", 0);
-//
-//            AccountsInfo info = FacadeManage.aideAccountsFacade.GetAccountsInfoByGameID(gameid);
-//            ajv.SetDataItem("nickname", info != null ? info.NickName : "");
-//            ajv.SetDataItem("compellation", info != null ? info.Compellation : "");
-//            ajv.SetValidDataValue(true);
-//            context.Response.Write(ajv.SerializeToJson());
-//        }
-//
-//        /// <summary>
-//        /// 获取充值钻石记录
-//        /// </summary>
-//        /// <param name="context"></param>
-//        protected void GetPayDiamondList(HttpContext context)
-//        {
-//            AjaxJsonValid ajv = new AjaxJsonValid();
-//
-//            //判断登录
-//            UserTicketInfo uti = Fetch.GetUserCookie();
-//            if (uti == null || uti.UserID <= 0)
-//            {
-//                ajv.code = 0;
-//                ajv.msg = "登录已失效，请重新打开页面";
-//                context.Response.Write(ajv.SerializeToJson());
-//                return;
-//            }
-//
-//            StringBuilder sb = new StringBuilder();
-//            int number = GameRequest.GetQueryInt("pageSize", 10);
-//            int page = GameRequest.GetQueryInt("page", 1);
-//
-//            string where = $" WHERE UserID = {uti.UserID} AND OrderStatus = 1 ";
-//            PagerSet pagerSet = FacadeManage.aideTreasureFacade.GetPayDiamondRecord(where, page, number);
-//            string html;
-//            if (pagerSet.PageSet.Tables[0].Rows.Count > 0)
-//            {
-//                foreach (DataRow item in pagerSet.PageSet.Tables[0].Rows)
-//                {
-//                    sb.Append("<tr>");
-//                    sb.AppendFormat("<td>{0}</td>", Fetch.FormatTimeWrap(Convert.ToDateTime(item["PayDate"])));
-//                    sb.AppendFormat("<td>{0}</td>", item["BeforeDiamond"]);
-//                    sb.AppendFormat("<td>{0}</td>",
-//                        Convert.ToInt32(item["Diamond"]) + Convert.ToInt32(item["OtherPresent"]));
-//                    sb.AppendFormat("<td>{0}</td>", item["Amount"]);
-//                    sb.Append("</tr>");
-//                }
-//                html = sb.ToString();
-//            }
-//            else
-//            {
-//                html = "<tr><td colspan=\"4\">暂无记录！</td></tr>";
-//            }
-//            ajv.SetDataItem("html", html);
-//            ajv.SetDataItem("total", pagerSet.RecordCount);
-//            ajv.SetValidDataValue(true);
-//            context.Response.Write(ajv.SerializeToJson());
-//        }
-//
-//        /// <summary>
-//        /// 获取代理赠送钻石记录
-//        /// </summary>
-//        /// <param name="context"></param>
-//        protected void GetPresentDiamondList(HttpContext context)
-//        {
-//            AjaxJsonValid ajv = new AjaxJsonValid();
-//
-//            //判断登录
-//            UserTicketInfo uti = Fetch.GetUserCookie();
-//            if (uti == null || uti.UserID <= 0)
-//            {
-//                ajv.code = 0;
-//                ajv.msg = "登录已失效，请重新打开页面";
-//                context.Response.Write(ajv.SerializeToJson());
-//                return;
-//            }
-//
-//            StringBuilder sb = new StringBuilder();
-//            int number = GameRequest.GetQueryInt("pageSize", 10);
-//            int page = GameRequest.GetQueryInt("page", 1);
-//
-//            string where = $"WHERE SourceUserID = {uti.UserID}";
-//            PagerSet pagerSet = FacadeManage.aideRecordFacade.GetAgentPresentDiamondRecord(where, page, number);
-//            string html;
-//            if (pagerSet.PageSet.Tables[0].Rows.Count > 0)
-//            {
-//                foreach (DataRow item in pagerSet.PageSet.Tables[0].Rows)
-//                {
-//                    AccountsInfo info =
-//                        FacadeManage.aideAccountsFacade.GetAccountsInfoByUserID(Convert.ToInt32(item["TargetUserID"]));
-//
-//                    sb.Append("<tr>");
-//                    sb.AppendFormat("<td>{0}</td>", Fetch.FormatTimeWrap(Convert.ToDateTime(item["CollectDate"])));
-//                    sb.AppendFormat("<td>{0}</td>", info != null ? info.GameID.ToString() : "");
-//                    sb.AppendFormat("<td>({0}){1}</td>", item["SourceDiamond"], item["PresentDiamond"]);
-//                    sb.AppendFormat("<td>{0}</td>", item["CollectNote"]);
-//                    sb.Append("</tr>");
-//                }
-//                html = sb.ToString();
-//            }
-//            else
-//            {
-//                html = "<tr><td colspan=\"4\">暂无记录！</td></tr>";
-//            }
-//            ajv.SetDataItem("html", html);
-//            ajv.SetDataItem("total", pagerSet.RecordCount);
-//            ajv.SetValidDataValue(true);
-//            context.Response.Write(ajv.SerializeToJson());
-//        }
-//
-//        /// <summary>
-//        /// 获取钻石创建房间记录
-//        /// </summary>
-//        /// <param name="context"></param>
-//        protected void GetCostDiamondList(HttpContext context)
-//        {
-//            AjaxJsonValid ajv = new AjaxJsonValid();
-//
-//            //判断登录
-//            UserTicketInfo uti = Fetch.GetUserCookie();
-//            if (uti == null || uti.UserID <= 0)
-//            {
-//                ajv.code = 0;
-//                ajv.msg = "登录已失效，请重新打开页面";
-//                context.Response.Write(ajv.SerializeToJson());
-//                return;
-//            }
-//
-//            StringBuilder sb = new StringBuilder();
-//            int number = GameRequest.GetQueryInt("pageSize", 10);
-//            int page = GameRequest.GetQueryInt("page", 1);
-//
-//            string where = $"WHERE UserID = {uti.UserID}";
-//            PagerSet pagerSet = FacadeManage.aidePlatformFacade.GetCreateRoomCost(where, page, number);
-//            string html;
-//            if (pagerSet.PageSet.Tables[0].Rows.Count > 0)
-//            {
-//                foreach (DataRow item in pagerSet.PageSet.Tables[0].Rows)
-//                {
-//                    sb.Append("<tr>");
-//                    sb.AppendFormat("<td>{0}</td>", Fetch.FormatTimeWrap(Convert.ToDateTime(item["CreateDate"])));
-//                    sb.AppendFormat("<td>{0}</td>", item["RoomID"]);
-//                    sb.AppendFormat("<td>{0}</td>", item["CreateTableFee"]);
-//                    sb.AppendFormat("<td>{0}</td>",
-//                        !item["DissumeDate"].ToString().Equals("")
-//                            ? Fetch.FormatTimeWrap(Convert.ToDateTime(item["DissumeDate"]))
-//                            : "");
-//                    sb.Append("</tr>");
-//                }
-//                html = sb.ToString();
-//            }
-//            else
-//            {
-//                html = "<tr><td colspan=\"4\">暂无记录！</td></tr>";
-//            }
-//            ajv.SetDataItem("html", html);
-//            ajv.SetDataItem("total", pagerSet.RecordCount);
-//            ajv.SetValidDataValue(true);
-//            context.Response.Write(ajv.SerializeToJson());
-//        }
-//
-//        /// <summary>
-//        /// 获取代理推广人
-//        /// </summary>
-//        /// <param name="context"></param>
-//        protected void GetSpreadRegisterList(HttpContext context)
-//        {
-//            AjaxJsonValid ajv = new AjaxJsonValid();
-//
-//            //判断登录
-//            UserTicketInfo uti = Fetch.GetUserCookie();
-//            if (uti == null || uti.UserID <= 0)
-//            {
-//                ajv.code = 0;
-//                ajv.msg = "登录已失效，请重新打开页面";
-//                context.Response.Write(ajv.SerializeToJson());
-//                return;
-//            }
-//
-//            StringBuilder sb = new StringBuilder();
-//            int number = GameRequest.GetQueryInt("pageSize", 10);
-//            int page = GameRequest.GetQueryInt("page", 1);
-//
-//            DataSet ds = FacadeManage.aideAccountsFacade.GetAgentSpreadList(uti.UserID, page, number);
-//            string html;
-//            if (ds.Tables[0].Rows.Count > 0)
-//            {
-//                foreach (DataRow item in ds.Tables[0].Rows)
-//                {
-//                    sb.Append("<tr>");
-//                    sb.AppendFormat("<td>{0}</td>", Fetch.FormatTimeWrap(Convert.ToDateTime(item["RegisterDate"])));
-//                    sb.AppendFormat("<td>{0}</td>", item["GameID"]);
-//                    sb.AppendFormat("<td>{0}</td>", Fetch.RegisterOrigin(Convert.ToInt32(item["RegisterOrigin"])));
-//                    sb.AppendFormat("<td>{0}</td>", Convert.ToInt32(item["AgentID"]) > 0 ? "代理商" : "非代理商");
-//                    sb.Append("</tr>");
-//                }
-//                html = sb.ToString();
-//            }
-//            else
-//            {
-//                html = "<tr><td colspan=\"4\">暂无记录！</td></tr>";
-//            }
-//            ajv.SetDataItem("html", html);
-//            ajv.SetDataItem("total", FacadeManage.aideAccountsFacade.GetAgentSpreadCount(uti.UserID));
-//            ajv.SetValidDataValue(true);
-//            context.Response.Write(ajv.SerializeToJson());
-//        }
-//
-//        /// <summary>
-//        /// 代理兑换游戏币记录
-//        /// </summary>
-//        /// <param name="context"></param>
-//        protected void GetExchangeDiamondList(HttpContext context)
-//        {
-//            AjaxJsonValid ajv = new AjaxJsonValid();
-//
-//            //判断登录
-//            UserTicketInfo uti = Fetch.GetUserCookie();
-//            if (uti == null || uti.UserID <= 0)
-//            {
-//                ajv.code = 0;
-//                ajv.msg = "登录已失效，请重新打开页面";
-//                context.Response.Write(ajv.SerializeToJson());
-//                return;
-//            }
-//
-//            StringBuilder sb = new StringBuilder();
-//            int number = GameRequest.GetQueryInt("pageSize", 10);
-//            int page = GameRequest.GetQueryInt("page", 1);
-//
-//            PagerSet pagerSet =
-//                FacadeManage.aideRecordFacade.GetAgentExchangeDiamondRecord($"WHERE UserID = {uti.UserID} ", page,
-//                    number);
-//            string html;
-//            if (pagerSet.PageSet.Tables[0].Rows.Count > 0)
-//            {
-//                foreach (DataRow item in pagerSet.PageSet.Tables[0].Rows)
-//                {
-//                    sb.Append("<tr>");
-//                    sb.AppendFormat("<td>{0}</td>", Fetch.FormatTimeWrap(Convert.ToDateTime(item["CollectDate"])));
-//                    sb.AppendFormat("<td>{0}</td>", item["PresentGold"]);
-//                    sb.AppendFormat("<td>{0}</td>", item["ExchDiamond"]);
-//                    sb.AppendFormat("<td>{0}</td>",
-//                        Convert.ToInt64(item["CurDiamond"]) - Convert.ToInt64(item["ExchDiamond"]));
-//                    sb.Append("</tr>");
-//                }
-//                html = sb.ToString();
-//            }
-//            else
-//            {
-//                html = "<tr><td colspan=\"4\">暂无记录！</td></tr>";
-//            }
-//            ajv.SetDataItem("html", html);
-//            ajv.SetDataItem("total", pagerSet.RecordCount);
-//            ajv.SetValidDataValue(true);
-//            context.Response.Write(ajv.SerializeToJson());
-//        }
-//
-//        public void GetUnderList(HttpContext context)
-//        {
-//            AjaxJsonValid ajv = new AjaxJsonValid();
-//
-//            UserTicketInfo uti = Fetch.GetUserCookie();
-//            if (uti == null || uti.UserID <= 0)
-//            {
-//                ajv.code = 0;
-//                ajv.msg = "登录已失效，请重新打开页面";
-//                context.Response.Write(ajv.SerializeToJson());
-//                return;
-//            }
-//
-//            string type = GameRequest.GetQueryString("type");
-//            string range = GameRequest.GetQueryString("range");
-//            int number = range == "all" ? GameRequest.GetQueryInt("pageSize", 10) : 50;
-//            int page = GameRequest.GetQueryInt("page", 1);
-//            string sqlMonth = " AND CollectDate >= '" +
-//                              new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd HH:mm:ss") +
-//                              "'";
-//            string sqlRange = range == "month"
-//                ? sqlMonth
-//                : "";
-//            string sqlWhere;
-//            long pCount;
-//            UnderList list = new UnderList();
-//            PagerSet ps;
-//            switch (type)
-//            {
-//                case "user":
-//                    sqlWhere =
-//                        $" WHERE SourceUserID = {uti.UserID} AND TargetUserID NOT IN (SELECT UserID FROM WHQJAccountsDBLink.WHQJAccountsDB.dbo.AccountsAgentInfo) {sqlRange} GROUP BY TargetUserID,SourceUserID ";
-//                    ps = FacadeManage.aideRecordFacade.GetAgentBelowUserPresentDiamondRecord(sqlWhere, page, number);
-//                    list.PageCount = ps.PageCount;
-//                    list.RecordCount = ps.RecordCount;
-//                    list.PageIndex = ps.PageIndex;
-//                    list.PageSize = ps.PageSize;
-//                    if (ps.RecordCount > 0)
-//                    {
-//                        foreach (DataRow row in ps.PageSet.Tables[0].Rows)
-//                        {
-//                            UnderData data = new UnderData()
-//                            {
-//                                UserID = Convert.ToInt32(row["UserID"]),
-//                                RankID = Convert.ToInt32(row["PageView_RowNo"])
-//                            };
-//                            data.GameID = FacadeManage.aideAccountsFacade.GetGameIDByUserID(data.UserID);
-//                            data.NickName = FacadeManage.aideAccountsFacade.GetNickNameByUserID(data.UserID);
-//                            data.Diamond = FacadeManage.aideTreasureFacade.GetUserCurrency(data.UserID)?.Diamond ?? 0;
-//                            if (type == "month")
-//                            {
-//                                data.MonthDiamond = Convert.ToInt64(row["SumDiamond"]);
-//                                data.TotalDiamond =
-//                                    FacadeManage.aideRecordFacade.GetTotalPresentCount(uti.UserID, data.UserID);
-//                            }
-//                            else
-//                            {
-//                                data.TotalDiamond = Convert.ToInt64(row["SumDiamond"]);
-//                                data.MonthDiamond =
-//                                    FacadeManage.aideRecordFacade.GetTotalPresentCount(uti.UserID, data.UserID,
-//                                        sqlMonth);
-//                            }
-//
-//                            list.dataList.Add(data);
-//                        }
-//                    }
-//                    pCount = FacadeManage.aideRecordFacade.GetAgentBelowAccountsCount(uti.UserID);
-//                    break;
-//                case "agent":
-//                    list.Link = true;
-//                    if (range == "all")
-//                    {
-//                        IList<AccountsAgentInfo> belowList =
-//                            FacadeManage.aideAccountsFacade.GetAgentBelowAgentList(uti.UserID);
-//                        list.PageCount = 1;
-//                        list.RecordCount = belowList?.Count ?? 0;
-//                        list.PageIndex = 1;
-//                        list.PageSize = belowList?.Count ?? 0;
-//                        var iCount = 0;
-//                        if (belowList != null)
-//                            foreach (AccountsAgentInfo agentInfo in belowList)
-//                            {
-//                                iCount++;
-//                                UnderData data = new UnderData()
-//                                {
-//                                    UserID = agentInfo.UserID,
-//                                    RankID = iCount
-//                                };
-//                                data.GameID = FacadeManage.aideAccountsFacade.GetGameIDByUserID(data.UserID);
-//                                data.NickName = FacadeManage.aideAccountsFacade.GetNickNameByUserID(data.UserID);
-//                                data.Diamond = FacadeManage.aideTreasureFacade.GetUserCurrency(data.UserID)?.Diamond ??
-//                                               0;
-//                                data.TotalDiamond = FacadeManage.aideRecordFacade.GetTotalPresentCount(uti.UserID,
-//                                    data.UserID,
-//                                    sqlMonth);
-//                                data.MonthDiamond =
-//                                    FacadeManage.aideRecordFacade.GetTotalPresentCount(uti.UserID, data.UserID,
-//                                        sqlMonth);
-//
-//                                list.dataList.Add(data);
-//                            }
-//                    }
-//                    else
-//                    {
-//                        sqlWhere =
-//                            $" WHERE SourceUserID IN ( SELECT UserID FROM WHQJAccountsDBLink.WHQJAccountsDB.dbo.AccountsAgentInfo WHERE ParentAgent = {uti.AgentID} )  {sqlRange} GROUP BY SourceUserID ";
-//                        ps =
-//                            FacadeManage.aideRecordFacade
-//                                .GetAgentBelowAgentPresentDiamondRecord(sqlWhere, page, number);
-//                        list.PageCount = ps.PageCount;
-//                        list.RecordCount = ps.RecordCount;
-//                        list.PageIndex = ps.PageIndex;
-//                        list.PageSize = ps.PageSize;
-//                        if (ps.RecordCount > 0)
-//                        {
-//                            foreach (DataRow row in ps.PageSet.Tables[0].Rows)
-//                            {
-//                                UnderData data = new UnderData()
-//                                {
-//                                    UserID = Convert.ToInt32(row["UserID"]),
-//                                    RankID = Convert.ToInt32(row["PageView_RowNo"])
-//                                };
-//                                data.GameID = FacadeManage.aideAccountsFacade.GetGameIDByUserID(data.UserID);
-//                                data.NickName = FacadeManage.aideAccountsFacade.GetNickNameByUserID(data.UserID);
-//                                data.Diamond = FacadeManage.aideTreasureFacade.GetUserCurrency(data.UserID)?.Diamond ??
-//                                               0;
-//                                if (type == "month")
-//                                {
-//                                    data.MonthDiamond = Convert.ToInt64(row["SumDiamond"]);
-//                                    data.TotalDiamond =
-//                                        FacadeManage.aideRecordFacade.GetTotalPresentCount(uti.UserID, data.UserID);
-//                                }
-//                                else
-//                                {
-//                                    data.TotalDiamond = Convert.ToInt64(row["SumDiamond"]);
-//                                    data.MonthDiamond =
-//                                        FacadeManage.aideRecordFacade.GetTotalPresentCount(uti.UserID, data.UserID,
-//                                            sqlMonth);
-//                                }
-//
-//                                list.dataList.Add(data);
-//                            }
-//                        }
-//                    }
-//                    pCount = FacadeManage.aideAccountsFacade.GetAgentBelowAgentCount(uti.UserID);
-//                    break;
-//                default:
-//                    ajv.msg = "类型参数丢失！";
-//                    context.Response.Write(ajv.SerializeToJson());
-//                    return;
-//            }
-//
-//            ajv.SetDataItem("list", list.dataList);
-//            ajv.SetDataItem("total", list.RecordCount);
-//            if (list.Link) ajv.SetDataItem("link", true);
-//            ajv.SetDataItem("count", pCount);
-//            ajv.SetValidDataValue(true);
-//            context.Response.Write(ajv.SerializeToJson());
-//        }
-//
-//        private static void GetUnderDetail(HttpContext context)
-//        {
-//            AjaxJsonValid ajv = new AjaxJsonValid();
-//
-//            //判断登录
-//            UserTicketInfo uti = Fetch.GetUserCookie();
-//            if (uti == null || uti.UserID <= 0)
-//            {
-//                ajv.code = 0;
-//                ajv.msg = "登录已失效，请重新打开页面";
-//                context.Response.Write(ajv.SerializeToJson());
-//                return;
-//            }
-//
-//            int userid = GameRequest.GetQueryInt("userid", 0);
-//            AccountsInfo ai = FacadeManage.aideAccountsFacade.GetAccountsInfoByUserID(userid);
-//            if (ai.AgentID > 0)
-//            {
-//                AccountsAgentInfo aai = FacadeManage.aideAccountsFacade.GetAccountsAgentInfoByAgentID(ai.AgentID);
-//                UnderDetail underDetail = new UnderDetail()
-//                {
-//                    UserID = ai.UserID,
-//                    GameID = ai.GameID,
-//                    NickName = ai.NickName,
-//                    Compellation = aai.Compellation,
-//                    QQAccount = aai.QQAccount,
-//                    ContactAddress = aai.ContactAddress,
-//                    ContactPhone = aai.ContactPhone,
-//                    AgentID = ai.AgentID,
-//                    Diamond = FacadeManage.aideTreasureFacade.GetUserCurrency(ai.UserID)?.Diamond ?? 0
-//                };
-//                ajv.SetDataItem("info", underDetail.ToString());
-//                ajv.SetValidDataValue(true);
-//            }
-//
-//            context.Response.Write(ajv.SerializeToJson());
-//        }
-//
-//        #endregion
 
         #region Version 2.0 Logic
 
@@ -714,8 +212,10 @@ namespace Game.Web.Card
         /// </summary>
         private static void GetAgentInfo()
         {
-            Entity.Agent.SystemStatusInfo diamondSave = FacadeManage.aideAgentFacade.GetSystemStatusInfo(AppConfig.AgentConfig.ReceiveDiamondSave.ToString());
-            Entity.Agent.SystemStatusInfo goldSave = FacadeManage.aideAgentFacade.GetSystemStatusInfo(AppConfig.AgentConfig.ReceiveGoldSave.ToString());
+            Entity.Agent.SystemStatusInfo diamondSave =
+                FacadeManage.aideAgentFacade.GetSystemStatusInfo(AppConfig.AgentConfig.ReceiveDiamondSave.ToString());
+            Entity.Agent.SystemStatusInfo goldSave =
+                FacadeManage.aideAgentFacade.GetSystemStatusInfo(AppConfig.AgentConfig.ReceiveGoldSave.ToString());
 
             AccountsInfo userInfo = FacadeManage.aideAccountsFacade.GetAccountsInfoByUserID(UserId);
             Entity.Agent.AgentInfo agentInfo =
@@ -749,8 +249,8 @@ namespace Game.Web.Card
             };
             _ajv.SetValidDataValue(true);
             _ajv.SetDataItem("info", info);
-            _ajv.SetDataItem("DiamondSave",diamondSave?.StatusValue??0);
-            _ajv.SetDataItem("GoldSave",goldSave?.StatusValue??0);
+            _ajv.SetDataItem("DiamondSave", diamondSave?.StatusValue ?? 0);
+            _ajv.SetDataItem("GoldSave", goldSave?.StatusValue ?? 0);
         }
 
         /// <summary>
@@ -911,27 +411,26 @@ namespace Game.Web.Card
             long pCount = 0;
             BelowList list = new BelowList();
 
-            string sqlWhere = $"WHERE SpreaderID = {UserId}";
+            string sqlWhere = $"WHERE AgentID IN (SELECT AgentID FROM AgentInfo(NOLOCK) WHERE UserID={UserId})";
             if (!string.IsNullOrEmpty(type))
             {
-                sqlWhere += type == "agent" ? " AND AgentID>0 " : " AND AgentID = 0 ";
+                sqlWhere += type == "agent" ? " AND UserID IN (SELECT UserID FROM AgentInfo(NOLOCK)) " : " AND UserID NOT IN (SELECT UserID FROM AgentInfo(NOLOCK)) ";
             }
             var ps = FacadeManage.aideAgentFacade.GetBelowListPagerSet(sqlWhere, page, number);
             if (ps?.PageCount > 0)
             {
                 foreach (DataRow dr in ps.PageSet.Tables[0].Rows)
                 {
+                    AccountsInfo ai = FacadeManage.aideAccountsFacade.GetAccountsInfoByUserID(Convert.ToInt32(dr["UserID"].ToString()));
                     BelowDetail detail = new BelowDetail
                     {
-                        UserID = Convert.ToInt32(dr["UserID"]),
-                        GameID = Convert.ToInt32(dr["GameID"]),
-                        NickName = dr["NickName"].ToString(),
-                        AgentID = Convert.ToInt32(dr["AgentID"]),
-                        RegisterDate = Convert.ToDateTime(dr["RegisterDate"]).ToString("yyyy/MM/dd HH:mm:ss"),
-                        TotalDiamond =
-                            FacadeManage.aideAgentFacade.GetTotalDiamondAward(UserId, Convert.ToInt32(dr["UserID"])),
-                        TotalGold = FacadeManage.aideAgentFacade.GetTotalGoldAward(UserId,
-                            Convert.ToInt32(dr["UserID"]))
+                        UserID = ai.UserID,
+                        GameID = ai.GameID,
+                        NickName = ai.NickName,
+                        AgentID = ai.AgentID,
+                        RegisterDate = Convert.ToDateTime(dr["CollectDate"]).ToString("yyyy/MM/dd HH:mm:ss"),
+                        TotalDiamond = FacadeManage.aideAgentFacade.GetTotalDiamondAward(UserId, ai.UserID),
+                        TotalGold = FacadeManage.aideAgentFacade.GetTotalGoldAward(UserId, ai.UserID)
                     };
                     pCount++;
                     list.dataList.Add(detail);
@@ -945,12 +444,28 @@ namespace Game.Web.Card
         }
 
         /// <summary>
-        /// 代理下级的详情信息查询 by gameId
+        /// 代理返利情况
         /// </summary>
-        /// <param name="gameId"></param>
-        private static void GetBelowDetail(int gameId)
+        private static void GetAwardInfo()
         {
-            
+            Dictionary<string, long> dicGoldDetail = new Dictionary<string, long>
+            {
+                {"TotalAward", FacadeManage.aideAgentFacade.GetTotalGoldAward(UserId, Fetch.GetMonthTime())},
+                {"MonthAward", FacadeManage.aideAgentFacade.GetTotalGoldAward(UserId, Fetch.GetMonthTime())},
+                {"LastMonthAward", FacadeManage.aideAgentFacade.GetTotalGoldAward(UserId, Fetch.GetLastMonthTime())},
+                {"TotalReceive", FacadeManage.aideAgentFacade.GetTotalGoldReceive(UserId)}
+            };
+            Dictionary<string, long> dicDiamondDetail = new Dictionary<string, long>
+            {
+                {"TotalAward", FacadeManage.aideAgentFacade.GetTotalDiamondAward(UserId, Fetch.GetMonthTime())},
+                {"MonthAward", FacadeManage.aideAgentFacade.GetTotalDiamondAward(UserId, Fetch.GetMonthTime())},
+                {"LastMonthAward", FacadeManage.aideAgentFacade.GetTotalDiamondAward(UserId, Fetch.GetLastMonthTime())},
+                {"TotalReceive", FacadeManage.aideAgentFacade.GetTotalDiamondReceive(UserId)}
+            };
+            Dictionary<string, object> dicAwardInfo =
+                new Dictionary<string, object> {{"Gold", dicGoldDetail}, {"Diamond", dicDiamondDetail}};
+            _ajv.SetValidDataValue(true);
+            _ajv.SetDataItem("info", dicAwardInfo);
         }
 
         #endregion
@@ -963,29 +478,44 @@ namespace Game.Web.Card
         /// <param name="gameId"></param>
         /// <param name="pass"></param>
         /// <param name="count"></param>
-        /// <param name="note"></param>
-        private static void PresentDiamond(int gameId, string pass, int count, string note)
+        /// <param name="type"></param>
+        private static void PresentScore(int gameId, string pass, int count, byte type)
         {
-            if (gameId == 0 || count == 0 || string.IsNullOrEmpty(pass))
+            if (count == 0)
             {
                 _ajv.code = (int) ApiCode.VertyParamErrorCode;
                 _ajv.msg = string.Format(EnumHelper.GetDesc(ApiCode.VertyParamErrorCode),
-                    " gameid、password、count 缺失");
+                    " count 缺失");
                 return;
             }
-            if (!IsPassChecked(pass))
+            if (gameId > 0 && string.IsNullOrEmpty(pass))
             {
                 _ajv.code = (int) ApiCode.VertyParamErrorCode;
                 _ajv.msg = string.Format(EnumHelper.GetDesc(ApiCode.VertyParamErrorCode),
-                    " password 不正确");
+                    " pass 转赠时安全密码必填");
                 return;
             }
+            if (gameId > 0 && !IsPassChecked(pass))
+            {
+                _ajv.code = (int) ApiCode.VertyParamErrorCode;
+                _ajv.msg = string.Format(EnumHelper.GetDesc(ApiCode.VertyParamErrorCode),
+                    " pass 安全密码不正确");
+                return;
+            }
+
+            //代理领取返利
             Message msg =
-                FacadeManage.aideTreasureFacade.AgentPresentDiamond(UserId, pass, count, gameId, Utility.UserIP, note);
+                FacadeManage.aideAgentFacade.ReceiveAgentAward(UserId, type, count);
+            if (gameId > 0) //当填写了别人的GameID为转赠功能
+            {
+                //代理转赠返利
+                msg = FacadeManage.aideAgentFacade.GiveAgentAward(UserId, gameId, type, count, pass);
+            }
+
             if (msg.Success)
             {
                 _ajv.SetValidDataValue(true);
-                _ajv.msg = "赠送钻石成功";
+                _ajv.msg = gameId > 0 ? "提取并转赠成功" : "提取成功";
             }
             else
             {

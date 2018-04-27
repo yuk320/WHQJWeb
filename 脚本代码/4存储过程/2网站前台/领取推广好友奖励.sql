@@ -69,8 +69,8 @@ BEGIN
 	END
 
 	-- 获取有效好友
-	SELECT @FriendCount=COUNT(UserID) FROM (SELECT UserID,COUNT(UserID) AS UCount FROM WHQJPlatformDB.dbo.PersonalRoomScoreInfo WITH(NOLOCK) 
-	WHERE UserID IN (SELECT UserID FROM WHQJAccountsDB.[dbo].AccountsInfo WITH(NOLOCK) WHERE SpreaderID = @UserID) GROUP BY UserID HAVING COUNT(UserID)>@Count) AS P
+	SELECT @FriendCount = COUNT(UserID) FROM (SELECT z.UserID AS UserID,COUNT(z.UserID) AS UCount,COUNT(x.UserID) AS JCount FROM WHQJPlatformDB.dbo.PersonalRoomScoreInfo(NOLOCK) AS z,WHQJTreasureDB.dbo.RecordDrawScoreForWeb(NOLOCK) x
+	WHERE z.UserID=x.UserID AND z.UserID IN (SELECT UserID FROM WHQJAccountsDB.DBO.AccountsInfo WITH(NOLOCK) WHERE SpreaderID = @UserID) GROUP BY z.UserID HAVING COUNT(x.UserID)+COUNT(z.UserID)>@Count) AS P
 
 	-- 判断有效好友
 	IF @FriendCount<@SpreadNum

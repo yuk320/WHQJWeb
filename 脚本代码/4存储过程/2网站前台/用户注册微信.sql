@@ -198,7 +198,7 @@ BEGIN
 	IF @SpreaderID>0
 	BEGIN
 		DECLARE @bindReturn INT
-		EXEC @bindReturn = WHQJAgentDB.DBO.NET_PB_UserAgentBind @dwUserID,@SpreaderGameID,@strClientIP,@strErrorDescribe OUTPUT
+		EXEC @bindReturn = WHQJAgentDB.DBO.NET_PB_UserAgentBind @UserID,@SpreaderGameID,@strClientIP,@strErrorDescribe OUTPUT
 	END
 
 	-- ¼ÇÂ¼ÈÕÖ¾

@@ -66,12 +66,12 @@ function getBelowList(params, callback) {
 }
 
 /**
- * 获取用户的某个代理或下线的具体信息
+ * 获取代理奖励情况
  * @param {Object} params
  * @param {Function} callback
  */
-function getBelowDetail(params, callback) {
-  $.ajax(generateUrl('GetBelowDetail', params)).done(function(data) {
+function getAwardInfo(params, callback) {
+  $.ajax(generateUrl('GetAwardInfo', params)).done(function(data) {
     toLogin(data) || callback(data)
   })
 }
@@ -207,7 +207,7 @@ export {
   getInfo,
   getRecord,
   getBelowList,
-  getUnderDetail,
+  getAwardInfo,
   getNickNameByGameID,
   present,
   setPassword,

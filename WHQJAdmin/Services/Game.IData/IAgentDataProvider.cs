@@ -1,4 +1,6 @@
-﻿using Game.Entity.Agent;
+﻿using System.Collections.Generic;
+using System.Data;
+using Game.Entity.Agent;
 using Game.Kernel;
 
 namespace Game.IData
@@ -36,6 +38,31 @@ namespace Game.IData
         int UpdateSystemStatusInfo(SystemStatusInfo statusinfo);
         #endregion
 
+        #region 返利配置
+
+        /// <summary>
+        /// 获取代理返利配置
+        /// </summary>
+        /// <param name="configId"></param>
+        /// <returns></returns>
+        ReturnAwardConfig GetAgentReturnConfig(int configId);
+
+        /// <summary>
+        /// 删除代理返利配置
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        int DeleteAgentReturnConfig(string ids);
+
+        /// <summary>
+        /// 保存代理返利配置（新增，修改）
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <returns></returns>
+        int SaveAgentReturnConfig(ReturnAwardConfig cfg);
+
+        #endregion
+
         #region 代理系统
         /// <summary>
         /// 获取代理信息
@@ -63,6 +90,24 @@ namespace Game.IData
         /// <param name="nullity">代理状态</param>
         /// <returns></returns>
         int NullityAgentUser(string strList, int nullity);
+        #endregion
+
+        #region 直属下线
+
+        /// <summary>
+        /// 获取代理下线信息
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        AgentBelowInfo GetAgentBelowInfo(int userId);
+
+        /// <summary>
+        /// 获取直属下线的注册情况
+        /// </summary>
+        /// <param name="agentId"></param>
+        /// <returns></returns>
+        IList<AgentBelowInfo> GetAgentBelowRegisterList(int agentId);
+
         #endregion
     }
 }

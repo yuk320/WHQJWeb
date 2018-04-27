@@ -18,6 +18,7 @@ namespace Game.Web.Module.FilledManager
         {
             if(!Page.IsPostBack)
             {
+                DropDownDataBind();
                 BindData();
             }
         }
@@ -38,14 +39,15 @@ namespace Game.Web.Module.FilledManager
             }
 
             config.AppleID = CtrlHelper.GetText(txtAppleID);
-            config.Diamond = CtrlHelper.GetInt(txtCurrency, 0);
-            config.PayIdentity = Convert.ToByte(rbIdentity.SelectedValue);
+            config.Score = CtrlHelper.GetInt(txtCurrency, 0);
+            config.ScoreType = Convert.ToByte(ddlScoreType.SelectedValue);
             config.PayName = CtrlHelper.GetText(txtProductName);
             config.PayPrice = Convert.ToDecimal(txtPrice.Text);
             config.PayType = Convert.ToByte(ddlProductType.SelectedValue);
-            config.PresentDiamond = CtrlHelper.GetInt(txtOtherPresent,0);
+            config.PresentScore = CtrlHelper.GetInt(txtPresentScore,0);
+            config.FristPresent = CtrlHelper.GetInt(txtFristPresent, 0);
             config.SortID = CtrlHelper.GetInt(txtSortID, 0);
-            config.ImageType = Convert.ToByte(rbImage.SelectedValue);
+            config.ImageType = Convert.ToByte(txtImageType.Text);
 
             string where;
             //验证苹果产品标识
@@ -64,16 +66,17 @@ namespace Game.Web.Module.FilledManager
                 }
             }
             //验证首充是否重复
-            if(config.PayIdentity == 2 && IntParam == 0)
-            {
-                where = $"WHERE PayType = {config.PayType} AND PayIdentity = 2";
-                if(FacadeManage.aideTreasureFacade.IsExistAppPayConfig(where))
-                {
-                    ShowError("操作失败，首充产品仅限配置一个");
-                    return;
-                }
-            }
-            int result = IntParam > 0 ? FacadeManage.aideTreasureFacade.UpdateAppPayConfig(config) : FacadeManage.aideTreasureFacade.InsertAppPayConfig(config);
+//            if(config.PayIdentity == 2 && IntParam == 0)
+//            {
+//                where = $"WHERE PayType = {config.PayType} AND PayIdentity = 2";
+//                if(FacadeManage.aideTreasureFacade.IsExistAppPayConfig(where))
+//                {
+//                    ShowError("操作失败，首充产品仅限配置一个");
+//                    return;
+//                }
+//            }
+            if (IntParam > 0) config.ConfigID = IntParam;
+            int result =  FacadeManage.aideTreasureFacade.SaveAppPayConfig(config);
             if(result > 0)
             {
                 ShowInfo("配置信息操作成功", "AppPayConfigList.aspx", 1200);
@@ -83,6 +86,16 @@ namespace Game.Web.Module.FilledManager
                 ShowError("配置信息操作失败");
             }
 
+        }
+        /// <summary>
+        ///充值货币类型绑定
+        /// </summary>
+        private void DropDownDataBind()
+        {
+            ddlScoreType.DataSource = EnumDescription.GetFieldTexts(typeof(AppConfig.PayScoreType));
+            ddlScoreType.DataTextField = "Description";
+            ddlScoreType.DataValueField = "EnumValue";
+            ddlScoreType.DataBind();
         }
         /// <summary>
         /// 数据绑定
@@ -96,21 +109,21 @@ namespace Game.Web.Module.FilledManager
                 if(config != null)
                 {
                     CtrlHelper.SetText(txtAppleID, config.AppleID);
-                    CtrlHelper.SetText(txtCurrency, config.Diamond.ToString());
+                    
+                    CtrlHelper.SetText(txtCurrency, config.Score.ToString());
                     CtrlHelper.SetText(txtPrice, config.PayPrice.ToString(CultureInfo.InvariantCulture));
                     CtrlHelper.SetText(txtProductName, config.PayName);
-                    CtrlHelper.SetText(txtOtherPresent, config.PresentDiamond.ToString());
+                    CtrlHelper.SetText(txtPresentScore, config.PresentScore.ToString());
+                    CtrlHelper.SetText(txtFristPresent, config.FristPresent.ToString());
                     CtrlHelper.SetText(txtSortID, config.SortID.ToString());
                     ddlProductType.SelectedValue = config.PayType.ToString();
-                    rbIdentity.SelectedValue = config.PayIdentity.ToString();
-                    rbImage.SelectedValue = config.ImageType.ToString();
+                    ddlScoreType.SelectedValue = config.ScoreType.ToString();
+                    CtrlHelper.SetText(txtImageType,config.ImageType.ToString());
                     apple.Visible = config.PayType > 0;
-                    scale.Visible = config.PayIdentity == 2;
                 }
             }
             else
             {
-                scale.Visible = false;
                 apple.Visible = false;
             }
         }
@@ -121,12 +134,6 @@ namespace Game.Web.Module.FilledManager
         {
             int typeid = Convert.ToInt32(ddlProductType.SelectedValue);
             apple.Visible = typeid > 0;
-        }
-
-        protected void rbIdentity_OnSelectedIndexChanged(object sender, EventArgs e)
-        {
-            int payIdentity = Convert.ToInt32(rbIdentity.SelectedValue);
-            scale.Visible = payIdentity == 2;
         }
     }
 }

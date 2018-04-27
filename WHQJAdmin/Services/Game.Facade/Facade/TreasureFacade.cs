@@ -77,22 +77,13 @@ namespace Game.Facade
             return aideTreasureData.IsExistAppPayConfig(where);
         }
         /// <summary>
-        /// 新增充值产品
+        /// 新增、修改充值产品
         /// </summary>
         /// <param name="config">充值产品</param>
         /// <returns></returns>
-        public int InsertAppPayConfig(AppPayConfig config)
+        public int SaveAppPayConfig(AppPayConfig config)
         {
-            return aideTreasureData.InsertAppPayConfig(config);
-        }
-        /// <summary>
-        /// 修改充值产品
-        /// </summary>
-        /// <param name="config">充值产品</param>
-        /// <returns></returns>
-        public int UpdateAppPayConfig(AppPayConfig config)
-        {
-            return aideTreasureData.UpdateAppPayConfig(config);
+            return aideTreasureData.SaveAppPayConfig(config);
         }
         #endregion
 

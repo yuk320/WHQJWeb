@@ -7,19 +7,19 @@
         <ul>
           <li>
             <h3>总累计奖励</h3>
-            <div>123456</div>
+            <div>{{ info.Diamond.TotalAward }}</div>
           </li>
           <li>
             <h3>上月奖励</h3>
-            <div>123456</div>
+            <div>{{ info.Diamond.LastMonthAward }}</div>
           </li>
           <li>
-            <h3>当月直属玩家奖励</h3>
-            <div>123456</div>
+            <h3>当月奖励</h3>
+            <div>{{ info.Diamond.MonthAward }}</div>
           </li>
           <li>
             <h3>当月累计提成汇总</h3>
-            <div>123456</div>
+            <div>{{ info.Diamond.TotalReceive }}</div>
           </li>
         </ul>
         <!-- <p>总累计奖励 ：<span>123456</span></p>
@@ -32,29 +32,23 @@
         <ul>
           <li>
             <h3>总累计奖励</h3>
-            <div>123456</div>
+            <div>{{ info.Gold.TotalAward }}</div>
           </li>
           <li>
             <h3>上月奖励</h3>
-            <div>123456</div>
+            <div>{{ info.Gold.LastMonthAward }}</div>
           </li>
           <li>
-            <h3>当月直属玩家奖励</h3>
-            <div>123456</div>
+            <h3>当月奖励</h3>
+            <div>{{ info.Gold.MonthAward }}</div>
           </li>
           <li>
             <h3>当月累计提成汇总</h3>
-            <div>123456</div>
+            <div>{{ info.Gold.TotalReceive }}</div>
           </li>
         </ul>
-        <!-- <p>总累计奖励 ：<span>123456</span></p>
-        <p>上月奖励 ：<span>10000</span></p>
-        <p>当月直属玩家奖励 ：<span>10000</span></p>
-        <p>当月累计提成汇总 ：<span>10000</span></p> -->
       </div>
-
     </div>
-
   </div>
 
 
@@ -63,7 +57,7 @@
 <script>
 import top from "./common/top";
 import UiTable from "./table/vue-table";
-
+import { getAwardInfo } from "../fetch/fetch"; 
 export default {
   name: "perfomance",
   props: {
@@ -72,8 +66,18 @@ export default {
   components: { top, UiTable },
   data: function() {
     return {
-      perfomance: {}
+      info: {}
     };
+  },
+  created() {
+    getAwardInfo({ token: localStorage.getItem("token") }, data => {
+      if (data.data.valid) {
+        this.info = data.data.info;
+      }
+    });
+  },
+  methods:{
+
   }
 };
 </script>

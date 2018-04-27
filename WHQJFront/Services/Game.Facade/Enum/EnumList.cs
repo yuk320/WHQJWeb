@@ -72,6 +72,11 @@ namespace Game.Facade.Enum
         /// 被代理赠送
         /// </summary>
         [EnumDescription("被代理赠送")] 被代理赠送 = 11,
+
+        /// <summary>
+        /// 充值额外赠送
+        /// </summary>
+        [EnumDescription("充值额外赠送")] 充值额外赠送 = 12
     }
 
     /// <summary>
@@ -142,14 +147,19 @@ namespace Game.Facade.Enum
         [EnumDescription("AA制游戏")] AA制游戏 = 11,
 
         /// <summary>
-        /// 钻石兑换
+        /// 充值赠送
         /// </summary>
-        [EnumDescription("钻石兑换")] 钻石兑换 = 12,
+        [EnumDescription("充值赠送")] 钻石兑换 = 12,
 
         /// <summary>
         /// 领取返利
         /// </summary>
-        [EnumDescription("领取返利")] 领取返利 = 13
+        [EnumDescription("领取返利")] 领取返利 = 13,
+
+        /// <summary>
+        /// 充值额外赠送
+        /// </summary>
+        [EnumDescription("充值额外赠送")] 充值额外赠送 = 14
     }
 
     [Serializable]

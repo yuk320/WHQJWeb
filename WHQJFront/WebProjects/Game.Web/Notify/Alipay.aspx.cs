@@ -33,7 +33,6 @@ namespace Game.Web.Notify
                             OnLinePayOrder order = new OnLinePayOrder
                             {
                                 OrderID = outTradeNo,
-                                PayAddress = GameRequest.GetUserIP(),
                                 Amount = Convert.ToDecimal(Request.Form["total_fee"])
                             };
 

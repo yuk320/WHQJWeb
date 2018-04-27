@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
+using System.Xml.XPath;
 using Game.IData;
 using Game.Kernel;
 using Game.Entity.Agent;
@@ -20,12 +22,12 @@ namespace Game.Data
         public AgentDataProvider(string connString)
             : base(connString)
         {
-
         }
 
         #endregion 构造方法
 
         #region 公用分页
+
         /// <summary>
         /// 分页获取数据列表
         /// </summary>
@@ -40,9 +42,11 @@ namespace Game.Data
             PagerParameters pagerPrams = new PagerParameters(tableName, orderby, condition, pageIndex, pageSize);
             return GetPagerSet2(pagerPrams);
         }
+
         #endregion 公用分页
 
         #region 系统配置
+
         /// <summary>
         /// 获取配置信息
         /// </summary>
@@ -51,9 +55,10 @@ namespace Game.Data
         public SystemStatusInfo GetSystemStatusInfo(string statusName)
         {
             string sqlQuery = @"SELECT * FROM SystemStatusInfo WITH(NOLOCK) WHERE StatusName=@StatusName";
-            var prams = new List<DbParameter> { Database.MakeInParam("StatusName", statusName) };
+            var prams = new List<DbParameter> {Database.MakeInParam("StatusName", statusName)};
             return Database.ExecuteObject<SystemStatusInfo>(sqlQuery, prams);
         }
+
         /// <summary>
         /// 修改配置信息
         /// </summary>
@@ -75,9 +80,76 @@ namespace Game.Data
 
             return Database.ExecuteNonQuery(CommandType.Text, sqlQuery, prams.ToArray());
         }
+
+        #endregion
+
+        #region 返利配置
+
+        /// <summary>
+        /// 获取代理返利配置
+        /// </summary>
+        /// <param name="configId"></param>
+        /// <returns></returns>
+        public ReturnAwardConfig GetAgentReturnConfig(int configId)
+        {
+            return Database.ExecuteObject<ReturnAwardConfig>($"SELECT * FROM {ReturnAwardConfig.Tablename} WHERE {ReturnAwardConfig._ConfigID}={configId}");
+        }
+
+        /// <summary>
+        /// 删除代理返利配置
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public int DeleteAgentReturnConfig(string ids)
+        {
+            return Database.ExecuteNonQuery(CommandType.Text,
+                $"DELETE {ReturnAwardConfig.Tablename} WHERE {ReturnAwardConfig._ConfigID} IN ({ids})");
+        }
+
+        /// <summary>
+        /// 保存代理返利配置（新增，修改）
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <returns></returns>
+        public int SaveAgentReturnConfig(ReturnAwardConfig cfg)
+        {
+            var prams = new List<DbParameter>
+            {
+                Database.MakeInParam(ReturnAwardConfig._AwardLevel, cfg.AwardLevel),
+                Database.MakeInParam(ReturnAwardConfig._AwardScale, cfg.AwardScale),
+                Database.MakeInParam(ReturnAwardConfig._AwardType, cfg.AwardType),
+                Database.MakeInParam(ReturnAwardConfig._Nullity, cfg.Nullity),
+                Database.MakeInParam(ReturnAwardConfig._UpdateTime, cfg.UpdateTime)
+            };
+
+            string sql;
+            if (cfg.ConfigID > 0)
+            {
+                prams.Add(Database.MakeInParam(ReturnAwardConfig._ConfigID, cfg.ConfigID));
+                sql = $" UPDATE {ReturnAwardConfig.Tablename} " +
+                      $"    SET {ReturnAwardConfig._AwardLevel} = @{ReturnAwardConfig._AwardLevel}," +
+                      $"           {ReturnAwardConfig._AwardScale} = @{ReturnAwardConfig._AwardScale}," +
+                      $"           {ReturnAwardConfig._AwardType} = @{ReturnAwardConfig._AwardType}," +
+                      $"           {ReturnAwardConfig._Nullity} = @{ReturnAwardConfig._Nullity}," +
+                      $"           {ReturnAwardConfig._UpdateTime} = @{ReturnAwardConfig._UpdateTime} " +
+                      $"WHERE {ReturnAwardConfig._ConfigID} = @{ReturnAwardConfig._ConfigID}";
+            }
+            else
+            {
+                sql = $" IF NOT EXISTS (SELECT 1 FROM {ReturnAwardConfig.Tablename}(NOLOCK) WHERE {ReturnAwardConfig._AwardLevel}={cfg.AwardLevel} AND {ReturnAwardConfig._AwardType}={cfg.AwardType})" +
+                      "BEGIN "+
+                    $" INSERT {ReturnAwardConfig.Tablename} ({ReturnAwardConfig._AwardLevel},{ReturnAwardConfig._AwardScale},{ReturnAwardConfig._AwardType} ,{ReturnAwardConfig._Nullity},{ReturnAwardConfig._UpdateTime})" +
+                    $"    VALUES (@{ReturnAwardConfig._AwardLevel},@{ReturnAwardConfig._AwardScale},@{ReturnAwardConfig._AwardType},@{ReturnAwardConfig._Nullity},@{ReturnAwardConfig._UpdateTime}) " +
+                      "END ";
+            }
+
+            return Database.ExecuteNonQuery(CommandType.Text, sql, prams.ToArray());
+        }
+
         #endregion
 
         #region 代理系统
+
         /// <summary>
         /// 获取代理信息
         /// </summary>
@@ -88,6 +160,7 @@ namespace Game.Data
             string sql = $"SELECT * FROM AgentInfo WITH(NOLOCK) WHERE AgentID = {agentId}";
             return Database.ExecuteObject<AgentInfo>(sql);
         }
+
         /// <summary>
         /// 添加代理信息
         /// </summary>
@@ -114,6 +187,7 @@ namespace Game.Data
 
             return MessageHelper.GetMessage(Database, "NET_PM_AddAgent", prams);
         }
+
         /// <summary>
         /// 更新代理基本信息
         /// </summary>
@@ -121,7 +195,8 @@ namespace Game.Data
         /// <returns></returns>
         public int UpdateAgentUser(AgentInfo agent)
         {
-            string sqlQuery = @"UPDATE AgentInfo SET Password=@Password,Compellation=@Compellation,QQAccount=@QQAccount,WCNickName=@WCNickName,
+            string sqlQuery =
+                @"UPDATE AgentInfo SET Password=@Password,Compellation=@Compellation,QQAccount=@QQAccount,WCNickName=@WCNickName,
             ContactPhone=@ContactPhone,ContactAddress=@ContactAddress,AgentDomain=@AgentDomain,AgentNote=@AgentNote WHERE AgentID=@AgentID";
 
             var prams = new List<DbParameter>
@@ -134,13 +209,13 @@ namespace Game.Data
                 Database.MakeInParam("AgentDomain", agent.AgentDomain),
                 Database.MakeInParam("AgentNote", agent.AgentNote),
                 Database.MakeInParam("AgentID", agent.AgentID),
-                Database.MakeInParam("Password",agent.Password)
+                Database.MakeInParam("Password", agent.Password)
             };
 
-            
 
             return Database.ExecuteNonQuery(CommandType.Text, sqlQuery, prams.ToArray());
         }
+
         /// <summary>
         /// 冻结解冻代理
         /// </summary>
@@ -152,6 +227,36 @@ namespace Game.Data
             string sql = $"UPDATE AgentInfo SET Nullity={nullity} WHERE AgentID IN({strList})";
             return Database.ExecuteNonQuery(sql);
         }
+
+        #endregion
+
+        #region 直属下线
+
+        /// <summary>
+        /// 获取代理下线信息
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public AgentBelowInfo GetAgentBelowInfo(int userId)
+        {
+            string sql = $"SELECT * FROM {AgentBelowInfo.Tablename}(NOLOCK) WHERE {AgentBelowInfo._UserID}={userId}";
+            return Database.ExecuteObject<AgentBelowInfo>(sql);
+        }
+
+        /// <summary>
+        /// 获取直属下线的注册情况
+        /// </summary>
+        /// <param name="agentId"></param>
+        /// <returns></returns>
+        public IList<AgentBelowInfo> GetAgentBelowRegisterList(int agentId)
+        {
+            string sql =
+                "DECLARE @UserID INT " +
+                $" SELECT @UserID = UserID FROM AgentInfo(NOLOCK)WHERE AgentID = {agentId} " +
+                " SELECT * FROM WF_GetAgentBelowUserRegister (@UserID) ";
+            return Database.ExecuteObjectList<AgentBelowInfo>(sql);
+        }
+
         #endregion
     }
 }

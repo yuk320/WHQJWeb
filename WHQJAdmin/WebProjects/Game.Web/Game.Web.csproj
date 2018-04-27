@@ -123,10 +123,15 @@
     <Content Include="Module\AccountManager\TreasureIncome.aspx" />
     <Content Include="Module\AccountManager\UserPlaying.aspx" />
     <Content Include="Module\AgentManager\AgentGrantDiamond.aspx" />
+    <Content Include="Module\AgentManager\AgentReturnGrantList.aspx" />
+    <Content Include="Module\AgentManager\AgentReturnReceiveList.aspx" />
+    <Content Include="Module\AgentManager\AgentReturnRecordList.aspx" />
     <Content Include="Module\AgentManager\AgentUserInfo.aspx" />
     <Content Include="Module\AgentManager\AgentList.aspx" />
     <Content Include="Module\AgentManager\AgentUserUnder.aspx" />
     <Content Include="Module\AgentManager\AgentUserUpdate.aspx" />
+    <Content Include="Module\AgentManager\AgentReturnConfigInfo.aspx" />
+    <Content Include="Module\AgentManager\AgentReturnConfigList.aspx" />
     <Content Include="Module\AgentManager\SystemSet.aspx" />
     <Content Include="Module\AppManager\DataBaseInfoInfo.aspx" />
     <Content Include="Module\AppManager\DataBaseInfoList.aspx" />
@@ -2602,6 +2607,27 @@
     <Compile Include="Module\AgentManager\AgentGrantDiamond.aspx.designer.cs">
       <DependentUpon>AgentGrantDiamond.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnGrantList.aspx.cs">
+      <DependentUpon>AgentReturnGrantList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnGrantList.aspx.designer.cs">
+      <DependentUpon>AgentReturnGrantList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnReceiveList.aspx.cs">
+      <DependentUpon>AgentReturnReceiveList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnReceiveList.aspx.designer.cs">
+      <DependentUpon>AgentReturnReceiveList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnRecordList.aspx.cs">
+      <DependentUpon>AgentReturnRecordList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnRecordList.aspx.designer.cs">
+      <DependentUpon>AgentReturnRecordList.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Module\AgentManager\AgentUserInfo.aspx.cs">
       <DependentUpon>AgentUserInfo.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2629,6 +2655,20 @@
     </Compile>
     <Compile Include="Module\AgentManager\AgentUserUpdate.aspx.designer.cs">
       <DependentUpon>AgentUserUpdate.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnConfigInfo.aspx.cs">
+      <DependentUpon>AgentReturnConfigInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnConfigInfo.aspx.designer.cs">
+      <DependentUpon>AgentReturnConfigInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnConfigList.aspx.cs">
+      <DependentUpon>AgentReturnConfigList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Module\AgentManager\AgentReturnConfigList.aspx.designer.cs">
+      <DependentUpon>AgentReturnConfigList.aspx</DependentUpon>
     </Compile>
     <Compile Include="Module\AgentManager\SystemSet.aspx.cs">
       <DependentUpon>SystemSet.aspx</DependentUpon>

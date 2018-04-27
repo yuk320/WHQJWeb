@@ -11,36 +11,26 @@
 </head>
 <body>
     <form id="form1" runat="server">
-    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="title">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="title">
         <tr>
-            <td width="19" height="25" valign="top" class="Lpd10">
-                <div class="arr">
-                </div>
-            </td>
-            <td width="1232" height="25" valign="top" align="left">
-                你当前位置：俱乐部管理 - 俱乐部设置
-            </td>
-        </tr>
-    </table>
-      <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="Tmg7">
-        <tr>
-          <td height="28">
-            <ul>
-              <li class="tab1">俱乐部设置</li>
-              <li class="tab2" onclick="openWindowSelf('GroupList.aspx');">俱乐部管理</li>
-            </ul>
+          <td width="19" height="25" valign="top" class="Lpd10">
+            <div class="arr">
+            </div>
+          </td>
+          <td width="1232" height="25" valign="top" align="left">
+            你当前位置：俱乐部系统 - 系统设置
           </td>
         </tr>
       </table>
-   <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="titleOpBg">
+      <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="listBg2">
         <tr>
             <td colspan="2" class="Lpd10 Rpd10">
-                <div class="">
+                <div class="liebiao">
                     <ul>
                         <asp:Repeater ID="rptDataList" runat="server">
                             <ItemTemplate>
-                               <input type="button" class="btn wd3" <%# Eval("OptionName").ToString()==StrParam || ( string.IsNullOrEmpty( StrParam ) && Container.ItemIndex==0 )?"disabled=\"disabled\"":""%> onclick="openWindowSelf('SystemSet.aspx?param=<%#Eval("OptionName").ToString() %>');"
-                                    value=<%#Eval( "OptionTip" ).ToString( )%> />
+                              <li <%# Eval("OptionName").ToString()==StrParam || ( string.IsNullOrEmpty( StrParam ) && Container.ItemIndex==0 )?"class=\"current\"":""%>><a href="SystemSet.aspx?param=<%#Eval("OptionName").ToString() %>">
+                                <%#Eval( "OptionTip" ).ToString( )%></a></li> 
                             </ItemTemplate>
                         </asp:Repeater>
                     </ul>

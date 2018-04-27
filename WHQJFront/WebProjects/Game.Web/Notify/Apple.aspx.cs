@@ -36,7 +36,7 @@ namespace Game.Web.Notify
                     {
                         OrderID = orderId,
                         UserID = userId,
-                        PayAddress = GameRequest.GetUserIP(),
+                        OrderAddress = GameRequest.GetUserIP(),
                         Amount = payAmount
                     };
 

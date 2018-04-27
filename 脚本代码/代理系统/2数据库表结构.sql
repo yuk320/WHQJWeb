@@ -147,10 +147,56 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ÐÞ¸ÄÊ±¼ä' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AgentInfo', @level2type=N'COLUMN',@level2name=N'CollectDate'
 GO
 
+/** ´úÀíÏÂÏßÐÅÏ¢±í **/
+IF EXISTS (SELECT 1 FROM SYS.TABLES WHERE name=N'AgentBelowInfo')
+BEGIN
+	DROP TABLE DBO.AgentBelowInfo
+END
+GO
+
+/****** Object:  Table [dbo].[AgentBelowInfo]    Script Date: 2018/4/26 10:51:25 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[AgentBelowInfo](
+	[AgentID] [int] NOT NULL,
+	[UserID] [int] NOT NULL,
+	[CollectDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_AgentBelowInfo] PRIMARY KEY CLUSTERED 
+(
+	[AgentID] ASC,
+	[UserID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[AgentBelowInfo] ADD  CONSTRAINT [DF_AgentBelowInfo_AgentID]  DEFAULT ((0)) FOR [AgentID]
+GO
+
+ALTER TABLE [dbo].[AgentBelowInfo] ADD  CONSTRAINT [DF_AgentBelowInfo_UserID]  DEFAULT ((0)) FOR [UserID]
+GO
+
+ALTER TABLE [dbo].[AgentBelowInfo] ADD  CONSTRAINT [DF_AgentBelowInfo_CollectDate]  DEFAULT (GETDATE()) FOR [CollectDate]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'´úÀí±êÊ¶' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AgentBelowInfo', @level2type=N'COLUMN',@level2name=N'AgentID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'´úÀíÏÂÏßÓÃ»§±êÊ¶£¨ÎÞÂÛÊÇÏÂÏßÍæ¼Ò»¹ÊÇÏÂ¼¶´úÀí£©' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AgentBelowInfo', @level2type=N'COLUMN',@level2name=N'UserID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ÊÕ¼¯Ê±¼ä' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AgentBelowInfo', @level2type=N'COLUMN',@level2name=N'CollectDate'
+GO
+
+
 /** ´úÀíÏµÍ³ÉèÖÃ±í **/
 IF EXISTS (SELECT 1 FROM SYS.TABLES WHERE name=N'SystemStatusInfo')
 BEGIN
-	DROP TABLE DBO.AgentInfo
+	DROP TABLE DBO.SystemStatusInfo
 END
 GO
 
@@ -188,7 +234,7 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'×´Ì¬ÏÔÊ¾Ãû³Æ' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'SystemStatusInfo', @level2type=N'COLUMN',@level2name=N'StatusTip'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'×Ö·ûµÄÃèÊö' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'SystemStatusInfo', @level2type=N'COLUMN',@level2name=N'StatusDescription'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'×´Ì¬µÄÃèÊö' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'SystemStatusInfo', @level2type=N'COLUMN',@level2name=N'StatusDescription'
 GO
 
 /** ´úÀí·µÀûÅäÖÃ±í **/
@@ -276,6 +322,7 @@ CREATE TABLE [dbo].[ReturnAwardRecord](
 	[AwardScale] [decimal](18, 6) NOT NULL,
 	[Award] [int] NOT NULL,
 	[CollectDate] [datetime] NOT NULL,
+	[ExtraField] NVARCHAR(32) NOT NULL,
  CONSTRAINT [PK_ReturnAwardRecord] PRIMARY KEY CLUSTERED 
 (
 	[RecordID] ASC
@@ -308,6 +355,9 @@ GO
 ALTER TABLE [dbo].[ReturnAwardRecord] ADD  CONSTRAINT [DF_ReturnAwardRecord_CollectDate]  DEFAULT (getdate()) FOR [CollectDate]
 GO
 
+ALTER TABLE [dbo].[ReturnAwardRecord] ADD  CONSTRAINT [DF_ReturnAwardRecord_ExtraField]  DEFAULT (N'') FOR [ExtraField]
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'¼ÇÂ¼±êÊ¶' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ReturnAwardRecord', @level2type=N'COLUMN',@level2name=N'RecordID'
 GO
 
@@ -333,6 +383,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'·µÀûÖµ £¨¸ù¾Ý·
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'¼ÇÂ¼Ê±¼ä' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ReturnAwardRecord', @level2type=N'COLUMN',@level2name=N'CollectDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'À©Õ¹×Ö¶Î£º³äÖµ·µÀû¼ÇÂ¼³äÖµ¡¾³äÖµ¶©µ¥ºÅ¡¿£»ÓÎÏ·Ë°ÊÕ·µÀû¼ÇÂ¼¡¾ÓÎÏ·Ãû³Æ-·¿¼äÃû³Æ¡¿' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ReturnAwardRecord', @level2type=N'COLUMN',@level2name=N'ExtraField'
 GO
 
 /** ´úÀí·µÀûÍ³¼Æ±í **/

@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------
 -- 版权：2017
--- 时间：2017-06-8
+-- 时间：2018-04-27
 -- 用途：苹果充值
 ----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ GO
 ---------------------------------------------------------------------------------------
 -- 在线充值
 CREATE PROCEDURE NET_PW_FinishOnLineOrderIOS
-	@strOrdersID		NVARCHAR(50),			--	订单编号
+	@strOrdersID		NVARCHAR(32),			--	订单编号
 	@PayAmount			DECIMAL(18,2),			--  支付金额
 	@dwUserID			INT,					--	充值用户
 	@strAppleID			NVARCHAR(32),			--  产品标识
@@ -43,10 +43,12 @@ DECLARE @BindSpread INT
 -- 订单信息
 DECLARE @ConfigID INT
 DECLARE @Amount DECIMAL(18,2)
-DECLARE @Diamond INT
-DECLARE @PresentDiamond INT
+DECLARE @ScoreType TINYINT
+DECLARE @Score INT
+DECLARE @FristPresent INT
+DECLARE @PresentScore INT
 DECLARE @OtherPresent INT
-DECLARE @BeforeDiamond BIGINT
+DECLARE @BeforeScore BIGINT
 DECLARE @OrderStatus TINYINT
 DECLARE @DateTime DATETIME
 
@@ -76,13 +78,13 @@ BEGIN
 	END
 
 	-- 配置查询
-	SELECT @ConfigID=ConfigID,@Amount=PayPrice,@Diamond=Diamond,@PresentDiamond=PresentDiamond FROM AppPayConfig WITH(NOLOCK) WHERE PayType=1 AND AppleID=@strAppleID
+	SELECT @ConfigID=ConfigID,@Amount=PayPrice,@ScoreType = ScoreType,@Score=Score,@PresentScore=PresentScore,@FristPresent = FristPresent FROM AppPayConfig WITH(NOLOCK) WHERE PayType=1 AND AppleID=@strAppleID
 	IF @ConfigID IS NULL
 	BEGIN
 		SET @strErrorDescribe=N'抱歉！充值产品不存在!'
 		RETURN 2001
 	END
-	IF @Amount <= 0 OR @Diamond <=0
+	IF @Amount <= 0 OR @Score <=0
 	BEGIN
 		SET @strErrorDescribe=N'抱歉！充值产品配置异常！'
 		RETURN 2002
@@ -100,55 +102,38 @@ BEGIN
 		RETURN 2004
 	END
 
-	-- 计算额外赠送钻石
-	SET @PresentDiamond = @PresentDiamond + @Diamond
-
-	-- 事务处理
-	BEGIN TRAN
-
-	SELECT @BeforeDiamond=Diamond FROM UserCurrency WITH(ROWLOCK) WHERE UserID=@UserID
-	IF @BeforeDiamond IS NULL
+	SET @OtherPresent = @FristPresent
+	-- 账户按类型首充
+	IF EXISTS(SELECT 1 FROM OnLinePayOrder WHERE UserID=@UserID AND ConfigID=@ConfigID AND OrderStatus>1)
 	BEGIN
-		SET @BeforeDiamond=0
-		INSERT INTO UserCurrency VALUES(@UserID,@PresentDiamond)
-	END
-	ELSE
-	BEGIN
-		UPDATE UserCurrency SET Diamond = Diamond + @PresentDiamond WHERE UserID=@UserID
-	END
-	IF @@ROWCOUNT <=0
-	BEGIN
-		ROLLBACK TRAN
-		SET @strErrorDescribe=N'抱歉！操作异常，请稍后重试!'
-		RETURN 3001
-	END
-	INSERT INTO OnLinePayOrder(ConfigID,ShareID,UserID,GameID,Accounts,NickName,OrderID,OrderType,Amount,Diamond,OtherPresent,OrderStatus,OrderDate,OrderAddress,BeforeDiamond,PayDate,PayAddress)
-	VALUES(@ConfigID,800,@UserID,@GameID,@Accounts,@NickName,@strOrdersID,1,@Amount,@Diamond,@PresentDiamond,1,@DateTime,@strIPAddress,@BeforeDiamond,@DateTime,@strIPAddress)
-	IF @@ROWCOUNT <=0
-	BEGIN
-		ROLLBACK TRAN
-		SET @strErrorDescribe=N'抱歉！操作异常，请稍后重试!'
-		RETURN 3002
+		SET @OtherPresent = @PresentScore
 	END
 
-	-- 写入钻石变化记录
-	INSERT INTO WHQJRecordDB.dbo.RecordDiamondSerial(SerialNumber,MasterID,UserID,TypeID,CurDiamond,ChangeDiamond,ClientIP,CollectDate)
-	VALUES(dbo.WF_GetSerialNumber(),0,@UserID,3,@BeforeDiamond,@PresentDiamond,@strIPAddress,@DateTime)
-
-	-- 如果存在返利配置，写入返利记录
-	IF EXISTS (SELECT 1 FROM SpreadReturnConfig WHERE Nullity=0)
+	IF @ScoreType = 0 
 	BEGIN
-		DECLARE @ReturnType TINYINT
-		SELECT @ReturnType = StatusValue FROM WHQJAccountsDB.DBO.SystemStatusInfo WHERE StatusName = N'SpreadReturnType'
-		IF @ReturnType IS NULL
+		SELECT @BeforeScore = Score FROM WHQJTreasureDB.DBO.GameScoreInfo(NOLOCK) WHERE UserID = @UserID
+		IF @BeforeScore IS NULL 
 		BEGIN
-			SET @ReturnType = 0
+			INSERT WHQJTreasureDB.DBO.GameScoreInfo (UserID,Score) VALUES (@UserID,0)
+			SET @BeforeScore = 0
 		END
-		INSERT WHQJRecordDB.DBO.RecordSpreadReturn (SourceUserID,TargetUserID,SourceDiamond,SpreadlEvel,ReturnScale,ReturnNum,ReturnType,CollectDate)
-		SELECT @UserID,A.UserID,@Diamond,B.SpreadLevel,B.PresentScale,@Diamond*B.PresentScale,@ReturnType,@DateTime FROM (SELECT UserID,LevelID FROM [dbo].[WF_GetAgentAboveAccounts](@UserID) ) AS A,SpreadReturnConfig AS B WHERE B.SpreadLevel=A.LevelID-1 AND A.LevelID>1 AND A.LevelID<=4 AND B.Nullity=0
+	END	
+	ELSE IF @ScoreType = 1
+	BEGIN
+		SELECT @BeforeScore = Diamond FROM WHQJTreasureDB.DBO.UserCurrency(NOLOCK) WHERE UserID = @UserID
+		IF @BeforeScore IS NULL 
+		BEGIN
+			INSERT WHQJTreasureDB.DBO.UserCurrency (UserID,Diamond) VALUES (@UserID,0)
+			SET @BeforeScore = 0
+		END
 	END
+	
+	-- 记录订单
+	INSERT INTO OnLinePayOrder(ConfigID,ShareID,UserID,GameID,Accounts,NickName,OrderID,OrderType,Amount,ScoreType,Score,OtherPresent,OrderStatus,OrderDate,OrderAddress,BeforeScore)
+	VALUES(@ConfigID,800,@UserID,@GameID,@Accounts,@NickName,@strOrdersID,1,@Amount,@ScoreType,@Score,@OtherPresent,1,@DateTime,@strIPAddress,@BeforeScore)
 
-	COMMIT TRAN
+	-- 插入代币 交付给服务端进行代币处理。
+	INSERT INTO MiddleMoney (RecordID,UserID,MiddleMoney,MoneyType) VALUES (@strOrdersID,@UserID,@Amount,@ScoreType)
 
 END
 RETURN 0

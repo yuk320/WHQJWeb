@@ -19,6 +19,10 @@ namespace Game.Web.Module.FilledManager
             {
                 txtStartDate.Text = DateTime.Now.ToString("yyyy-MM-") + "01";
                 txtEndDate.Text = DateTime.Now.ToString("yyyy-MM-dd");
+                ddlGlobalShareInfo.DataSource = EnumDescription.GetFieldTexts(typeof(AppConfig.ShareType));
+                ddlGlobalShareInfo.DataTextField = "Description";
+                ddlGlobalShareInfo.DataValueField = "EnumValue";
+                ddlGlobalShareInfo.DataBind();
                 ShareInfoDataBind();
             }
         }
@@ -158,21 +162,7 @@ namespace Game.Web.Module.FilledManager
         /// <returns></returns>
         public string GetOrderShareName(int shareId)
         {
-            switch (shareId)
-            {
-                case 101:
-                    return "手机微信充值";
-                case 102:
-                    return "H5微信充值";
-                case 201:
-                    return "手机支付宝充值";
-                case 301:
-                    return "手机零钱支付";
-                case 800:
-                    return "手机苹果充值";
-                default:
-                    return "";
-            }
+            return EnumDescription.GetFieldText((AppConfig.ShareType) shareId);
         }
 
         /// <summary>
@@ -182,13 +172,14 @@ namespace Game.Web.Module.FilledManager
         /// <returns></returns>
         protected string GetPayStatus(int status)
         {
-            if (status == 1)
+            switch (status)
             {
-                return "<span>已支付</span>";
-            }
-            else
-            {
-                return "<span class='hong'>未支付</span>";
+                case 2:
+                    return "<span>已完成</span>";
+                case 1:
+                    return "<span class='hong'>已支付，未处理</span>";
+                default:
+                    return "<span class='hong'>未支付</span>";
             }
         }
 

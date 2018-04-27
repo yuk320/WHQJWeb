@@ -70,8 +70,8 @@
                     <asp:ListItem Text="新闻公告广告" Value="1"></asp:ListItem>
                     <asp:ListItem Text="联系我们广告" Value="2"></asp:ListItem>
                     <asp:ListItem Text="游戏下载广告" Value="5"></asp:ListItem>
-                    <asp:ListItem Text="手机大厅广告" Value="3"></asp:ListItem>
-                    <asp:ListItem Text="手机弹出广告" Value="4"></asp:ListItem>
+                    <asp:ListItem Text="H5竖版弹出广告" Value="3"></asp:ListItem>
+                    <asp:ListItem Text="手机横版弹出广告" Value="4"></asp:ListItem>
                 </asp:DropDownList>
             </td>
         </tr>

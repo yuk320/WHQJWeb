@@ -195,7 +195,7 @@ namespace Game.Web.Module.AccountManager
             PagerSet pagerSet = FacadeManage.aideAccountsFacade.GetList(AccountsInfo.Tablename,
                 anpPage.CurrentPageIndex, anpPage.PageSize, SearchItems, Orderby);
             anpPage.RecordCount = pagerSet.RecordCount;
-            litNoData.Visible = pagerSet.PageSet.Tables[0].Rows.Count > 0 ? false : true;
+            litNoData.Visible = pagerSet.PageSet.Tables[0].Rows.Count <= 0;
             rptDataList.DataSource = pagerSet.PageSet;
             rptDataList.DataBind();
         }

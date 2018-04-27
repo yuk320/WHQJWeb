@@ -1,4 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AppPayConfigList.aspx.cs" Inherits="Game.Web.Module.FilledManager.AppPayConfigList" %>
+<%@ Import Namespace="Game.Facade" %>
+<%@ Import Namespace="Game.Utils" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -54,16 +56,16 @@
                     充值面额
                 </td>
                 <td class="listTitle2">
-                    赠送钻石
+                    充值货币类型
                 </td>
                 <td class="listTitle2">
-                    额外赠送钻石
+                    充值到账数值
+                </td>
+                <td class="listTitle2">
+                    额外赠送 (首充 / 普通)
                 </td>
                 <td class="listTitle2">
                     产品排序
-                </td>
-                <td class="listTitle2">
-                    产品标识
                 </td>
                 <td class="listTitle2">
                     配置时间
@@ -92,17 +94,20 @@
                             <%# Eval("PayPrice")%>
                         </td>
                         <td>
-                            <%# Eval("Diamond")%>
+                          <%# EnumDescription.GetFieldText((AppConfig.PayScoreType)Convert.ToInt32(Eval("ScoreType").ToString())) %>
                         </td>
                         <td>
-                            <%# Eval("PresentDiamond") %>
+                            <%# Eval("Score")%>
+                        </td>
+                        <td>
+                          <%# Eval("FristPresent") %> / <%# Eval("PresentScore") %>
                         </td>
                         <td>
                             <%# Eval("SortID").ToString()%>
                         </td>
-                        <td>
-                            <%# Eval("PayIdentity").ToString()=="2"?"首充":Eval("PayIdentity").ToString()=="1"?"推荐":"普通" %>
-                        </td>
+<%--                        <td>--%>
+<%--                            <%# Eval("PayIdentity").ToString()=="2"?"首充":Eval("PayIdentity").ToString()=="1"?"推荐":"普通" %>--%>
+<%--                        </td>--%>
                         <td>
                             <%# Eval("ConfigTime").ToString()%>
                         </td>
@@ -129,18 +134,21 @@
                         <td>
                             <%# Eval("PayPrice")%>
                         </td>
-                        <td>
-                            <%# Eval("Diamond")%>
-                        </td>
-                        <td>
-                            <%# Eval("PresentDiamond") %>
-                        </td>
-                        <td>
-                            <%# Eval("SortID").ToString()%>
-                        </td>
-                        <td>
-                            <%# Eval("PayIdentity").ToString()=="2"?"首充":Eval("PayIdentity").ToString()=="1"?"推荐":"普通" %>
-                        </td>
+                      <td>
+                        <%# EnumDescription.GetFieldText((AppConfig.PayScoreType)Convert.ToInt32(Eval("ScoreType").ToString())) %>
+                      </td>
+                      <td>
+                        <%# Eval("Score")%>
+                      </td>
+                      <td>
+                        <%# Eval("FristPresent") %> / <%# Eval("PresentScore") %>
+                      </td>
+                      <td>
+                        <%# Eval("SortID").ToString()%>
+                      </td>
+                      <%--                        <td>--%>
+                      <%--                            <%# Eval("PayIdentity").ToString()=="2"?"首充":Eval("PayIdentity").ToString()=="1"?"推荐":"普通" %>--%>
+                      <%--                        </td>--%>
                         <td>
                             <%# Eval("ConfigTime").ToString()%>
                         </td>

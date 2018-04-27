@@ -22,6 +22,25 @@ osql -E -i "%rootPath%1数据库创建.sql"
 osql -E -i "%rootPath%2数据库表结构.sql"
 osql -E -i "%rootPath%3数据库表数据.sql"
 
+set rootPath=代理系统\4存储过程\
+osql -d WHQJAccountsDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJGameScoreDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJNativeWebDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJPlatformDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJPlatformManagerDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJRecordDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJTreasureDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJAgentDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+osql -d WHQJGroupDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
+
+osql -E -i "%rootPath%(代理)代理商创建代理.sql"
+osql -E -i "%rootPath%(代理)代理登录.sql"
+osql -E -i "%rootPath%(代理)转赠返利.sql"
+osql -E -i "%rootPath%(代理)领取返利.sql"
+osql -E -i "%rootPath%(公共)玩家绑定代理.sql"
+osql -E -i "%rootPath%(公共)系统返利.sql"
+osql -E -i "%rootPath%(后台)系统创建代理.sql"
+
 set rootPath=4存储过程\1公共过程\
 osql -d WHQJAccountsDB -E  -n -i "%rootPath%分页过程.sql"
 osql -d WHQJGameScoreDB -E  -n -i "%rootPath%分页过程.sql"
@@ -69,6 +88,7 @@ osql -E -i "%rootPath%领取注册赠送奖励.sql"
 osql -E -i "%rootPath%钻石兑换金币.sql"
 osql -E -i "%rootPath%领取推广返利奖励.sql"
 osql -E -i "%rootPath%用户代理中心.sql"
+osql -E -i "%rootPath%充值处理.sql"
 
 set rootPath=4存储过程\3网站后台\
 osql -E -i "%rootPath%菜单加载.sql"
@@ -100,24 +120,6 @@ osql -E -i "%rootPath%排行榜统计.sql"
 osql -E -i "%rootPath%排行榜周统计.sql"
 osql -E -i "%rootPath%每日钻石统计.sql"
 osql -E -i "%rootPath%每日统计.sql"
-
-set rootPath=代理系统\4存储过程\
-osql -d WHQJAccountsDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
-osql -d WHQJGameScoreDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
-osql -d WHQJNativeWebDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
-osql -d WHQJPlatformDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
-osql -d WHQJPlatformManagerDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
-osql -d WHQJRecordDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
-osql -d WHQJTreasureDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
-osql -d WHQJAgentDB -E  -n -i "%rootPath%(公共)代理商关系查询.sql"
-
-osql -E -i "%rootPath%(代理)代理商创建代理.sql"
-osql -E -i "%rootPath%(代理)代理登录.sql"
-osql -E -i "%rootPath%(代理)转赠返利.sql"
-osql -E -i "%rootPath%(代理)领取返利.sql"
-osql -E -i "%rootPath%(公共)玩家绑定代理.sql"
-osql -E -i "%rootPath%(公共)系统返利.sql"
-osql -E -i "%rootPath%(后台)系统创建代理.sql"
 
 pause
 

@@ -95,8 +95,18 @@ namespace Game.IData
         /// <param name="userId">必填 代理的用户标识</param>
         /// <param name="typeId">默认不传统计代理充值返利</param>
         /// <param name="sourceUserId">默认不传统计代理所有该类返利</param>
+        /// <param name="timeSpan">时间期间</param>
         /// <returns></returns>
-        long GetTotalAward(int userId, int typeId = 1, int sourceUserId = 0);
+        long GetTotalAward(int userId, int typeId = 1, int sourceUserId = 0, string[] timeSpan = null);
+
+        /// <summary>
+        /// 获取代理累计提取总返利 by awardType 不传为 充值返利，传2 为游戏税收返利 
+        /// </summary>
+        /// <param name="userId">必填 代理的用户标识</param>
+        /// <param name="typeId">默认不传，统计代理充值返利</param>
+        /// <param name="timeSpan">时间期间</param>
+        /// <returns></returns>
+        long GetTotalReceive(int userId, int typeId = 1, string[] timeSpan = null);
 
         #endregion
 

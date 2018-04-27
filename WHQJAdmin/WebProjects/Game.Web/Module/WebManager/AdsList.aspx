@@ -43,7 +43,7 @@
                         <td><input name='cid' type='checkbox' value='<%# Eval("ID")%>'/></td>      
                         <td><a class="l" href="AddAds.aspx?param=<%# Eval("ID") %>">编辑</a></td>  
                         <td><%# GetAdsType(Convert.ToInt32(Eval("Type"))) %></td>
-                        <td style="padding:2px;"><img src="/Upload<%# Eval( "ResourceURL" )%>" title="<%# Eval( "Title" )%>" width="176" height="58"/></td>         
+                        <td style="padding:2px;"><img src="/Upload<%# Eval( "ResourceURL" )%>" title="<%# Eval( "Title" )%>" height="64"/></td>         
                         <td><%# Eval("Remark")%></td>
                     </tr>
                 </ItemTemplate>
@@ -53,7 +53,7 @@
                         <td><input name='cid' type='checkbox' value='<%# Eval("ID")%>'/></td>      
                         <td><a class="l" href="AddAds.aspx?param=<%# Eval("ID") %>">编辑</a></td>  
                         <td><%# GetAdsType(Convert.ToInt32(Eval("Type"))) %></td>
-                        <td style="padding:2px;"><img src="/Upload<%# Eval( "ResourceURL" )%>" title="<%# Eval( "Title" )%>" width="176" height="58"/></td>             
+                        <td style="padding:2px;"><img src="/Upload<%# Eval( "ResourceURL" )%>" title="<%# Eval( "Title" )%>" height="58"/></td>             
                         <td><%# Eval("Remark")%></td>
                     </tr>
                 </AlternatingItemTemplate>

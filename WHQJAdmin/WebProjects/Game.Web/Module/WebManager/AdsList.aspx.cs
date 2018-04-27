@@ -59,9 +59,9 @@ namespace Game.Web.Module.WebManager
                 case 2:
                     return "联系我们广告图";
                 case 3:
-                    return "手机大厅广告图";
+                    return "H5竖版弹出广告";
                 case 4:
-                    return "手机大厅弹出图";
+                    return "手机横版弹出广告";
                 case 5:
                     return "游戏下载广告图";
                 default:

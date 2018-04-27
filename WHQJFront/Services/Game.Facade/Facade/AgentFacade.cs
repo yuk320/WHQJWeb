@@ -82,26 +82,74 @@ namespace Game.Facade
         }
 
         /// <summary>
+        /// 获取代理下线对代理的累计充值总贡献
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sourceUserId"></param>
+        /// <returns></returns>
+        public long GetTotalDiamondAward(int userId, int sourceUserId)
+        {
+            return GetTotalDiamondAward(userId, null, sourceUserId);
+        }
+
+        /// <summary>
         /// 获取代理累计充值总返利
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="timeSpan">时间期间</param>
         /// <param name="sourceUserId">传值时代表某个下线对你的贡献</param>
         /// <returns></returns>
-        public long GetTotalDiamondAward(int userId, int sourceUserId = 0)
+        public long GetTotalDiamondAward(int userId, string[] timeSpan = null, int sourceUserId = 0)
         {
-            return agentData.GetTotalAward(userId,1,sourceUserId);
+            return agentData.GetTotalAward(userId, 1, sourceUserId, timeSpan);
+        }
+
+        /// <summary>
+        /// 获取代理下线对代理的累计游戏税收总贡献
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sourceUserId"></param>
+        /// <returns></returns>
+        public long GetTotalGoldAward(int userId, int sourceUserId)
+        {
+            return GetTotalGoldAward(userId, null, sourceUserId);
         }
 
         /// <summary>
         /// 获取代理累计游戏税收总返利
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="timeSpan">时间期间</param>
         /// <param name="sourceUserId">传值时代表某个下线对你的贡献</param>
         /// <returns></returns>
-        public long GetTotalGoldAward(int userId, int sourceUserId = 0)
+        public long GetTotalGoldAward(int userId, string[] timeSpan = null, int sourceUserId = 0)
         {
-            return agentData.GetTotalAward(userId, 2, sourceUserId);
+            return agentData.GetTotalAward(userId, 2, sourceUserId, timeSpan);
         }
+
+        /// <summary>
+        /// 获取代理累计提取充值返利
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
+        public long GetTotalDiamondReceive(int userId, string[] timeSpan = null)
+        {
+            return agentData.GetTotalReceive(userId, 1, timeSpan);
+        }
+
+        /// <summary>
+        /// 获取代理累计提取游戏税收返利
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
+        public long GetTotalGoldReceive(int userId, string[] timeSpan = null)
+        {
+            return agentData.GetTotalReceive(userId, 2, timeSpan);
+        }
+
+
         #endregion
 
         #region 直属下线
@@ -148,6 +196,36 @@ namespace Game.Facade
         public Message AddAgent(int userId, AgentInfo info, int gameId)
         {
             return agentData.AddAgent(userId, info, gameId);
+        }
+
+        #endregion
+
+        #region 代理返利
+
+        /// <summary>
+        /// 领取奖励
+        /// </summary>
+        /// <param name="userId">代理用户标识</param>
+        /// <param name="awardType">1：充值返利【钻石】 2：游戏税收返利【金币】</param>
+        /// <param name="award">领取的数量</param>
+        /// <returns></returns>
+        public Message ReceiveAgentAward(int userId, byte awardType, long award)
+        {
+            return agentData.ReceiveAgentAward(userId, awardType, award);
+        }
+
+        /// <summary>
+        /// 转赠奖励（单独使用时则为单向转赠，与领取返利一起使用则转赠返利）
+        /// </summary>
+        /// <param name="userId">代理用户标识</param>
+        /// <param name="gameId">被转赠目标游戏标识</param>
+        /// <param name="awardType">1：充值返利【钻石】 2：游戏税收返利【金币】</param>
+        /// <param name="award">转赠数额</param>
+        /// <param name="password">安全密码</param>
+        /// <returns></returns>
+        public Message GiveAgentAward(int userId, int gameId, byte awardType, long award, string password)
+        {
+            return agentData.GiveAgentAward(userId, gameId, awardType, award, password);
         }
 
         #endregion

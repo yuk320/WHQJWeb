@@ -132,10 +132,14 @@ namespace Game.Facade
         /// <summary>
         /// 充值货币类型
         /// </summary>
+        [EnumDescription("代币转换类型")]
         public enum PayScoreType : byte
         {
+            [EnumDescription("游戏币")]
             Score = 0,
+            [EnumDescription("钻石")]
             Diamond = 1,
+            [EnumDescription("游戏豆")]
             Currency = 2
         }
 

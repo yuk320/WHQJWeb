@@ -34,7 +34,6 @@ namespace Game.Web.Notify
                             OnLinePayOrder order = new OnLinePayOrder
                             {
                                 OrderID = dic["out_trade_no"].ToString(),
-                                PayAddress = GameRequest.GetUserIP(),
                                 Amount = amount
                             };
 

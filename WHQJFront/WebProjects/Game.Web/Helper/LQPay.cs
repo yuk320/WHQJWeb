@@ -99,10 +99,10 @@ namespace Game.Web.Helper
                 LQPrePayContent content = new LQPrePayContent()
                 {
                     code = "001",
-                    comment = onlineOrder.Diamond + "颗 钻石",
+                    comment = $"{onlineOrder.Score} 颗 {EnumDescription.GetFieldText(AppConfig.PayScoreType.Diamond)}",
                     name = "钻石",
-                    price = ((onlineOrder.Amount / onlineOrder.Diamond) * 100).ToString("F0"),
-                    quality = onlineOrder.Diamond.ToString(),
+                    price = (onlineOrder.Amount / onlineOrder.Score * 100).ToString("F0"),
+                    quality = onlineOrder.Score.ToString(),
                     realMoney = (onlineOrder.Amount * 100).ToString("F0"),
                     rebateMoney = "0",
                     totalMoney = (onlineOrder.Amount * 100).ToString("F0"),
@@ -122,7 +122,7 @@ namespace Game.Web.Helper
                 LQPayContent content = new LQPayContent()
                 {
                     channelType = type,
-                    body = onLinePayOrder.Diamond + "颗钻石",
+                    body = $"{onLinePayOrder.Score} 颗 {EnumDescription.GetFieldText(AppConfig.PayScoreType.Diamond)}",
                     money = (onLinePayOrder.Amount * 100).ToString("F0"),
                     userId = onLinePayOrder.GameID.ToString(),
                     userIp = GameRequest.GetUserIP(),

@@ -18,7 +18,8 @@ CREATE PROC [NET_PB_RecordAgentAward]
 (
 	@dwUserID			INT,					--用户标识
 	@dwReturnBase	INT,			-- 返利基准
-	@dwAwardType TINYINT,
+	@dwAwardType TINYINT,       -- 返利类型：1、充值返利【钻石】；2、游戏税收返利【金币】
+  @strExtraField NVARCHAR(32),  --扩展字段：充值返利记录充值【充值订单号】；游戏税收返利记录【游戏名称(房间名称)】
 
 	@strErrorDescribe NVARCHAR(127) OUTPUT		--输出信息
 )
@@ -31,12 +32,12 @@ SET NOCOUNT ON
 -- 用户信息
 DECLARE @UserID INT
 DECLARE @Nullity TINYINT
-DECLARE @SpreaderID INT
+DECLARE @AboveAgentID INT
 
 
 BEGIN
 	-- 查询用户	
-	SELECT @UserID=UserID,@Nullity=Nullity,@SpreaderID=SpreaderID FROM WHQJAccountsDB.DBO.AccountsInfo WITH(NOLOCK) WHERE UserID=@dwUserID
+	SELECT @UserID=UserID,@Nullity=Nullity FROM WHQJAccountsDB.DBO.AccountsInfo WITH(NOLOCK) WHERE UserID=@dwUserID
 
 	-- 用户存在
 	IF @UserID IS NULL
@@ -52,7 +53,9 @@ BEGIN
 		RETURN 1002
 	END	
 
-  IF @SpreaderID = 0 
+  SELECT @AboveAgentID = AgentID FROM AgentBelowInfo WHERE UserID = @dwUserID
+
+  IF @AboveAgentID = 0 
   BEGIN
     SET @strErrorDescribe=N'抱歉，帐号未被代理，无奖励返利'
     RETURN 1003
@@ -78,8 +81,8 @@ BEGIN
     DECLARE @DateTime DateTime
     SET @DateTime = GETDATE()
 
-		INSERT ReturnAwardRecord(SourceUserID,TargetUserID,ReturnBase,Awardlevel,AwardScale,Award,AwardType,CollectDate)
-		SELECT @UserID,A.UserID,@dwReturnBase,B.AwardLevel,B.AwardScale,@dwReturnBase*B.AwardScale,B.AwardType,@DateTime FROM (SELECT UserID,LevelID FROM [dbo].[WF_GetAgentAboveAgent](@SpreaderID) ) AS A,ReturnAwardConfig AS B WHERE B.AwardLevel=A.LevelID AND A.LevelID<=3 AND B.Nullity=0 AND B.AwardType = @dwAwardType
+		INSERT ReturnAwardRecord(SourceUserID,TargetUserID,ReturnBase,Awardlevel,AwardScale,Award,AwardType,CollectDate,ExtraField)
+		SELECT @UserID,A.UserID,@dwReturnBase,B.AwardLevel,B.AwardScale,@dwReturnBase*B.AwardScale,B.AwardType,@DateTime,@strExtraField FROM (SELECT UserID,LevelID FROM [dbo].[WF_GetAgentAboveAgent](@AboveAgentID) ) AS A,ReturnAwardConfig AS B WHERE B.AwardLevel=A.LevelID AND A.LevelID<=3 AND B.Nullity=0 AND B.AwardType = @dwAwardType
 
     DECLARE @DateID INT
     SET @DateID = CAST (CAST (@DateTime AS FLOAT) AS INT)

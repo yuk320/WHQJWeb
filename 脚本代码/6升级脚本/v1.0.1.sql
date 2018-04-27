@@ -2,17 +2,20 @@
 USE WHQJAccountsDB
 GO
 
-INSERT INTO [dbo].[SystemStatusInfo] ([StatusName],[StatusValue],[StatusString],[StatusTip],[StatusDescription],[SortID])
-     VALUES (N'MobileBattleRecordMask',7,N'手机大厅战绩显示类型',N'大厅战绩类型',N'键值：
-     1：仅显示普通房卡战绩；
-     2：仅显示金币房卡战绩；
-     3：1+2；
-     4：仅显示金币游戏记录；
-     5：1+4；
-     6：2+4；
-     7：1+2+4；',50)
+IF EXISTS (SELECT 1 FROM DBO.SystemStatusInfo WHERE StatusName = N'MobileBattleRecordMask')
+	DELETE DBO.SystemStatusInfo WHERE StatusName = N'MobileBattleRecordMask'
 GO
 
+INSERT INTO [dbo].[SystemStatusInfo] ([StatusName],[StatusValue],[StatusString],[StatusTip],[StatusDescription],[SortID])
+     VALUES (N'MobileBattleRecordMask',7,N'手机大厅战绩显示类型',N'大厅战绩类型',N'键值：
+	 1：仅显示普通房卡战绩；
+	 2：仅显示金币房卡战绩；
+	 3：1+2；
+	 4：仅显示金币游戏记录；
+	 5：1+4；
+	 6：2+4；
+	 7：1+2+4；',50)
+GO
 
 USE WHQJGroupDB
 GO
@@ -68,13 +71,17 @@ GO
 
 USE [WHQJPlatformManagerDB]
 GO
+
   -- 插入新的模块
 DELETE DBO.Base_Module WHERE ModuleID = 9 OR ParentID = 9
 INSERT DBO.Base_Module (ModuleID,ParentID,Title,Link,OrderNo,Nullity,IsMenu,[Description],ManagerPopedom)
 VALUES (9,0,N'俱乐部系统',N'',9,0,1,N'',0)
 INSERT DBO.Base_Module (ModuleID,ParentID,Title,Link,OrderNo,Nullity,IsMenu,[Description],ManagerPopedom)
-VALUES (901,9,N'俱乐部管理',N'/Module/ClubManager/SystemSet.aspx',1,0,0,N'',0)
+VALUES (901,9,N'系统设置',N'/Module/ClubManager/SystemSet.aspx',1,0,0,N'',0)
+INSERT DBO.Base_Module (ModuleID,ParentID,Title,Link,OrderNo,Nullity,IsMenu,[Description],ManagerPopedom)
+VALUES (902,9,N'俱乐部管理',N'/Module/ClubManager/GroupList.aspx',2,0,0,N'',0)
 GO
+
   -- 插入新模块的权限
 DELETE DBO.Base_ModulePermission WHERE ModuleID IN (901,902)
 INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])

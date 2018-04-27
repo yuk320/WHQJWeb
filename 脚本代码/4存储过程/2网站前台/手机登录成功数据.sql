@@ -56,8 +56,8 @@ BEGIN
 	-- 有效好友数
 	SELECT @StatusValue=StatusValue FROM SystemStatusInfo WITH(NOLOCK) WHERE StatusName IN('JJEffectiveFriendGame')
 	IF @StatusValue IS NULL SET @StatusValue=1
-	SELECT COUNT(UserID) AS Total FROM (SELECT UserID,COUNT(UserID) AS UCount FROM WHQJPlatformDB.dbo.PersonalRoomScoreInfo WITH(NOLOCK)
-	WHERE UserID IN (SELECT UserID FROM AccountsInfo WITH(NOLOCK) WHERE SpreaderID = @dwUserID) GROUP BY UserID HAVING COUNT(UserID)>@StatusValue) AS P
+	SELECT COUNT(UserID) AS Total FROM (SELECT z.UserID AS UserID,COUNT(z.UserID) AS UCount,COUNT(x.UserID) AS JCount FROM WHQJPlatformDB.dbo.PersonalRoomScoreInfo(NOLOCK) AS z,WHQJTreasureDB.dbo.RecordDrawScoreForWeb(NOLOCK) x
+	WHERE z.UserID=x.UserID AND z.UserID IN (SELECT UserID FROM AccountsInfo WITH(NOLOCK) WHERE SpreaderID = @dwUserID) GROUP BY z.UserID HAVING COUNT(x.UserID)+COUNT(z.UserID)>@StatusValue) AS P
 
 END
 

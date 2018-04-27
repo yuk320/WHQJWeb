@@ -33,30 +33,8 @@
                 代理查询：
             </td>
             <td>
-                <asp:TextBox ID="txtSearch" runat="server" CssClass="text"></asp:TextBox>
-                <asp:DropDownList ID="ddlSearchType" runat="server">
-                    <asp:ListItem Text="游戏ID" Value ="1"></asp:ListItem>
-                    <asp:ListItem Text="真实姓名" Value ="2"></asp:ListItem>
-                    <asp:ListItem Text="QQ账号" Value ="3"></asp:ListItem>
-                    <asp:ListItem Text="代理编号" Value ="4"></asp:ListItem>
-                    <asp:ListItem Text="微信昵称" Value ="5"></asp:ListItem>
-                </asp:DropDownList>
+                <asp:TextBox ID="txtSearch" PlaceHolder="关键词查询" runat="server" CssClass="text"></asp:TextBox>
                 <asp:Button ID="btnQuery" runat="server" Text="查询" CssClass="btn wd1" OnClick="btnQuery_Click" />
-            </td>
-        </tr>
-    </table>
-    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="titleQueBg Tmg7">
-        <tr>
-            <td align="center"  style="width: 80px">
-                代理编号：
-            </td>
-            <td>
-                <asp:TextBox ID="txtAgentId" runat="server" CssClass="text"></asp:TextBox>
-                <asp:DropDownList ID="ddlRelation" runat="server">
-                    <asp:ListItem Text="上级代理" Value ="1"></asp:ListItem>
-                    <asp:ListItem Text="下级代理" Value ="2"></asp:ListItem>
-                </asp:DropDownList>
-                <asp:Button ID="btnDown" runat="server" Text="代理查询" CssClass="btn wd1" Width="68px" OnClick="btnDown_Click" />
             </td>
         </tr>
     </table>

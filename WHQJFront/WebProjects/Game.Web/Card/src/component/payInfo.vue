@@ -12,7 +12,7 @@
         </div>
         <div class="ui-reward-title">
           <p>充值返利详情</p>
-          <a>查询业绩汇总 ：123465789</a>
+          <a v-show="total!=null">查询业绩汇总 ：123465789</a>
         </div>
       </div>
       <div class="ui-panel vue-tab-content">
@@ -36,6 +36,7 @@ export default {
     return {
       pageSize: 15,
       curRecord: 'pay',
+      total:null,
       record: [],
       pages: 0,
       curPage: 1,

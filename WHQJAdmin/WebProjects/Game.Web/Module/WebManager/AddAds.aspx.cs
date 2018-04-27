@@ -83,14 +83,7 @@ namespace Game.Web.Module.WebManager
                     {
                         upImage.FilePath = "/Upload" + ads.ResourceURL;
                     }
-                    if(ads.Type == 3)
-                    {
-                        ddlLink.SelectedValue = ads.LinkURL;
-                        CtrlHelper.SetText(txtLink, "");
-                        ddlLink.Visible = true;
-                        txtLink.Visible = false;
-                    }
-                    else if(ads.Type == 4)
+                    else if(ads.Type==3 && ads.Type == 4)
                     {
                         linkurl.Visible = false;
                     }

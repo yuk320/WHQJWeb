@@ -54,6 +54,7 @@
     <Compile Include="Accounts\ReserveIdentifier.cs" />
     <Compile Include="Accounts\SystemStatusInfo.cs" />
     <Compile Include="Accounts\SystemStreamInfo.cs" />
+    <Compile Include="Agent\AgentBelowInfo.cs" />
     <Compile Include="Agent\AgentInfo.cs" />
     <Compile Include="Agent\ReturnAwardConfig.cs" />
     <Compile Include="Agent\ReturnAwardGrant.cs" />

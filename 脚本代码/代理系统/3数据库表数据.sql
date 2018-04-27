@@ -1,6 +1,8 @@
 USE WHQJPlatformManagerDB
 GO
 
+ -- 删除旧的代理管理入口
+DELETE DBO.Base_Module WHERE ModuleID = 103
 -- 插入新的模块
 DELETE DBO.Base_Module WHERE ModuleID = 10 OR ParentID = 10
 INSERT DBO.Base_Module (ModuleID,ParentID,Title,Link,OrderNo,Nullity,IsMenu,[Description],ManagerPopedom)
@@ -9,6 +11,8 @@ INSERT DBO.Base_Module (ModuleID,ParentID,Title,Link,OrderNo,Nullity,IsMenu,[Des
 VALUES (1000,10,N'系统设置',N'/Module/AgentManager/SystemSet.aspx',1,0,0,N'',0)
 INSERT DBO.Base_Module (ModuleID,ParentID,Title,Link,OrderNo,Nullity,IsMenu,[Description],ManagerPopedom)
 VALUES (1001,10,N'代理管理',N'/Module/AgentManager/AgentList.aspx',2,0,0,N'',0)
+INSERT DBO.Base_Module (ModuleID,ParentID,Title,Link,OrderNo,Nullity,IsMenu,[Description],ManagerPopedom)
+VALUES (1002,10,N'代理返利',N'/Module/AgentManager/AgentReturnConfigList.aspx',3,0,0,N'',0)
 GO
 
 -- 插入新模块的权限
@@ -31,15 +35,24 @@ GO
 INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
 VALUES (1001,N'冻结',8,0,0,1)
 GO
+INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
+VALUES (1002,N'查看',1,0,0,1)
+GO
+INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
+VALUES (1002,N'新增',2,0,0,1)
+GO
+INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
+VALUES (1002,N'修改',4,0,0,1)
+GO
+INSERT INTO DBO.Base_ModulePermission ([ModuleID] ,[PermissionTitle] ,[PermissionValue] ,[Nullity] ,[StateFlag] ,[ParentID])
+VALUES (1002,N'删除',8,0,0,1)
+GO
 
 USE WHQJAgentDB
 GO
 
 /** 代理系统-系统配置-配置项 S **/
 TRUNCATE TABLE DBO.SystemStatusInfo
-INSERT SystemStatusInfo ([StatusName],[StatusValue],[StatusString],[StatusTip],[StatusDescription],[SortID])
-VALUES (N'IsClearSpreadUser',1,'是否清除玩家的推广下线','是否清除下线','键值：1代表当某玩家被添加为代理时，将清除原推广的所有玩家，0代表将原来推广的玩家都当做他的下线',100)
-GO
 INSERT SystemStatusInfo ([StatusName],[StatusValue],[StatusString],[StatusTip],[StatusDescription],[SortID])
 VALUES (N'AgentAwardType',3,'代理返利模式','返利模式','键值：1代表仅开放充值返利【钻石】，2代表仅开放游戏税收返利【金币】，3代表同时开启1、2两种返利模式',10)
 GO

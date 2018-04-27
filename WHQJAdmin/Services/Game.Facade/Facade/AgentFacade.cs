@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using Game.Data.Factory;
 using Game.Entity.Agent;
 using Game.IData;
@@ -69,6 +70,40 @@ namespace Game.Facade
         }
         #endregion
 
+        #region 返利配置
+
+        /// <summary>
+        /// 获取代理返利配置
+        /// </summary>
+        /// <param name="configId"></param>
+        /// <returns></returns>
+        public ReturnAwardConfig GetAgentReturnConfig(int configId)
+        {
+            return agentData.GetAgentReturnConfig(configId);
+        }
+
+        /// <summary>
+        /// 删除代理返利配置
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public int DeleteAgentReturnConfig(string ids)
+        {
+            return agentData.DeleteAgentReturnConfig(ids);
+        }
+
+        /// <summary>
+        /// 保存代理返利配置（新增，修改）
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <returns></returns>
+        public int SaveAgentReturnConfig(ReturnAwardConfig cfg)
+        {
+            return agentData.SaveAgentReturnConfig(cfg);
+        }
+
+        #endregion
+
         #region 代理系统
         /// <summary>
         /// 获取代理信息
@@ -108,6 +143,30 @@ namespace Game.Facade
         {
             return agentData.NullityAgentUser(strList, nullity);
         }
+        #endregion
+
+        #region 直属下线
+
+        /// <summary>
+        /// 获取代理下线信息
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public AgentBelowInfo GetAgentBelowInfo(int userId)
+        {
+            return agentData.GetAgentBelowInfo(userId);
+        }
+
+        /// <summary>
+        /// 获取直属下线的注册情况
+        /// </summary>
+        /// <param name="agentId"></param>
+        /// <returns></returns>
+        public IList<AgentBelowInfo> GetAgentBelowRegisterList(int agentId)
+        {
+            return agentData.GetAgentBelowRegisterList(agentId);
+        }
+
         #endregion
     }
 }

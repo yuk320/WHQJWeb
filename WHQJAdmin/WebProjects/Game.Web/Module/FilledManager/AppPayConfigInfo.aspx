@@ -89,14 +89,24 @@
                     </td>
                 </tr>
                 <tr>
+                  <td class="listTdLeft">
+                    产品类别：
+                  </td>
+                  <td>
+                    <asp:DropDownList ID="ddlScoreType" runat="server" Width="155" Height="24" CssClass="text" AutoPostBack="True">
+
+                    </asp:DropDownList>
+                  </td>
+                </tr>
+                <tr>
                     <td class="listTdLeft">
-                        赠送钻石：
+                        赠送数值：
                     </td>
                     <td>
                         <asp:TextBox ID="txtCurrency" runat="server" CssClass="text"></asp:TextBox>
                         <span class="hong">*</span>
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ErrorMessage="请输入赠送钻石" Display="Dynamic" ControlToValidate="txtCurrency" ForeColor="Red"></asp:RequiredFieldValidator>
-                        <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ErrorMessage="赠送钻石格式不正确" Display="Dynamic" ControlToValidate="txtCurrency" ForeColor="Red" ValidationExpression="^[1-9]\d*$"></asp:RegularExpressionValidator>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ErrorMessage="请输入赠送数值" Display="Dynamic" ControlToValidate="txtCurrency" ForeColor="Red"></asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ErrorMessage="赠送数值格式不正确" Display="Dynamic" ControlToValidate="txtCurrency" ForeColor="Red" ValidationExpression="^[1-9]\d*$"></asp:RegularExpressionValidator>
                     </td>
                 </tr>
 
@@ -116,36 +126,44 @@
                         图标类型：
                     </td>
                     <td>
-                        <asp:RadioButtonList ID="rbImage" runat="server" RepeatDirection="Horizontal">
-                            <asp:ListItem Text="少量钻石图标" Value="1" Selected="True"></asp:ListItem>
-                            <asp:ListItem Text="普通钻石图标" Value="2"></asp:ListItem>
-                            <asp:ListItem Text="多数钻石图标" Value="3"></asp:ListItem>
-                            <asp:ListItem Text="大量钻石图标" Value="4"></asp:ListItem>
-                        </asp:RadioButtonList>
+                      <asp:TextBox ID="txtImageType" runat="server" CssClass="text"></asp:TextBox>
+                      <span class="hong">*</span>
+                      <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ErrorMessage="请输入图片标识" Display="Dynamic" ControlToValidate="txtImageType" ForeColor="Red"></asp:RequiredFieldValidator>
+                      <asp:RegularExpressionValidator ID="RegularExpressionValidator6" runat="server" ErrorMessage="图片标识格式不正确" Display="Dynamic" ControlToValidate="txtImageType" ForeColor="Red" ValidationExpression="^[1-9]\d*$"></asp:RegularExpressionValidator>
                     </td>
                 </tr>
+<%--                <tr>--%>
+<%--                    <td class="listTdLeft">--%>
+<%--                        充值标志：--%>
+<%--                    </td>--%>
+<%--                    <td>--%>
+<%--                        <asp:RadioButtonList ID="rbIdentity" runat="server" RepeatDirection="Horizontal" AutoPostBack="True" OnSelectedIndexChanged="rbIdentity_OnSelectedIndexChanged">--%>
+<%--                            <asp:ListItem Text="普通" Value="0" Selected="True"></asp:ListItem>--%>
+<%--                            <asp:ListItem Text="推荐" Value="1"></asp:ListItem>--%>
+<%--                            <asp:ListItem Text="首充" Value="2"></asp:ListItem>--%>
+<%--                        </asp:RadioButtonList>--%>
+<%--                    </td>--%>
+<%--                </tr>--%>
                 <tr>
                     <td class="listTdLeft">
-                        充值标志：
+                        首冲额外赠送：
                     </td>
                     <td>
-                        <asp:RadioButtonList ID="rbIdentity" runat="server" RepeatDirection="Horizontal" AutoPostBack="True" OnSelectedIndexChanged="rbIdentity_OnSelectedIndexChanged">
-                            <asp:ListItem Text="普通" Value="0" Selected="True"></asp:ListItem>
-                            <asp:ListItem Text="推荐" Value="1"></asp:ListItem>
-                            <asp:ListItem Text="首充" Value="2"></asp:ListItem>
-                        </asp:RadioButtonList>
+                        <asp:TextBox ID="txtFristPresent" runat="server" CssClass="text" Text="0"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" ErrorMessage="请输入赠送数量" Display="Dynamic" ControlToValidate="txtFristPresent" ForeColor="Red"></asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator4" runat="server" ErrorMessage="赠送数量格式不正确" Display="Dynamic" ControlToValidate="txtFristPresent" ForeColor="Red" ValidationExpression="^[1-9]\d*$"></asp:RegularExpressionValidator>
                     </td>
                 </tr>
-                <tr id="scale" runat="server">
-                    <td class="listTdLeft">
-                        首冲额外赠送钻石：
-                    </td>
-                    <td>
-                        <asp:TextBox ID="txtOtherPresent" runat="server" CssClass="text" Text="0"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" ErrorMessage="请输入赠送数量" Display="Dynamic" ControlToValidate="txtOtherPresent" ForeColor="Red"></asp:RequiredFieldValidator>
-                        <asp:RegularExpressionValidator ID="RegularExpressionValidator4" runat="server" ErrorMessage="赠送数量格式不正确" Display="Dynamic" ControlToValidate="txtOtherPresent" ForeColor="Red" ValidationExpression="^[1-9]\d*$"></asp:RegularExpressionValidator>
-                    </td>
-                </tr>
+              <tr>
+                <td class="listTdLeft">
+                  普通额外赠送：
+                </td>
+                <td>
+                  <asp:TextBox ID="txtPresentScore" runat="server" CssClass="text" Text="0"></asp:TextBox>
+                  <asp:RequiredFieldValidator ID="RequiredFieldValidator6" runat="server" ErrorMessage="请输入赠送数量" Display="Dynamic" ControlToValidate="txtPresentScore" ForeColor="Red"></asp:RequiredFieldValidator>
+                  <asp:RegularExpressionValidator ID="RegularExpressionValidator5" runat="server" ErrorMessage="赠送数量格式不正确" Display="Dynamic" ControlToValidate="txtPresentScore" ForeColor="Red" ValidationExpression="^[1-9]\d*$"></asp:RegularExpressionValidator>
+                </td>
+              </tr>
             </table>
         </ContentTemplate>
     </asp:UpdatePanel>

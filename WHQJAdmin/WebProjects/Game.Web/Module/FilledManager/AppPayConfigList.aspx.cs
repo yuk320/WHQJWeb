@@ -1,13 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-
-using System.Text;
-
-using Game.Utils;
 using Game.Kernel;
 using Game.Web.UI;
 using Game.Facade;

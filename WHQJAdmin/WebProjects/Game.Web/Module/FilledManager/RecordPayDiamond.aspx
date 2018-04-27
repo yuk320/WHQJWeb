@@ -1,4 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RecordPayDiamond.aspx.cs" Inherits="Game.Web.Module.FilledManager.RecordPayDiamond" %>
+<%@ Import Namespace="Game.Utils" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -43,12 +44,6 @@
                     style="cursor: pointer; vertical-align: middle" />
 
                 <asp:DropDownList ID="ddlGlobalShareInfo" runat="server">
-                    <asp:ListItem Text="全部" Value="0"></asp:ListItem>
-                    <asp:ListItem Text="手机微信充值" Value="101"></asp:ListItem>
-                    <asp:ListItem Text="H5微信充值" Value="102"></asp:ListItem>
-                    <asp:ListItem Text="手机支付宝充值" Value="201"></asp:ListItem>
-                    <asp:ListItem Text="手机零钱充值" Value="301"></asp:ListItem>
-                    <asp:ListItem Text="手机苹果充值" Value="800"></asp:ListItem>
                 </asp:DropDownList>
                 <asp:Button ID="btnQuery" runat="server" Text="查询" CssClass="btn wd1" OnClick="btnQuery_Click" />
                 <asp:Button ID="btnQueryTD" runat="server" Text="今天" CssClass="btn wd1" OnClick="btnQueryTD_Click" />
@@ -103,16 +98,19 @@
                     支付金额
                 </td>
                 <td class="listTitle2">
-                    充值前钻石
+                    充值货币类型
                 </td>
                 <td class="listTitle2">
-                    充值钻石
+                    充值前数值
                 </td>
                 <td class="listTitle2">
-                    额外赠送钻石
+                    充值数值
                 </td>
                 <td class="listTitle2">
-                    充值后钻石
+                    额外赠送
+                </td>
+                <td class="listTitle2">
+                    充值后数值
                 </td>
                 <td class="listTitle2">
                     充值状态
@@ -146,16 +144,19 @@
                             <%# Eval("Amount")%>
                         </td>
                         <td>
-                            <%# Convert.ToInt32(Eval("OrderStatus"))==1?Eval("BeforeDiamond"):"——"%>
+                            <%# EnumDescription.GetFieldText(Convert.ToInt32(Eval("ScoreType").ToString())) %>
                         </td>
                         <td>
-                            <%# Eval("Diamond")%>
+                            <%# Convert.ToInt32(Eval("OrderStatus"))==2?Eval("BeforeScore"):"——"%>
+                        </td>
+                        <td>
+                            <%# Eval("Score")%>
                         </td>
                         <td>
                             <%# Eval("OtherPresent")%>
                         </td>
                         <td>
-                            <%# Convert.ToInt32(Eval("OrderStatus"))==1?""+(Convert.ToInt32(Eval("BeforeDiamond"))+Convert.ToInt32(Eval("Diamond"))+Convert.ToInt32(Eval("OtherPresent"))):"——"%>
+                            <%# Convert.ToInt32(Eval("OrderStatus"))==2?""+(Convert.ToInt32(Eval("BeforeScore"))+Convert.ToInt32(Eval("Score"))+Convert.ToInt32(Eval("OtherPresent"))):"——"%>
                         </td>
                         <td>
                             <%# GetPayStatus(Convert.ToInt32(Eval("OrderStatus"))) %>
@@ -188,17 +189,20 @@
                         <td>
                             <%# Eval("Amount")%>
                         </td>
+                      <td>
+                        <%# EnumDescription.GetFieldText(Convert.ToInt32(Eval("ScoreType").ToString())) %>
+                      </td>
                         <td>
-                            <%# Convert.ToInt32(Eval("OrderStatus"))==1?Eval("BeforeDiamond"):"——"%>
+                            <%# Convert.ToInt32(Eval("OrderStatus"))==1?Eval("BeforeScore"):"——"%>
                         </td>
                         <td>
-                            <%# Eval("Diamond")%>
+                            <%# Eval("Score")%>
                         </td>
                         <td>
                             <%# Eval("OtherPresent")%>
                         </td>
                         <td>
-                            <%# Convert.ToInt32(Eval("OrderStatus"))==1?""+(Convert.ToInt32(Eval("BeforeDiamond"))+Convert.ToInt32(Eval("Diamond"))+Convert.ToInt32(Eval("OtherPresent"))):"——"%>
+                            <%# Convert.ToInt32(Eval("OrderStatus"))==1?""+(Convert.ToInt32(Eval("BeforeScore"))+Convert.ToInt32(Eval("Score"))+Convert.ToInt32(Eval("OtherPresent"))):"——"%>
                         </td>
                         <td>
                             <%# GetPayStatus(Convert.ToInt32(Eval("OrderStatus"))) %>

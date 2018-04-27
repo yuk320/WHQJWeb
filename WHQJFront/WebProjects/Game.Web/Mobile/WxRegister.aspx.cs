@@ -32,9 +32,10 @@ namespace Game.Web.Mobile
             }
             if (string.IsNullOrEmpty(Wxparam))
             {
-                string param = Typeid == 82
+                string path = Typeid == 82
                     ? $"/Mobile/WxRegister.aspx?t=82&g={Gameid}&r={Roomid}&k={Kindid}&a={Action}&p={Password}"
                     : "/Mobile/WxRegister.aspx?t=81&g=" + Gameid;
+                string param = $"http://{AppConfig.GetSetting("FrontSiteDomain")}{path}";
                 if (!string.IsNullOrEmpty(PlatformType))
                 {
                     param += $"&y={PlatformType}";

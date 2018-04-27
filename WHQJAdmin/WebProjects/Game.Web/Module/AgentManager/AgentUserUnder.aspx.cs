@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Data;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-
 using Game.Web.UI;
-using Game.Kernel;
-using System.Text;
-using Game.Utils;
-using Game.Entity.Accounts;
+using Game.Entity.Agent;
 using Game.Facade;
 
 namespace Game.Web.Module.AgentManager
@@ -32,10 +23,15 @@ namespace Game.Web.Module.AgentManager
         /// </summary>
         private void BindData()
         {
-            DataSet ds = FacadeManage.aideAccountsFacade.GetAgentUserUnderRegister(IntParam);
-            lbTotal.Text = ds.Tables[0].Rows.Count.ToString();
-            litNoData.Visible = ds.Tables[0].Rows.Count <= 0;
-            rptDataList.DataSource = ds;
+            IList<AgentBelowInfo> list = FacadeManage.aideAgentFacade.GetAgentBelowRegisterList(IntParam);
+            foreach (var agentBelowInfo in list)
+            {
+                agentBelowInfo.AgentID = FacadeManage.aideAccountsFacade.GetAccountInfoByUserId(agentBelowInfo.UserID)
+                    .AgentID;
+            }
+            lbTotal.Text = list.Count.ToString();
+            litNoData.Visible = list.Count <= 0;
+            rptDataList.DataSource = list;
             rptDataList.DataBind();
         }
     }

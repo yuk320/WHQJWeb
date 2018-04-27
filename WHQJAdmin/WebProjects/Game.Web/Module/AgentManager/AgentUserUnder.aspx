@@ -46,9 +46,6 @@
                     用户昵称
                 </td>
                 <td class="listTitle2">
-                    推广级别
-                </td>
-                <td class="listTitle2">
                     代理状态
                 </td>
             </tr>
@@ -68,9 +65,6 @@
                           <td>
                             <%# Eval( "NickName" )%>
                         </td>   
-                         <td>
-                            <%# (Convert.ToInt32(Eval( "LevelID" ))-1) %>
-                        </td>  
                         <td>
                             <%# Eval("AgentID").ToString()!="0"?"代理商":"非代理商" %>
                         </td>
@@ -90,10 +84,7 @@
                         </td>
                           <td>
                             <%# Eval( "NickName" )%>
-                        </td>   
-                        <td>
-                            <%# (Convert.ToInt32(Eval( "LevelID" ))-1) %>
-                        </td> 
+                        </td>  
                         <td>
                             <%# Eval("AgentID").ToString()!="0"?"代理商":"非代理商" %>
                         </td>

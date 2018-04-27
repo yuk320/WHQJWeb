@@ -1,373 +1,334 @@
 /*
- * 版本： 4.0
- * 日期：2017/8/7 10:51:24
- * 
+ * 版本：4.0
+ * 时间：2018/4/25
+ * 作者：http://www.foxuc.com
+ *
  * 描述：实体类
- * 
+ *
  */
 
 using System;
-using System.Collections.Generic;
+// ReSharper disable InconsistentNaming
 
 namespace Game.Entity.Treasure
 {
-    /// <summary>
-    /// 实体类 OnLinePayOrder  (属性说明自动提取数据库字段的描述信息)
-    /// </summary>
-    [Serializable]
-    public partial class OnLinePayOrder
-    {
-        #region 常量 
+	/// <summary>
+	/// 实体类 OnLinePayOrder。(属性说明自动提取数据库字段的描述信息)
+	/// </summary>
+	[Serializable]
+	public class OnLinePayOrder  
+	{
+		#region 常量
 
-        /// <summary>
-        /// 表名
-        /// </summary>
-        public const string Tablename = "OnLinePayOrder";
+		/// <summary>
+		/// 表名
+		/// </summary>
+		public const string Tablename = "OnLinePayOrder" ;
 
-        #endregion 
+		/// <summary>
+		/// 订单标识
+		/// </summary>
+		public const string _OnLineID = "OnLineID" ;
 
-        #region 私有变量
+		/// <summary>
+		/// 充值配置标识
+		/// </summary>
+		public const string _ConfigID = "ConfigID" ;
 
-        private int p_onlineid;
-        private int p_configid;
-        private int p_shareid;
-        private int p_userid;
-        private int p_gameid;
-        private string p_accounts;
-        private string p_nickname;
-        private string p_orderid;
-        private byte p_ordertype;
-        private decimal p_amount;
-        private int p_diamond;
-        private decimal p_presentscale;
-        private int p_otherpresent;
-        private byte p_orderstatus;
-        private DateTime p_orderdate;
-        private string p_orderaddress;
-        private Int64 p_beforediamond;
-        private DateTime? p_paydate;
-        private string p_payaddress;
+		/// <summary>
+		/// 充值方式（根据GlobalShareInfo）
+		/// </summary>
+		public const string _ShareID = "ShareID" ;
 
-        #endregion
+		/// <summary>
+		/// 用户标识
+		/// </summary>
+		public const string _UserID = "UserID" ;
 
-        #region 构造函数 
+		/// <summary>
+		/// 游戏标识
+		/// </summary>
+		public const string _GameID = "GameID" ;
 
-        /// <summary>
-        /// 初始化OnLinePayOrder
-        /// </summary>
-        public OnLinePayOrder() 
-        {
-            p_onlineid = 0;
-            p_configid = 0;
-            p_shareid = 0;
-            p_userid = 0;
-            p_gameid = 0;
-            p_accounts = string.Empty;
-            p_nickname = string.Empty;
-            p_orderid = string.Empty;
-            p_ordertype = 0;
-            p_amount = 0;
-            p_diamond = 0;
-            p_presentscale = 0;
-            p_otherpresent = 0;
-            p_orderstatus = 0;
-            p_orderdate = DateTime.Now;
-            p_orderaddress = string.Empty;
-            p_beforediamond = 0;
-            p_paydate = null;
-            p_payaddress = string.Empty;
-        }
+		/// <summary>
+		/// 用户账号
+		/// </summary>
+		public const string _Accounts = "Accounts" ;
 
-        #endregion
+		/// <summary>
+		/// 用户昵称
+		/// </summary>
+		public const string _NickName = "NickName" ;
 
-        #region 公共属性 
+		/// <summary>
+		/// 订单号码
+		/// </summary>
+		public const string _OrderID = "OrderID" ;
 
-        /// <summary>
-        /// OnLineID
-        /// </summary>
-        public int OnLineID
-        {
-            set
-            {
-                p_onlineid=value;
-            }
-            get
-            {
-                return p_onlineid;
-            }
-        }
+		/// <summary>
+		/// 订单类型（0 普通充值  1 苹果充值）
+		/// </summary>
+		public const string _OrderType = "OrderType" ;
 
-        /// <summary>
-        /// ConfigID
-        /// </summary>
-        public int ConfigID
-        {
-            set
-            {
-                p_configid=value;
-            }
-            get
-            {
-                return p_configid;
-            }
-        }
+		/// <summary>
+		/// 订单金额
+		/// </summary>
+		public const string _Amount = "Amount" ;
 
-        /// <summary>
-        /// ShareID
-        /// </summary>
-        public int ShareID
-        {
-            set
-            {
-                p_shareid=value;
-            }
-            get
-            {
-                return p_shareid;
-            }
-        }
+		/// <summary>
+		/// 充值类型（0：金币 1：钻石 2：游戏豆）
+		/// </summary>
+		public const string _ScoreType = "ScoreType" ;
 
-        /// <summary>
-        /// UserID
-        /// </summary>
-        public int UserID
-        {
-            set
-            {
-                p_userid=value;
-            }
-            get
-            {
-                return p_userid;
-            }
-        }
+		/// <summary>
+		/// 充值前数额
+		/// </summary>
+		public const string _BeforeScore = "BeforeScore" ;
 
-        /// <summary>
-        /// GameID
-        /// </summary>
-        public int GameID
-        {
-            set
-            {
-                p_gameid=value;
-            }
-            get
-            {
-                return p_gameid;
-            }
-        }
+		/// <summary>
+		/// 充值数额
+		/// </summary>
+		public const string _Score = "Score" ;
 
-        /// <summary>
-        /// Accounts
-        /// </summary>
-        public string Accounts
-        {
-            set
-            {
-                p_accounts=value;
-            }
-            get
-            {
-                return p_accounts;
-            }
-        }
+		/// <summary>
+		/// 充值额外赠送数
+		/// </summary>
+		public const string _OtherPresent = "OtherPresent" ;
 
-        /// <summary>
-        /// NickName
-        /// </summary>
-        public string NickName
-        {
-            set
-            {
-                p_nickname=value;
-            }
-            get
-            {
-                return p_nickname;
-            }
-        }
+		/// <summary>
+		/// 订单状态（0 未支付  1 已支付）
+		/// </summary>
+		public const string _OrderStatus = "OrderStatus" ;
 
-        /// <summary>
-        /// OrderID
-        /// </summary>
-        public string OrderID
-        {
-            set
-            {
-                p_orderid=value;
-            }
-            get
-            {
-                return p_orderid;
-            }
-        }
+		/// <summary>
+		/// 订单时间
+		/// </summary>
+		public const string _OrderDate = "OrderDate" ;
 
-        /// <summary>
-        /// OrderType
-        /// </summary>
-        public byte OrderType
-        {
-            set
-            {
-                p_ordertype=value;
-            }
-            get
-            {
-                return p_ordertype;
-            }
-        }
+		/// <summary>
+		/// 订单地址
+		/// </summary>
+		public const string _OrderAddress = "OrderAddress" ;
 
-        /// <summary>
-        /// Amount
-        /// </summary>
-        public decimal Amount
-        {
-            set
-            {
-                p_amount=value;
-            }
-            get
-            {
-                return p_amount;
-            }
-        }
+		/// <summary>
+		/// 付款时间
+		/// </summary>
+		public const string _PayDate = "PayDate" ;
+		#endregion
 
-        /// <summary>
-        /// Diamond
-        /// </summary>
-        public int Diamond
-        {
-            set
-            {
-                p_diamond=value;
-            }
-            get
-            {
-                return p_diamond;
-            }
-        }
+		#region 私有变量
+		private int m_onLineID;				//订单标识
+		private int m_configID;				//充值配置标识
+		private int m_shareID;				//充值方式（根据GlobalShareInfo）
+		private int m_userID;				//用户标识
+		private int m_gameID;				//游戏标识
+		private string m_accounts;			//用户账号
+		private string m_nickName;			//用户昵称
+		private string m_orderID;			//订单号码
+		private byte m_orderType;			//订单类型（0 普通充值  1 苹果充值）
+		private decimal m_amount;			//订单金额
+		private byte m_scoreType;			//充值类型（0：金币 1：钻石 2：游戏豆）
+		private long m_beforeScore;			//充值前数额
+		private int m_score;				//充值数额
+		private int m_otherPresent;			//充值额外赠送数
+		private byte m_orderStatus;			//订单状态（0 未支付  1 已支付）
+		private DateTime m_orderDate;		//订单时间
+		private string m_orderAddress;		//订单地址
+		private DateTime m_payDate;			//付款时间
+		#endregion
 
-        /// <summary>
-        /// PresentScale
-        /// </summary>
-        public decimal PresentScale
-        {
-            set
-            {
-                p_presentscale=value;
-            }
-            get
-            {
-                return p_presentscale;
-            }
-        }
+		#region 构造方法
 
-        /// <summary>
-        /// OtherPresent
-        /// </summary>
-        public int OtherPresent
-        {
-            set
-            {
-                p_otherpresent=value;
-            }
-            get
-            {
-                return p_otherpresent;
-            }
-        }
+		/// <summary>
+		/// 初始化OnLinePayOrder
+		/// </summary>
+		public OnLinePayOrder()
+		{
+			m_onLineID=0;
+			m_configID=0;
+			m_shareID=0;
+			m_userID=0;
+			m_gameID=0;
+			m_accounts="";
+			m_nickName="";
+			m_orderID="";
+			m_orderType=0;
+			m_amount=0;
+			m_scoreType=0;
+			m_beforeScore=0;
+			m_score=0;
+			m_otherPresent=0;
+			m_orderStatus=0;
+			m_orderDate=DateTime.Now;
+			m_orderAddress="";
+			m_payDate=DateTime.Now;
+		}
 
-        /// <summary>
-        /// OrderStatus
-        /// </summary>
-        public byte OrderStatus
-        {
-            set
-            {
-                p_orderstatus=value;
-            }
-            get
-            {
-                return p_orderstatus;
-            }
-        }
+		#endregion
 
-        /// <summary>
-        /// OrderDate
-        /// </summary>
-        public DateTime OrderDate
-        {
-            set
-            {
-                p_orderdate=value;
-            }
-            get
-            {
-                return p_orderdate;
-            }
-        }
+		#region 公共属性
 
-        /// <summary>
-        /// OrderAddress
-        /// </summary>
-        public string OrderAddress
-        {
-            set
-            {
-                p_orderaddress=value;
-            }
-            get
-            {
-                return p_orderaddress;
-            }
-        }
+		/// <summary>
+		/// 订单标识
+		/// </summary>
+		public int OnLineID
+		{
+			get { return m_onLineID; }
+			set { m_onLineID = value; }
+		}
 
-        /// <summary>
-        /// BeforeDiamond
-        /// </summary>
-        public Int64 BeforeDiamond
-        {
-            set
-            {
-                p_beforediamond=value;
-            }
-            get
-            {
-                return p_beforediamond;
-            }
-        }
+		/// <summary>
+		/// 充值配置标识
+		/// </summary>
+		public int ConfigID
+		{
+			get { return m_configID; }
+			set { m_configID = value; }
+		}
 
-        /// <summary>
-        /// PayDate
-        /// </summary>
-        public DateTime? PayDate
-        {
-            set
-            {
-                p_paydate=value;
-            }
-            get
-            {
-                return p_paydate;
-            }
-        }
+		/// <summary>
+		/// 充值方式（根据GlobalShareInfo）
+		/// </summary>
+		public int ShareID
+		{
+			get { return m_shareID; }
+			set { m_shareID = value; }
+		}
 
-        /// <summary>
-        /// PayAddress
-        /// </summary>
-        public string PayAddress
-        {
-            set
-            {
-                p_payaddress=value;
-            }
-            get
-            {
-                return p_payaddress;
-            }
-        }
+		/// <summary>
+		/// 用户标识
+		/// </summary>
+		public int UserID
+		{
+			get { return m_userID; }
+			set { m_userID = value; }
+		}
 
-        #endregion
-    }
+		/// <summary>
+		/// 游戏标识
+		/// </summary>
+		public int GameID
+		{
+			get { return m_gameID; }
+			set { m_gameID = value; }
+		}
+
+		/// <summary>
+		/// 用户账号
+		/// </summary>
+		public string Accounts
+		{
+			get { return m_accounts; }
+			set { m_accounts = value; }
+		}
+
+		/// <summary>
+		/// 用户昵称
+		/// </summary>
+		public string NickName
+		{
+			get { return m_nickName; }
+			set { m_nickName = value; }
+		}
+
+		/// <summary>
+		/// 订单号码
+		/// </summary>
+		public string OrderID
+		{
+			get { return m_orderID; }
+			set { m_orderID = value; }
+		}
+
+		/// <summary>
+		/// 订单类型（0 普通充值  1 苹果充值）
+		/// </summary>
+		public byte OrderType
+		{
+			get { return m_orderType; }
+			set { m_orderType = value; }
+		}
+
+		/// <summary>
+		/// 订单金额
+		/// </summary>
+		public decimal Amount
+		{
+			get { return m_amount; }
+			set { m_amount = value; }
+		}
+
+		/// <summary>
+		/// 充值类型（0：金币 1：钻石 2：游戏豆）
+		/// </summary>
+		public byte ScoreType
+		{
+			get { return m_scoreType; }
+			set { m_scoreType = value; }
+		}
+
+		/// <summary>
+		/// 充值前数额
+		/// </summary>
+		public long BeforeScore
+		{
+			get { return m_beforeScore; }
+			set { m_beforeScore = value; }
+		}
+
+		/// <summary>
+		/// 充值数额
+		/// </summary>
+		public int Score
+		{
+			get { return m_score; }
+			set { m_score = value; }
+		}
+
+		/// <summary>
+		/// 充值额外赠送数
+		/// </summary>
+		public int OtherPresent
+		{
+			get { return m_otherPresent; }
+			set { m_otherPresent = value; }
+		}
+
+		/// <summary>
+		/// 订单状态（0 未支付  1 已支付）
+		/// </summary>
+		public byte OrderStatus
+		{
+			get { return m_orderStatus; }
+			set { m_orderStatus = value; }
+		}
+
+		/// <summary>
+		/// 订单时间
+		/// </summary>
+		public DateTime OrderDate
+		{
+			get { return m_orderDate; }
+			set { m_orderDate = value; }
+		}
+
+		/// <summary>
+		/// 订单地址
+		/// </summary>
+		public string OrderAddress
+		{
+			get { return m_orderAddress; }
+			set { m_orderAddress = value; }
+		}
+
+		/// <summary>
+		/// 付款时间
+		/// </summary>
+		public DateTime PayDate
+		{
+			get { return m_payDate; }
+			set { m_payDate = value; }
+		}
+		#endregion
+	}
 }
-

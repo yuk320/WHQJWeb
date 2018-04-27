@@ -74,7 +74,7 @@
                     性别
                 </td>
                 <td class="listTitle2">
-                    推广人
+                    推广 / 代理
                 </td>
                 <td class="listTitle2">
                     注册时间
@@ -123,7 +123,7 @@
                             <%# Eval( "Gender" ).ToString()=="1"?"男":"女"%>
                         </td>
                          <td>
-                            <%# Eval( "SpreaderID" ).ToString()!="0"?GetGameID( Convert.ToInt32( Eval( "SpreaderID" ) ) ):"" %>
+                            <%# GetSpreaderDesc( Convert.ToInt32( Eval( "SpreaderID" ) ), Convert.ToInt32( Eval( "UserID" )) ) %>
                         </td>
                         <td>
                             <%# Eval( "RegisterDate" ).ToString()%>
@@ -173,7 +173,7 @@
                             <%# Eval( "Gender" ).ToString()=="1"?"男":"女"%>
                         </td>
                         <td>
-                            <%# Eval( "SpreaderID" ).ToString()!="0"?GetGameID( Convert.ToInt32( Eval( "SpreaderID" ) ) ):"" %>
+                            <%# GetSpreaderDesc( Convert.ToInt32( Eval( "SpreaderID" ) ), Convert.ToInt32( Eval( "UserID" ) ) )  %>
                         </td>
                         <td>
                             <%# Eval( "RegisterDate" ).ToString()%>

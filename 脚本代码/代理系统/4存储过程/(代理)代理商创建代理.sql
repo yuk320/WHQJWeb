@@ -114,41 +114,55 @@ BEGIN
 	VALUES(@ParentAgent,@NewUserID,@strCompellation,@strQQAccount,@strWCNickName,@strContactPhone,@strContactAddress,@strAgentDomain,@NewAgentLevel,@strAgentNote,0,getdate())
 	SELECT @NewAgentID = SCOPE_IDENTITY()
 
+	-- 更新用户信息，设置代理标识
+	UPDATE WHQJAccountsDB.DBO.AccountsInfo SET AgentID=@NewAgentID WHERE UserID = @NewUserID
+
 	-- 设置用户
 	IF @@ERROR=0 
 	BEGIN
-		-- 记录原推广员信息。
-		DECLARE @OriginSpreaderID INT
-		SELECT @OriginSpreaderID = SpreaderID FROM WHQJAccountsDB.DBO.AccountsInfo(NOLOCK) WHERE UserID = @NewUserID
-		-- 更新用户信息，设置代理标识，设置重新绑定推广关系
-		UPDATE WHQJAccountsDB.DBO.AccountsInfo SET SpreaderID=@UserID,AgentID=@NewAgentID WHERE UserID = @NewUserID
-		
-		-- 根据全局配置，判断是否清除该用户原推广玩家。
-		DECLARE @IsClearSpreadUser INT
-		SELECT @IsClearSpreadUser = StatusValue FROM SystemStatusInfo WHERE StatusName = N'IsClearSpreadUser'
-		IF @IsClearSpreadUser IS NULL
-		BEGIN
-			SET @IsClearSpreadUser = 1
-		END
-		IF (@IsClearSpreadUser > 0) 
-		BEGIN
-			UPDATE WHQJAccountsDB.DBO.AccountsInfo SET SpreaderID = 0 WHERE SpreaderID = @NewUserID
-		END
-		-- 如果不清除该代理原推广的玩家，将都变成他的直属下线。
-		ELSE 
-		BEGIN
-			DECLARE @BelowUser INT
-			SELECT @BelowUser = COUNT(UserID) FROM WHQJAccountsDB.DBO.AccountsInfo(NOLOCK) WHERE SpreaderID = @dwUserID
-			UPDATE AgentInfo SET BelowUser = @BelowUser WHERE AgentID = @NewAgentID
-		END
+		DECLARE @OriginAgentID INT
+		SELECT @OriginAgentID FROM AgentBelowInfo(NOLOCK) WHERE UserID=@NewUserID
 
-		-- 更新上级代理的下级代理数+1。
-		UPDATE AgentInfo SET BelowAgent = BelowAgent + 1 WHERE AgentID = @ParentAgent
-		-- 如果原来不是直属下线，更新直属下线数-1
-		IF @OriginSpreaderID = @dwUserID
+		-- 如果新增代理时别人的代理下线时。
+		IF @OriginAgentID > 0 
 		BEGIN
-			UPDATE AgentInfo SET BelowUser = BelowUser - 1 WHERE AgentID = @ParentAgent
+			-- 先清除原有代理关系
+			DELETE AgentBelowInfo WHERE AgentID=@OriginAgentID AND UserID = @NewUserID
+			-- 更新原代理的下线玩家数
+			UPDATE AgentInfo SET BelowUser = BelowUser - 1 WHERE AgentID = @OriginAgentID
 		END
+		-- ELSE  -- 当新增代理没有代理关系时。
+		-- BEGIN
+		-- 	-- 根据全局配置，添加代理（含代理添加代理）时，是否携带原玩家的推广下线
+		-- 	DECLARE @IsAddAgentCarryUser INT
+		-- 	SELECT @IsAddAgentCarryUser = StatusValue FROM SystemStatusInfo WHERE StatusName = N'IsAddAgentCarryUser'
+		-- 	IF @IsAddAgentCarryUser IS NULL
+		-- 	BEGIN
+		-- 		SET @IsAddAgentCarryUser = 0
+		-- 	END
+		-- 	IF IsAddAgentCarryUser > 0
+		-- 	BEGIN
+		-- 		-- 但无法将已有代理关系的玩家携带过来
+		-- 		INSERT AgentBelowInfo (AgentID,UserID) 
+		-- 		SELECT @NewAgentID,a.UserID
+		-- 		FROM WHQJAccountsDB.DBO.AccountsInfo a WHERE SpreaderID = @NewUserID AND a.UserID NOT IN (SELECT UserID FROM AgentBelowInfo)
+		-- 	END
+			
+		-- 	DECLARE @BelowUser INT
+		-- 	-- 统计代理玩家人数（非代理）
+		-- 	SELECT @BelowUser = COUNT(UserID) FROM AgentBelowInfo WHERE AgentID=@NewAgentID
+		-- 	-- 同步代理下线人数		
+		-- 	UPDATE AgentInfo SET BelowUser = @BelowUser WHERE AgentID = @NewAgentID
+		-- END
+
+		-- 建立新的代理关系
+		INSERT AgentBelowInfo (AgentID,UserID) VALUES (@ParentAgent,@NewUserID)
+
+		-- 统计代理下级代理人数
+		DECLARE @BelowAgent INT
+		SELECT @BelowAgent = COUNT(UserID) FROM AgentBelowInfo WHERE AgentID=@NewAgentID AND UserID IN (SELECT UserID FROM AgentInfo)
+		-- 同步代理下级代理人数	
+		UPDATE AgentInfo SET BelowAgent = @BelowAgent WHERE AgentID = @ParentAgent
 
 		SET @strErrorDescribe=N'恭喜您！代理创建成功。'
 		RETURN 0

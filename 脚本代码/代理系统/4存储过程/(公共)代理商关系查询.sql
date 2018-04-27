@@ -8,7 +8,7 @@ GO
 -----------------------------------------------------------------
 CREATE FUNCTION [dbo].[WF_GetAgentBelowAgent] 
 (
-	@dwUserID INT = 0	--用户标识
+	@dwAgentID INT = 0	--用户标识
 )
 RETURNS 
 @tbUserInfo TABLE 
@@ -22,7 +22,7 @@ WITH ENCRYPTION AS
 BEGIN
 	DECLARE @dwLevel INT
 	SET  @dwLevel = 1
-	INSERT  INTO  @tbUserInfo SELECT UserID,AgentID,ParentAgent,@dwLevel FROM WHQJAgentDB.DBO.AgentInfo(NOLOCK) WHERE UserID = @dwUserID
+	INSERT  INTO  @tbUserInfo SELECT UserID,AgentID,ParentAgent,@dwLevel FROM WHQJAgentDB.DBO.AgentInfo(NOLOCK) WHERE AgentID = @dwAgentID
 	WHILE @@ROWCOUNT > 0
 	BEGIN 
 		SET  @dwLevel = @dwLevel + 1
@@ -39,7 +39,7 @@ GO
 -----------------------------------------------------------------
 CREATE FUNCTION [dbo].[WF_GetAgentAboveAgent] 
 (
-	@dwUserID INT = 0	--用户标识
+	@dwAgentID INT = 0	--用户标识
 )
 RETURNS 
 @tbUserInfo TABLE 
@@ -53,7 +53,7 @@ WITH ENCRYPTION AS
 BEGIN
 	DECLARE  @dwLevel INT
 	SET  @dwLevel = 1
-	INSERT  INTO  @tbUserInfo SELECT UserID,AgentID,ParentAgent,@dwLevel FROM WHQJAgentDB.DBO.AgentInfo(NOLOCK) WHERE UserID = @dwUserID
+	INSERT  INTO  @tbUserInfo SELECT UserID,AgentID,ParentAgent,@dwLevel FROM WHQJAgentDB.DBO.AgentInfo(NOLOCK) WHERE AgentID = @dwAgentID
 	WHILE @@ROWCOUNT > 0
 	BEGIN 
 		SET  @dwLevel = @dwLevel + 1
@@ -77,7 +77,6 @@ RETURNS
 (
 	UserID INT ,
 	SpreaderID INT,
-	LevelID INT,
 	RegisterDate DATETIME,
 	RegisterOrigin TINYINT,
 	GameID INT,
@@ -87,11 +86,12 @@ RETURNS
 WITH ENCRYPTION AS
 BEGIN
 	IF @dwUserID = 0 RETURN
-	IF NOT EXISTS (SELECT 1 FROM WHQJAgentDB.DBO.AgentInfo WHERE UserID = @dwUserID) RETURN
-	INSERT INTO @tbUserInfo 
-	SELECT a.UserID,b.SpreaderID,LevelID,b.RegisterDate,b.RegisterOrigin,b.GameID,b.NickName,b.AgentID FROM DBO.WF_GetAgentBelowAgent(@dwUserID) a LEFT JOIN WHQJAccountsDB.DBO.AccountsInfo(NOLOCK) b ON a.UserID = b.UserID WHERE LevelID>1
-	INSERT INTO @tbUserInfo SELECT a.UserID,a.SpreaderID,b.LevelID,a.RegisterDate,a.RegisterOrigin,a.GameID,a.NickName,a.AgentID FROM WHQJAccountsDB.DBO.AccountsInfo(NOLOCK) a LEFT JOIN @tbUserInfo b ON a.SpreaderID = b.UserID WHERE a.SpreaderID<>0
+	DECLARE @AgentID INT
+	SELECT @AgentID = AgentID FROM WHQJAgentDB.DBO.AgentInfo WHERE UserID = @dwUserID
+	IF @AgentID IS NULL RETURN
 
+	INSERT INTO @tbUserInfo  
+	SELECT b.UserID,b.SpreaderID,b.RegisterDate,b.RegisterOrigin,b.GameID,b.NickName,b.AgentID FROM WHQJAccountsDB.DBO.AccountsInfo(NOLOCK) b LEFT JOIN AgentBelowInfo a ON a.UserID = b.UserID WHERE a.AgentID = @AgentID
 	RETURN 
 END
 GO

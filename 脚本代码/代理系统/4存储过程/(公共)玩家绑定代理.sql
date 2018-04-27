@@ -64,27 +64,19 @@ BEGIN
 	RETURN 1003
 	END
 
-	SELECT @SpreaderID=UserID,@Nullity=Nullity,@SpreaderAgent = SpreaderID,@AgentID = AgentID FROM WHQJAccountsDB.DBO.AccountsInfo WITH(NOLOCK) WHERE GameID=@dwGameID
+	SELECT @SpreaderID=UserID,@Nullity=Nullity,@AgentID = AgentID FROM WHQJAccountsDB.DBO.AccountsInfo WITH(NOLOCK) WHERE GameID=@dwGameID
 	IF @SpreaderID IS NULL 
 	BEGIN
 	SET @strErrorDescribe=N'抱歉，您绑定的玩家不存在！'
 	RETURN 1004
 	END
 
-	-- 如果目标玩家非代理，则尝试找他的上级
-	IF @AgentID = 0
-	BEGIN
-		SET @OriginSpreaderID = @SpreaderID
-		SET @SpreaderID = @SpreaderAgent
-	END
+	/** 推广关系绑定 Begin **/
 
-	-- 如果都非代理则不绑定
-	IF @SpreaderID = 0
-	BEGIN
-		-- 变为普通推广关系
-		SET @SpreaderID = @OriginSpreaderID
-	END
+	-- 绑定推广关系
+	UPDATE WHQJAccountsDB.DBO.AccountsInfo SET SpreaderID = @SpreaderID WHERE UserID = @UserID
 
+	-- 领取推广奖励
 	DECLARE @SpreaderAward INT
 	SELECT @SpreaderAward = StatusValue FROM WHQJAccountsDB.DBO.SystemStatusInfo WHERE StatusName = N'JJBindSpreadPresent'
 	IF @SpreaderAward IS NULL
@@ -99,16 +91,16 @@ BEGIN
 		DECLARE @DiamondBefore INT
 		SET @DateTime = GETDATE()
 		-- 查询玩家钻石
-		SELECT @DiamondBefore = Diamond FROM WHQJTreasureDB.DBO.UserCurrency(NOLOCK) WHERE UserID = @dwUserID
+		SELECT @DiamondBefore = Diamond FROM WHQJTreasureDB.DBO.UserCurrency(NOLOCK) WHERE UserID = @UserID
 		IF @DiamondBefore IS NULL
 		BEGIN
-			INSERT WHQJTreasureDB.DBO.UserCurrency (UserID,Diamond) VALUES (@dwUserID,0)
+			INSERT WHQJTreasureDB.DBO.UserCurrency (UserID,Diamond) VALUES (@UserID,0)
 			SET @DiamondBefore = 0
 		END
 
 		UPDATE WHQJTreasureDB.DBO.UserCurrency 
 			SET Diamond = Diamond + @SpreaderAward 
-		 WHERE UserID = @dwUserID
+		 WHERE UserID = @UserID
 
 		-- 写入钻石流水记录
 		INSERT INTO WHQJRecordDB.DBO.RecordDiamondSerial
@@ -117,12 +109,31 @@ BEGIN
 
 	END
 
-	-- 绑定代理关系
-	UPDATE WHQJAccountsDB.DBO.AccountsInfo SET SpreaderID = @SpreaderID WHERE UserID = @UserID
-	IF (@AgentID > 0 OR @SpreaderAgent > 0)
-	BEGIN 
-		-- 更新上级下线人数
-		UPDATE AgentInfo SET BelowUser = BelowUser + 1 WHERE UserID = @SpreaderID
+	/** 推广关系绑定 End **/
+	
+	-- 如果目标玩家非代理，则尝试找他的上级
+	IF @AgentID = 0
+	BEGIN
+		SELECT @AgentID = AgentID FROM WHQJAgentDB.DBO.AgentBelowInfo WHERE UserID = @SpreaderID
+	END
+
+	IF @AgentID > 0 
+	BEGIN
+
+		/** 代理关系绑定 Start **/
+
+		DECLARE @ComeSpreadCount INT
+		-- 绑定代理关系
+		INSERT WHQJAgentDB.DBO.AgentBelowInfo (AgentID,UserID) VALUES (@AgentID,@UserID)
+		
+		DECLARE @BelowUser INT
+		-- 统计代理玩家人数（非代理）
+		SELECT @BelowUser = COUNT(UserID) FROM AgentBelowInfo WHERE AgentID=@AgentID AND UserID NOT IN (SELECT UserID FROM AgentInfo)
+		-- 同步代理下线人数		
+		UPDATE AgentInfo SET BelowUser = @BelowUser WHERE AgentID = @AgentID
+
+		/** 代理关系绑定 End **/
+
 	END
 
 	SET @strErrorDescribe = N'恭喜您，绑定成功！'

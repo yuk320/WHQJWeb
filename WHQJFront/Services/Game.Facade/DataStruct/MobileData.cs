@@ -81,9 +81,10 @@ namespace Game.Facade.DataStruct
         public int PayIdentity { get; set; }
         public int ImageType { get; set; }
         public int SortID { get; set; }
-        public int Diamond { get; set; }
-        public decimal PresentScale { get; set; } = 0;
-        public int PresentDiamond { get; set; }
+        public byte ScoreType { get; set; }
+        public int Score { get; set; }
+        public int PresentScore { get; set; }
+        public bool IsFristPay { get; set; }
     }
 
     public class TreasureStream

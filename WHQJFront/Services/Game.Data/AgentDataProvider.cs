@@ -33,6 +33,7 @@ namespace Game.Data
         #endregion
 
         #region 公共分页
+
         /// <summary>
         /// 分页获取数据列表
         /// </summary>
@@ -47,6 +48,7 @@ namespace Game.Data
             PagerParameters pagerPrams = new PagerParameters(tableName, orderby, condition, pageIndex, pageSize);
             return GetPagerSet2(pagerPrams);
         }
+
         #endregion
 
         #region 系统配置
@@ -199,14 +201,38 @@ namespace Game.Data
         /// <param name="userId">必填 代理的用户标识</param>
         /// <param name="typeId">默认不传统计代理充值返利</param>
         /// <param name="sourceUserId">默认不传统计代理所有该类返利</param>
+        /// <param name="timeSpan">时间期间</param>
         /// <returns></returns>
-        public long GetTotalAward(int userId, int typeId = 1, int sourceUserId = 0)
+        public long GetTotalAward(int userId, int typeId = 1, int sourceUserId = 0, string[] timeSpan = null)
         {
             string sql =
-                $" SELECT ISNULL(SUM(Award),0) FROM ReturnAwardRecord WHERE TargetUserID = {userId} AND AwardType= {typeId} ";
+                $" SELECT ISNULL(SUM({ReturnAwardRecord._Award}),0) FROM {ReturnAwardRecord.Tablename}(NOLOCK) WHERE {ReturnAwardRecord._TargetUserID} = {userId} AND {ReturnAwardRecord._AwardType}= {typeId} ";
             if (sourceUserId > 0)
             {
-                sql += $"AND SourceUserID = {sourceUserId} ";
+                sql += $"AND {ReturnAwardRecord._SourceUserID} = {sourceUserId} ";
+            }
+            if (timeSpan != null)
+            {
+                sql += $" AND {ReturnAwardRecord._CollectDate} BETWEEN '{timeSpan[0]}' AND '{timeSpan[1]}' ";
+            }
+            object result = Database.ExecuteScalar(CommandType.Text, sql);
+            return Convert.ToInt64(result);
+        }
+
+        /// <summary>
+        /// 获取代理累计提取总返利 by awardType 不传为 充值返利，传2 为游戏税收返利 
+        /// </summary>
+        /// <param name="userId">必填 代理的用户标识</param>
+        /// <param name="typeId">默认不传，统计代理充值返利</param>
+        /// <param name="timeSpan">时间期间</param>
+        /// <returns></returns>
+        public long GetTotalReceive(int userId, int typeId = 1, string[] timeSpan = null)
+        {
+            string sql =
+                $" SELECT ISNULL(SUM({ReturnAwardReceive._ReceiveAward}),0) FROM {ReturnAwardReceive.Tablename}(NOLOCK) WHERE {ReturnAwardReceive._UserID}={userId} AND {ReturnAwardReceive._AwardType}= {typeId} ";
+            if (timeSpan != null)
+            {
+                sql += $" AND {ReturnAwardReceive._CollectDate} BETWEEN '{timeSpan[0]}' AND '{timeSpan[1]}' ";
             }
             object result = Database.ExecuteScalar(CommandType.Text, sql);
             return Convert.ToInt64(result);
@@ -225,8 +251,9 @@ namespace Game.Data
         /// <returns></returns>
         public PagerSet GetBelowListPagerSet(string sqlWhere, int pageIndex, int pageSize)
         {
-            string[] returnField = {"UserID", "GameID", "NickName", "AgentID", "RegisterDate"};
-            PagerParameters prams = new PagerParameters("WHQJAccountsDB.DBO.AccountsInfo", "ORDER BY RegisterDate DESC",
+            string[] returnField = {"AgentID", "UserID", "CollectDate"};
+            PagerParameters prams = new PagerParameters(AgentBelowInfo.Tablename,
+                $"ORDER BY {AgentBelowInfo._CollectDate} DESC",
                 sqlWhere, pageIndex, pageSize)
             {
                 Fields = returnField,
@@ -242,7 +269,7 @@ namespace Game.Data
         /// <returns></returns>
         public int GetBelowAgentsUser(int userId)
         {
-            return (int)Database.ExecuteScalar(CommandType.Text,
+            return (int) Database.ExecuteScalar(CommandType.Text,
                 $" SELECT Count(1) FROM WHQJAccountsDB.DBO.AccountsInfo WHERE SpreaderID IN ( SELECT UserID FROM WF_GetAgentBelowAgent({userId}) WHERE LevelID = 2) ");
         }
 
@@ -253,7 +280,7 @@ namespace Game.Data
         /// <returns></returns>
         public int GetBelowAgentsAgent(int userId)
         {
-            return (int)Database.ExecuteScalar(CommandType.Text,
+            return (int) Database.ExecuteScalar(CommandType.Text,
                 $" SELECT Count(1) FROM WF_GetAgentBelowAgent({userId}) WHERE LevelID = 3 ");
         }
 

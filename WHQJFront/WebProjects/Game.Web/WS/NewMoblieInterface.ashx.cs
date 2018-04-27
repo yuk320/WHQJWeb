@@ -26,6 +26,7 @@ namespace Game.Web.WS
 
         private static int _userid;
         private static string _device;
+        private static long _groupid;
 
         /// <summary>
         /// 统一处理入口（主要验证）
@@ -45,6 +46,9 @@ namespace Game.Web.WS
                 //获取参数
                 _userid = GameRequest.GetQueryInt("userid", 0);
                 _device = GameRequest.GetString("device");
+                _groupid = !string.IsNullOrEmpty(GameRequest.GetString("groupid"))
+                    ? Convert.ToInt64(GameRequest.GetString("groupid"))
+                    : 0;
                 _ajv = new AjaxJsonValid();
 #if !DEBUG //DEBUG情况下不验证
             string time = GameRequest.GetQueryString("time");
@@ -227,6 +231,13 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                         break;
                     case "getgroupbattlerecord":
                         _ajv.SetDataItem("apiVersion", 20180424);
+                        if (_groupid <= 0)
+                        {
+                            _ajv.code = (int) ApiCode.VertyParamErrorCode;
+                            _ajv.msg = string.Format(EnumHelper.GetDesc(ApiCode.VertyParamErrorCode),
+                                " groupid 错误");
+                            return;
+                        }
                         GetGroupBattleRecord();
                         break;
                     default:
@@ -270,15 +281,16 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
             MobileCustomerService mcs = DataHelper.ConvertRowToObject<MobileCustomerService>(ds.Tables[1].Rows[0]);
             //获取系统公告配置
             IList<NoticeMobile> noticelist = DataHelper.ConvertDataTableToObjects<NoticeMobile>(ds.Tables[2]);
-            //获取手机广告图
-            IList<AdsMobile> plate = DataHelper.ConvertDataTableToObjects<AdsMobile>(ds.Tables[3]);
-            IList<AdsMobile> alert = DataHelper.ConvertDataTableToObjects<AdsMobile>(ds.Tables[4]);
-            foreach (AdsMobile ads in plate)
-            {
-                ads.ResourceURL = ads.ResourceURL.IndexOf("http://", StringComparison.Ordinal) < 0
-                    ? imageServerHost + ads.ResourceURL
-                    : ads.ResourceURL;
-            }
+//            //获取手机固定位广告图
+//            IList<AdsMobile> plate = DataHelper.ConvertDataTableToObjects<AdsMobile>(ds.Tables[3]);
+//            foreach (AdsMobile ads in plate)
+//            {
+//                ads.ResourceURL = ads.ResourceURL.IndexOf("http://", StringComparison.Ordinal) < 0
+//                    ? imageServerHost + ads.ResourceURL
+//                    : ads.ResourceURL;
+//            }
+            //获取手机弹出广告图
+            IList<AdsMobile> alert = DataHelper.ConvertDataTableToObjects<AdsMobile>(_device == "h5" ? ds.Tables[3] : ds.Tables[4]);
             foreach (AdsMobile ads in alert)
             {
                 ads.ResourceURL = ads.ResourceURL.IndexOf("http://", StringComparison.Ordinal) < 0
@@ -290,7 +302,7 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
             _ajv.SetDataItem("systemConfig", config);
             _ajv.SetDataItem("customerService", mcs);
             _ajv.SetDataItem("systemNotice", noticelist);
-            _ajv.SetDataItem("adsList", plate);
+//            _ajv.SetDataItem("adsList", plate);  //广告位取消
             _ajv.SetDataItem("adsAlertList", alert);
         }
 
@@ -341,17 +353,13 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
             //获取充值数据
             DataSet ds = FacadeManage.aideTreasureFacade.GetAppPayConfigList(typeId, _userid);
             //获取首充状态
-            DataTable table = ds.Tables[0];
-            bool flag = (table != null && table.Rows.Count == 0);
+//            DataTable table = ds.Tables[0];
+//            bool flag = (table != null && table.Rows.Count == 0);
             //获取充值产品列表
             IList<AppPayConfigMoile> list = DataHelper.ConvertDataTableToObjects<AppPayConfigMoile>(ds.Tables[1]);
-            //获取兑换产品列表
-            IList<CurrencyExchConfig> gold = DataHelper.ConvertDataTableToObjects<CurrencyExchConfig>(ds.Tables[2]);
 
             _ajv.SetValidDataValue(true);
-            _ajv.SetDataItem("isFirst", flag);
             _ajv.SetDataItem("list", list);
-            _ajv.SetDataItem("goldList", gold);
         }
 
         /// <summary>
@@ -781,7 +789,8 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                 _ajv.SetDataItem("OrderID", orderid);
                 _ajv.SetDataItem("PayStatus", "已支付");
                 _ajv.SetDataItem("PayAmount", olOrder.Amount);
-                _ajv.SetDataItem("Diamond", olOrder.Diamond);
+                _ajv.SetDataItem("ScoreType", olOrder.ScoreType);
+                _ajv.SetDataItem("Score", olOrder.Score);
             }
             _ajv.SetValidDataValue(true);
         }
@@ -822,31 +831,27 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
         /// <summary>
         /// 获取大厅战绩（俱乐部战绩）
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="groupId">当groupId</param>
+        /// <param name="typeId"></param>
         private static void GetBattleRecord(int typeId)
         {
-            long groupId = !string.IsNullOrEmpty(GameRequest.GetString("groupid"))
-                ? Convert.ToInt64(GameRequest.GetString("groupid"))
-                : 0;
             int page = GameRequest.GetInt("pageindex", 1);
             int size = GameRequest.GetInt("pagesize", 30);
+            IList<MobileBattleRecord> recordList = new List<MobileBattleRecord>();
             switch (typeId)
             {
                 //金币约战战绩
                 case 2:
-                    IList<MobileBattleRecord> recordList = new List<MobileBattleRecord>();
-                    PagerSet ps = FacadeManage.aidePlatformFacade.GetList(PersonalRoomScoreInfo.Tablename, page, size,
-                        $"WHERE {PersonalRoomScoreInfo._UserID}={_userid} AND {PersonalRoomScoreInfo._GroupID}={groupId} AND PlayMode = 1 ",
+                    PagerSet psBattle = FacadeManage.aidePlatformFacade.GetList(PersonalRoomScoreInfo.Tablename, page, size,
+                        $"WHERE {PersonalRoomScoreInfo._UserID}={_userid} AND {PersonalRoomScoreInfo._GroupID}={_groupid} AND PlayMode = 1 ",
                         $"ORDER BY {PersonalRoomScoreInfo._WriteTime} DESC");
-                    if (ps?.RecordCount > 0)
+                    if (psBattle?.RecordCount > 0)
                     {
-                        foreach (DataRow dr in ps.PageSet.Tables[0].Rows)
+                        foreach (DataRow dr in psBattle.PageSet.Tables[0].Rows)
                         {
                             int roomId = Convert.ToInt32(dr[PersonalRoomScoreInfo._RoomID].ToString());
                             long roomGuid = Convert.ToInt64(dr[PersonalRoomScoreInfo._PersonalRoomGUID].ToString());
                             StreamCreateTableFeeInfo tableInfo =
-                                FacadeManage.aidePlatformFacade.GetStreamCreateTableFeeInfo(roomId, groupId);
+                                FacadeManage.aidePlatformFacade.GetStreamCreateTableFeeInfo(roomId, _groupid);
                             if (tableInfo == null) continue;
 
                             MobileBattleRecord record = new MobileBattleRecord
@@ -875,7 +880,7 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                                 {
                                     int detailUserId = Convert.ToInt32(drDetail[RecordBackInfo._UserID].ToString());
                                     long detailScore = Convert.ToInt64(drDetail[RecordBackInfo._Score].ToString());
-                                    sumScore[detailUserId] += detailScore;
+                                    sumScore[detailUserId] = !sumScore.ContainsKey(detailUserId) ? detailScore : sumScore[detailUserId] + detailScore;
                                     MobileBattleDetails detail = new MobileBattleDetails
                                     {
                                         LoopCount = Convert.ToInt32(drDetail[RecordBackInfo._LoopCount].ToString()),
@@ -905,17 +910,33 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                             }
                             recordList.Add(record);
                         }
-                        _ajv.SetValidDataValue(true);
-                        _ajv.SetDataItem("list", recordList);
                     }
                     break;
                 case 4:
+                    PagerSet psDraw = FacadeManage.aideTreasureFacade.GetList(RecordDrawScoreForWeb.Tablename, page,
+                        size, $"WHERE {RecordDrawScoreForWeb._UserID} = {_userid} ", $"ORDER BY {RecordDrawScoreForWeb._InsertTime} DESC");
+                    if (psDraw?.RecordCount > 0)
+                    {
+                        foreach (DataRow dr in psDraw.PageSet.Tables[0].Rows)
+                        {
+                            MobileBattleRecord record = new MobileBattleRecord
+                            {
+                                KindName = FacadeManage.aidePlatformFacade.GetGameKindItemByID(Convert.ToInt32(dr[RecordDrawScoreForWeb._KindID].ToString()))?.KindName??"",
+                                Score = Convert.ToInt64(dr[RecordDrawScoreForWeb._Score].ToString()),
+                                PlayTime = Convert.ToDateTime(dr[RecordDrawScoreForWeb._InsertTime].ToString()),
+                                GamesNum = FacadeManage.aideTreasureFacade.GetList(RecordDrawScore.Tablename,1,999,$"WHERE {RecordDrawScore._DrawID}={Convert.ToInt32(dr[RecordDrawScore._DrawID].ToString())}",$"ORDER BY {RecordDrawScore._ChairID} ASC").RecordCount
+                            };
+                            recordList.Add(record);
+                        }
+                    }
                     break;
                 default:
                     _ajv.code = (int) ApiCode.VertyParamErrorCode;
                     _ajv.msg = string.Format(EnumHelper.GetDesc(ApiCode.VertyParamErrorCode), " type 不支持此类型");
-                    break;
+                    return;
             }
+            _ajv.SetValidDataValue(true);
+            _ajv.SetDataItem("list", recordList);
         }
 
         /// <summary>
@@ -923,9 +944,6 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
         /// </summary>
         private static void GetGroupBattleRecord()
         {
-            long groupId = !string.IsNullOrEmpty(GameRequest.GetString("groupid"))
-                ? Convert.ToInt64(GameRequest.GetString("groupid"))
-                : 0;
             int page = GameRequest.GetInt("pageindex", 1);
             int size = GameRequest.GetInt("pagesize", 50);
             string type = GameRequest.GetString("type"); // today,yesterday,last7days
@@ -949,7 +967,7 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
 
             IList<MobileBattleRecord> recordList = new List<MobileBattleRecord>();
             PagerSet ps = FacadeManage.aidePlatformFacade.GetList(StreamCreateTableFeeInfo.Tablename, page, size,
-                $"WHERE  {StreamCreateTableFeeInfo._GroupID} = {groupId} {dateWhere}",
+                $"WHERE  {StreamCreateTableFeeInfo._GroupID} = {_groupid} {dateWhere}",
                 $"ORDER BY {StreamCreateTableFeeInfo._CreateDate} DESC");
             if (ps?.RecordCount > 0)
             {
@@ -958,7 +976,7 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                     int roomId = Convert.ToInt32(dr[StreamCreateTableFeeInfo._RoomID].ToString());
                     int ownerId = Convert.ToInt32(dr[StreamCreateTableFeeInfo._UserID].ToString());
                     PersonalRoomScoreInfo tableInfo =
-                        FacadeManage.aidePlatformFacade.GetPersonalRoomScoreInfo(groupId, roomId, ownerId);
+                        FacadeManage.aidePlatformFacade.GetPersonalRoomScoreInfo(_groupid, roomId, ownerId);
                     if (tableInfo == null) continue;
 
                     MobileBattleRecord record = new MobileBattleRecord
@@ -987,7 +1005,7 @@ Fetch.VerifySignData((context.Request.QueryString["userid"] == null ? "" : _user
                         {
                             int detailUserId = Convert.ToInt32(drDetail[RecordBackInfo._UserID].ToString());
                             long detailScore = Convert.ToInt64(drDetail[RecordBackInfo._Score].ToString());
-                            sumScore[detailUserId] += detailScore;
+                            sumScore[detailUserId] = !sumScore.ContainsKey(detailUserId)?detailScore: sumScore[detailUserId]+detailScore;
                             MobileBattleDetails detail = new MobileBattleDetails
                             {
                                 LoopCount = Convert.ToInt32(drDetail[RecordBackInfo._LoopCount].ToString()),

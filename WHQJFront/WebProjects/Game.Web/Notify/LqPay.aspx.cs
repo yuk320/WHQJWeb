@@ -30,7 +30,6 @@ namespace Game.Web.Notify
                             OnLinePayOrder order = new OnLinePayOrder
                             {
                                 OrderID = pSplit[0],
-                                PayAddress = GameRequest.GetUserIP(),
                                 Amount = Convert.ToInt32(notify.ExtraParam.money) / 100M
                             };
                             FacadeManage.aideTreasureFacade.FinishOnLineOrder(order);

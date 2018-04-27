@@ -44,8 +44,8 @@ BEGIN
   -- 获取用户信息
   SELECT @UserID=UserID, @Nullity=Nullity
   FROM WHQJAccountsDBLink.WHQJAccountsDB.dbo.AccountsInfo WITH(NOLOCK)
-
   WHERE UserID=@dwUserID
+  
   IF @Nullity IS NULL
 	BEGIN
     SET @strErrorDescribe=N'抱歉，领取用户不存在'

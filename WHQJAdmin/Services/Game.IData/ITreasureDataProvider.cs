@@ -43,17 +43,11 @@ namespace Game.IData
         /// <returns></returns>
         bool IsExistAppPayConfig(string where);
         /// <summary>
-        /// 新增充值产品
+        /// 新增、修改充值产品
         /// </summary>
         /// <param name="config">充值产品</param>
         /// <returns></returns>
-        int InsertAppPayConfig(AppPayConfig config);
-        /// <summary>
-        /// 修改充值产品
-        /// </summary>
-        /// <param name="config">充值产品</param>
-        /// <returns></returns>
-        int UpdateAppPayConfig(AppPayConfig config);
+        int SaveAppPayConfig(AppPayConfig config);
         #endregion
 
         #region 推广配置

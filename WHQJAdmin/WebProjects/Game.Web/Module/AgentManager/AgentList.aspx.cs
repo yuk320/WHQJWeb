@@ -36,70 +36,22 @@ namespace Game.Web.Module.AgentManager
         protected void btnQuery_Click(object sender, EventArgs e)
         {
             string query = CtrlHelper.GetTextAndFilter(txtSearch);
-            int type = Convert.ToInt32(ddlSearchType.SelectedValue);
             StringBuilder condition = new StringBuilder(" WHERE 1=1");
 
             if(!string.IsNullOrEmpty(query))
             {
-                if(type == 2)
+                condition.AppendFormat(
+                    " AND (Compellation = '{0}' OR QQAccount = '{0}' OR UserID IN (SELECT UserID FROM WHQJAccountsDB.DBO.AccountsInfo(NOLOCK) WHERE NickName = '{0}' ) ",
+                    query);
+                if (Utils.Validate.IsPositiveInt(query))
                 {
-                    condition.AppendFormat(" AND Compellation='{0}'", query);
+                    condition.AppendFormat(
+                        " OR AgentID={0} OR UserID={0} OR UserID IN (SELECT UserID FROM WHQJAccountsDB.DBO.AccountsInfo(NOLOCK) WHERE GameID={0}) ",
+                        query);
                 }
-                else if(type == 3)
-                {
-                    condition.AppendFormat(" AND QQAccount='{0}'", query);
-                } else if (type == 5)
-                {
-                    condition.AppendFormat(" AND WCNickName='{0}'", query);
-                }
-                else
-                {
-                    if(!Utils.Validate.IsPositiveInt(query))
-                    {
-                        ShowError("输入查询格式不正确");
-                        return;
-                    }
-
-                    if(type == 4)
-                    {
-                        condition.AppendFormat(" AND AgentID = {0}", query);
-                    }
-                    else
-                    {
-                        condition.AppendFormat(" AND UserID = {0}", GetUserIDByGameID(Convert.ToInt32(query)));
-                    }
-                }
+                condition.Append(")");
             }
 
-            ViewState["SearchItems"] = condition.ToString();
-            AgentDataBind();
-        }
-        /// <summary>
-        /// 代理查询
-        /// </summary>
-        protected void btnDown_Click(object sender, EventArgs e)
-        {
-            string query = CtrlHelper.GetTextAndFilter(txtAgentId);
-            int type = Convert.ToInt32(ddlRelation.SelectedValue);
-
-            if(!Utils.Validate.IsPositiveInt(query))
-            {
-                ShowError("输入查询格式不正确");
-                return;
-            }
-            StringBuilder condition = new StringBuilder(" WHERE 1=1");
-            if(type == 1)
-            {
-                condition.AppendFormat(" AND (AgentID IN(SELECT ParentAgent FROM AgentInfo WITH(NOLOCK) WHERE AgentID={0}) OR AgentID IN(SELECT ParentAgent FROM AgentInfo WITH(NOLOCK) WHERE AgentID IN(SELECT ParentAgent FROM AgentInfo WITH(NOLOCK) WHERE AgentID={0})))", query);
-            }
-            else if(type == 2)
-            {
-                condition.AppendFormat(" AND (ParentAgent = {0} OR ParentAgent IN (SELECT AgentID FROM AgentInfo WITH(NOLOCK) WHERE ParentAgent={0}))", query);
-            }
-            else
-            {
-                condition.Append(" AND 1=2 ");
-            }
             ViewState["SearchItems"] = condition.ToString();
             AgentDataBind();
         }
@@ -193,7 +145,7 @@ namespace Game.Web.Module.AgentManager
         protected string GetAgentInfo(int agentid)
         {
             if (agentid<=0) return "";
-            string nickName = FacadeManage.aideAccountsFacade.GetAccountInfoByUserId(FacadeManage.aideAccountsFacade.GetAccountsAgentInfo(agentid).UserID).NickName;
+            string nickName = FacadeManage.aideAccountsFacade.GetAccountInfoByUserId(FacadeManage.aideAgentFacade.GetAgentInfo(agentid).UserID).NickName;
             return
                 $"<a class=\"l\" href=\"javascript:void(0)\" onclick=\"openWindowOwn('AgentUserUpdate.aspx?param={agentid}', '{nickName}', 700,490);\">{nickName}</a>";
         }

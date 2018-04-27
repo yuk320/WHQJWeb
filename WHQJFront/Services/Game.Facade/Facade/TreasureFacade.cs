@@ -37,6 +37,22 @@ namespace Game.Facade
         }
         #endregion
 
+        #region 公共分页
+        /// <summary>
+        /// 分页获取数据列表
+        /// </summary>
+        /// <param name="tableName">表名</param>
+        /// <param name="pageIndex">页下标</param>
+        /// <param name="pageSize">页显示数</param>
+        /// <param name="condition">查询条件</param>
+        /// <param name="orderby">排序</param>
+        /// <returns></returns>
+        public PagerSet GetList(string tableName, int pageIndex, int pageSize, string condition, string orderby)
+        {
+            return treasureData.GetList(tableName, pageIndex, pageSize, condition, orderby);
+        }
+        #endregion
+
         #region 充值产品
         /// <summary>
         /// 获取充值产品列表

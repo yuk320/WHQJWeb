@@ -78,15 +78,12 @@ namespace Game.Data
         }
 
         /// <summary>
-        /// 新增充值产品
+        /// 新增、修改充值产品
         /// </summary>
         /// <param name="config">充值产品</param>
         /// <returns></returns>
-        public int InsertAppPayConfig(AppPayConfig config)
+        public int SaveAppPayConfig(AppPayConfig config)
         {
-            string sqlQuery =
-                @"INSERT INTO AppPayConfig(AppleID,PayName,PayType,PayPrice,PayIdentity,ImageType,SortID,Diamond,PresentDiamond,ConfigTime) 
-                                        VALUES(@AppleID,@PayName,@PayType,@PayPrice,@PayIdentity,@ImageType,@SortID,@Diamond,@PresentDiamond,@ConfigTime)";
 
             var prams = new List<DbParameter>
             {
@@ -97,49 +94,39 @@ namespace Game.Data
                 Database.MakeInParam("PayIdentity", config.PayIdentity),
                 Database.MakeInParam("ImageType", config.ImageType),
                 Database.MakeInParam("SortID", config.SortID),
-                Database.MakeInParam("Diamond", config.Diamond),
-                Database.MakeInParam("PresentDiamond", config.PresentDiamond),
+                Database.MakeInParam("ScoreType", config.ScoreType),
+                Database.MakeInParam("Score", config.Score),
+                Database.MakeInParam("PresentScore", config.PresentScore),
+                Database.MakeInParam("FristPresent", config.FristPresent),
                 Database.MakeInParam("ConfigTime", config.ConfigTime)
             };
+            string sqlQuery;
+            if (config.ConfigID == 0)
+            {
+                sqlQuery = @"INSERT INTO AppPayConfig(AppleID,PayName,PayType,PayPrice,PayIdentity,ImageType,SortID,Score,FristPresent,PresentScore,ScoreType,ConfigTime) 
+                                        VALUES(@AppleID,@PayName,@PayType,@PayPrice,@PayIdentity,@ImageType,@SortID,@Diamond,@PresentDiamond,@ConfigTime)";
+            }
+            else
+            {
+                prams.Add(Database.MakeInParam("ConfigID",config.ConfigID));
+                StringBuilder sql = new StringBuilder();
+                sql.Append("UPDATE AppPayConfig SET ")
+                    .Append("AppleID=@AppleID, ")
+                    .Append("PayName=@PayName, ")
+                    .Append("PayType=@PayType, ")
+                    .Append("PayPrice=@PayPrice, ")
+                    .Append("PayIdentity=@PayIdentity, ")
+                    .Append("ImageType=@ImageType, ")
+                    .Append("Score=@Score, ")
+                    .Append("ScoreType=@ScoreType, ")
+                    .Append("PresentScore=@PresentScore, ")
+                    .Append("FristPresent=@FristPresent, ")
+                    .Append("SortID=@SortID ")
+                    .Append("WHERE ConfigID=@ConfigID");
+                sqlQuery = sql.ToString();
+            }
 
             return Database.ExecuteNonQuery(CommandType.Text, sqlQuery, prams.ToArray());
-        }
-
-        /// <summary>
-        /// 修改充值产品
-        /// </summary>
-        /// <param name="config">充值产品</param>
-        /// <returns></returns>
-        public int UpdateAppPayConfig(AppPayConfig config)
-        {
-            StringBuilder sqlQuery = new StringBuilder();
-            sqlQuery.Append("UPDATE AppPayConfig SET ")
-                .Append("AppleID=@AppleID, ")
-                .Append("PayName=@PayName, ")
-                .Append("PayType=@PayType, ")
-                .Append("PayPrice=@PayPrice, ")
-                .Append("PayIdentity=@PayIdentity, ")
-                .Append("ImageType=@ImageType, ")
-                .Append("Diamond=@Diamond, ")
-                .Append("PresentDiamond=@PresentDiamond, ")
-                .Append("SortID=@SortID ")
-                .Append("WHERE ConfigID=@ConfigID");
-
-            var prams = new List<DbParameter>
-            {
-                Database.MakeInParam("AppleID", config.AppleID),
-                Database.MakeInParam("PayName", config.PayName),
-                Database.MakeInParam("PayType", config.PayType),
-                Database.MakeInParam("PayPrice", config.PayPrice),
-                Database.MakeInParam("PayIdentity", config.PayIdentity),
-                Database.MakeInParam("ImageType", config.ImageType),
-                Database.MakeInParam("Diamond", config.Diamond),
-                Database.MakeInParam("PresentDiamond", config.PresentDiamond),
-                Database.MakeInParam("SortID", config.SortID),
-                Database.MakeInParam("ConfigID", config.ConfigID)
-            };
-
-            return Database.ExecuteNonQuery(CommandType.Text, sqlQuery.ToString(), prams.ToArray());
         }
 
         #endregion
